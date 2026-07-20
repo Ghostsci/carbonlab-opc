@@ -1,0 +1,43 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Local data and runtime state
+uploads/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+tmp/
+temp/
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Generated validation output
+validation_output/
+reports/generated/
