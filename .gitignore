@@ -26,6 +26,8 @@ coverage/
 
 # Local data and runtime state
 uploads/
+.uploads/
+**/.uploads/
 *.db
 *.sqlite
 *.sqlite3

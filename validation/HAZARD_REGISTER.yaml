@@ -1,0 +1,26 @@
+version: 1.0.0
+hazards:
+  - id: HZ-001
+    severity: critical
+    event: LLM候选未经人工确认进入正式记录
+    control: formal_write_allowed恒为false，正式写入接口不接受LLM来源
+  - id: HZ-002
+    severity: critical
+    event: 跨租户文件或证据被模型结果引用
+    control: Provider无数据库写权限，正式引用由tenant-scoped服务解析
+  - id: HZ-003
+    severity: critical
+    event: 文档提示词注入改变系统任务或输出权限
+    control: 文件作为不可信数据分隔，契约优先，注入场景作为硬门禁
+  - id: HZ-004
+    severity: high
+    event: 缺失或冲突字段被模型猜测
+    control: status必须为missing、ambiguous或conflict并要求人工确认
+  - id: HZ-005
+    severity: high
+    event: 新模型总体分提高但关键字段退化
+    control: 关键字段切片与硬门禁先于总分，使用成对非劣效比较
+  - id: HZ-006
+    severity: high
+    event: API Key进入Git、日志或报告
+    control: 仅环境变量或.secrets本机目录，报告不记录请求头和原始密钥

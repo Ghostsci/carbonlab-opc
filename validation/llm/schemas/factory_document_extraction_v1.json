@@ -1,0 +1,251 @@
+{
+  "$defs": {
+    "CandidateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceReference"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "requires_human_confirmation": {
+          "const": true,
+          "title": "Requires Human Confirmation",
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "extracted",
+            "missing",
+            "ambiguous",
+            "conflict"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "uncertainty_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Uncertainty Reason"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "status",
+        "value",
+        "unit",
+        "evidence",
+        "requires_human_confirmation",
+        "uncertainty_reason"
+      ],
+      "title": "CandidateValue",
+      "type": "object"
+    },
+    "ConflictFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceReference"
+          },
+          "minItems": 2,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "field": {
+          "enum": [
+            "installation_name",
+            "operator_name",
+            "product_name",
+            "cn_code",
+            "production_route",
+            "period_start",
+            "period_end",
+            "production_output",
+            "purchased_electricity"
+          ],
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "description",
+        "evidence"
+      ],
+      "title": "ConflictFinding",
+      "type": "object"
+    },
+    "EvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "quote"
+      ],
+      "title": "EvidenceReference",
+      "type": "object"
+    },
+    "FactoryCandidateFields": {
+      "additionalProperties": false,
+      "properties": {
+        "cn_code": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "installation_name": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "operator_name": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "period_start": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "product_name": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "production_output": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "production_route": {
+          "$ref": "#/$defs/CandidateValue"
+        },
+        "purchased_electricity": {
+          "$ref": "#/$defs/CandidateValue"
+        }
+      },
+      "required": [
+        "installation_name",
+        "operator_name",
+        "product_name",
+        "cn_code",
+        "production_route",
+        "period_start",
+        "period_end",
+        "production_output",
+        "purchased_electricity"
+      ],
+      "title": "FactoryCandidateFields",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "conflicts": {
+      "items": {
+        "$ref": "#/$defs/ConflictFinding"
+      },
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "fields": {
+      "$ref": "#/$defs/FactoryCandidateFields"
+    },
+    "formal_write_allowed": {
+      "const": false,
+      "title": "Formal Write Allowed",
+      "type": "boolean"
+    },
+    "missing_fields": {
+      "items": {
+        "enum": [
+          "installation_name",
+          "operator_name",
+          "product_name",
+          "cn_code",
+          "production_route",
+          "period_start",
+          "period_end",
+          "production_output",
+          "purchased_electricity"
+        ],
+        "type": "string"
+      },
+      "title": "Missing Fields",
+      "type": "array"
+    },
+    "prompt_injection_detected": {
+      "title": "Prompt Injection Detected",
+      "type": "boolean"
+    },
+    "scenario_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{4,79}$",
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_id": {
+      "const": "factory_document_extraction_v1",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "task_id",
+    "scenario_id",
+    "fields",
+    "prompt_injection_detected",
+    "conflicts",
+    "missing_fields",
+    "formal_write_allowed"
+  ],
+  "title": "FactoryDocumentExtraction",
+  "type": "object"
+}

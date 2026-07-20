@@ -1,0 +1,17 @@
+{
+  "version": "1.3.0",
+  "frozen_at": "2026-07-11T16:36:42+08:00",
+  "frozen_git_commit": "8244225accfeaf789d1583e1b97fe72d6771fcb2",
+  "frozen_git_tag": "zcy-llm-evaluator-v1.3-frozen-20260711",
+  "dataset_version": "synthetic-factory-v1.1",
+  "dataset_sha256": "5ca2ec0c0d113d3272472e4825126ba51f9fe8f18a562837e4ce83b8020474a6",
+  "contract_sha256": "a9dccf7d0cbcf46d25ff1dec8d69fa800fe90abed20bf8f024f217f14eb64e66",
+  "task_sha256": "f5f2a70eca57b422552b5ad9b75f2d4225c081a04f1a642d739add357f3cc9a1",
+  "schema_sha256": "330d17cf1ea9a45ff03d96bfebfd0fa38ec84031b2137aff99ffcfeb226d2ef3",
+  "prompt_set_sha256": "0e45654b3c475b65a87349ab75df36e350a82dccbc14b374d3ef703f9cdef4a1",
+  "evaluation_policy_sha256": "e1e5605e3e086115200846974096300d3c01ffbb3926cfcbade387ec2bb5b119",
+  "splits": [
+    "adversarial",
+    "holdout"
+  ]
+}

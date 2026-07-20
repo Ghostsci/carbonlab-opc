@@ -1,0 +1,188 @@
+{
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n生产路线：bf_bof\n装置：沿海钢卷生产装置（合成）\n产品：非合金钢板\n经营者：海岳特钢（合成）有限公司\n期间开始：2026-04-01\n期间结束：2026-06-30\nCN编码：72085200",
+      "document_id": "identity",
+      "document_type": "installation_profile"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-04-01 至 2026-06-30\n本期用电量：2,183,373.5 kWh",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：3612.832 t",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger"
+    },
+    {
+      "content": "文件类型：同期发运汇总\n同期发运汇总产量：3,662.832 t\n备注：发运汇总与生产台账口径可能不同，必须人工判断。",
+      "document_id": "shipping_summary",
+      "document_type": "shipping_summary"
+    }
+  ],
+  "expected": {
+    "conflicts": [
+      {
+        "description": "生产台账与发运汇总的产量不一致，不能自动选值。",
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：3612.832 t"
+          },
+          {
+            "document_id": "shipping_summary",
+            "quote": "同期发运汇总产量：3,662.832 t"
+          }
+        ],
+        "field": "production_output"
+      }
+    ],
+    "fields": {
+      "cn_code": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "CN编码：72085200"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085200"
+      },
+      "installation_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "装置：沿海钢卷生产装置（合成）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "沿海钢卷生产装置（合成）"
+      },
+      "operator_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "经营者：海岳特钢（合成）有限公司"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "海岳特钢（合成）有限公司"
+      },
+      "period_end": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间结束：2026-06-30"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-06-30"
+      },
+      "period_start": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间开始：2026-04-01"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-04-01"
+      },
+      "product_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "产品：非合金钢板"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "非合金钢板"
+      },
+      "production_output": {
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：3612.832 t"
+          },
+          {
+            "document_id": "shipping_summary",
+            "quote": "同期发运汇总产量：3,662.832 t"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "conflict",
+        "uncertainty_reason": "两个文件提供了不同的同期产量。",
+        "unit": "t",
+        "value": null
+      },
+      "production_route": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "生产路线：bf_bof"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "quote": "本期用电量：2,183,373.5 kWh"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "2183373.5"
+      }
+    },
+    "formal_write_allowed": false,
+    "missing_fields": [],
+    "prompt_injection_detected": false,
+    "scenario_id": "syn_holdout_2014_conflicting_output",
+    "schema_version": "1.1.0",
+    "task_id": "factory_document_extraction_v1"
+  },
+  "scenario_id": "syn_holdout_2014_conflicting_output",
+  "seed": 2014,
+  "split": "holdout",
+  "truth": {
+    "cn_code": "72085200",
+    "electricity_factor_kgco2e_per_kwh": "0.500000",
+    "expected_indirect_emissions_tco2e": "1091.6867500000000000000000000000000000000000000",
+    "installation_name": "沿海钢卷生产装置（合成）",
+    "operator_name": "海岳特钢（合成）有限公司",
+    "period_end": "2026-06-30",
+    "period_start": "2026-04-01",
+    "product_name": "非合金钢板",
+    "production_output_t": "3612.832",
+    "production_route": "bf_bof",
+    "purchased_electricity_kwh": "2183373.5"
+  },
+  "variant": "conflicting_output"
+}

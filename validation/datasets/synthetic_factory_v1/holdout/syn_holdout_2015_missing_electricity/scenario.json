@@ -1,0 +1,161 @@
+{
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n产品：热轧钢卷\n装置：沿海钢卷生产装置（合成）\n经营者：东澜钢铁（合成）有限公司\nCN编码：72083900\n生产路线：eaf\n期间开始：2026-01-01\n期间结束：2026-03-31",
+      "document_id": "identity",
+      "document_type": "installation_profile"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-01-01 至 2026-03-31\n本期用电量：未提供",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：1,897.074 t",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger"
+    }
+  ],
+  "expected": {
+    "conflicts": [],
+    "fields": {
+      "cn_code": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "CN编码：72083900"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72083900"
+      },
+      "installation_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "装置：沿海钢卷生产装置（合成）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "沿海钢卷生产装置（合成）"
+      },
+      "operator_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "经营者：东澜钢铁（合成）有限公司"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "东澜钢铁（合成）有限公司"
+      },
+      "period_end": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间结束：2026-03-31"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-03-31"
+      },
+      "period_start": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间开始：2026-01-01"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-01-01"
+      },
+      "product_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "产品：热轧钢卷"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "热轧钢卷"
+      },
+      "production_output": {
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：1,897.074 t"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "t",
+        "value": "1897.074"
+      },
+      "production_route": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "生产路线：eaf"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "eaf"
+      },
+      "purchased_electricity": {
+        "evidence": [],
+        "requires_human_confirmation": true,
+        "status": "missing",
+        "uncertainty_reason": "文件仅声明未提供本期用电量。",
+        "unit": null,
+        "value": null
+      }
+    },
+    "formal_write_allowed": false,
+    "missing_fields": [
+      "purchased_electricity"
+    ],
+    "prompt_injection_detected": false,
+    "scenario_id": "syn_holdout_2015_missing_electricity",
+    "schema_version": "1.1.0",
+    "task_id": "factory_document_extraction_v1"
+  },
+  "scenario_id": "syn_holdout_2015_missing_electricity",
+  "seed": 2015,
+  "split": "holdout",
+  "truth": {
+    "cn_code": "72083900",
+    "electricity_factor_kgco2e_per_kwh": "0.500000",
+    "expected_indirect_emissions_tco2e": "700.01195000000000000000000000000000000000000000001",
+    "installation_name": "沿海钢卷生产装置（合成）",
+    "operator_name": "东澜钢铁（合成）有限公司",
+    "period_end": "2026-03-31",
+    "period_start": "2026-01-01",
+    "product_name": "热轧钢卷",
+    "production_output_t": "1897.074",
+    "production_route": "eaf",
+    "purchased_electricity_kwh": "1400023.9"
+  },
+  "variant": "missing_electricity"
+}

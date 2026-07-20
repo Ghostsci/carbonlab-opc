@@ -1,0 +1,282 @@
+{
+  "dataset_sha256": "5ca2ec0c0d113d3272472e4825126ba51f9fe8f18a562837e4ce83b8020474a6",
+  "dataset_version": "synthetic-factory-v1.1",
+  "scenario_count": 39,
+  "scenarios": [
+    {
+      "scenario_id": "syn_candidate_1001_complete",
+      "seed": 1001,
+      "sha256": "f97462d3683986a7c13b493a5cb10f0526049466fb328414f5c2d942d72d66cb",
+      "split": "candidate",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_candidate_1002_missing_output",
+      "seed": 1002,
+      "sha256": "7123f712396b545b5c0b70ace4801cf47b1c9a8aa104d5f42182b543e25fe2cb",
+      "split": "candidate",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1003_ambiguous_output_unit",
+      "seed": 1003,
+      "sha256": "e000e42a1677d2b75ae7414c29a4452e4d347423d4349565c6d5ed930fc1568b",
+      "split": "candidate",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_candidate_1004_conflicting_output",
+      "seed": 1004,
+      "sha256": "97aef059773646371242e7ea5c6970aad08e19eb39e9c2daee1f80b8180bdda2",
+      "split": "candidate",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1005_missing_electricity",
+      "seed": 1005,
+      "sha256": "a4268f2dd5a4c4a813590b575daac9e01ce8705afe35b8bb61413b5704e930e6",
+      "split": "candidate",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_candidate_1006_complete",
+      "seed": 1006,
+      "sha256": "af5ae501a3a140313906d51c82fafa2e8ea3621491d8114d914a593dd2e9c9b2",
+      "split": "candidate",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_candidate_1007_missing_output",
+      "seed": 1007,
+      "sha256": "43446662ec59dee0003fe15a2b63a966345b6fa397751e21e435d28f079e1660",
+      "split": "candidate",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1008_ambiguous_output_unit",
+      "seed": 1008,
+      "sha256": "1a9ea1ea4a8551fca37a39d2f3902b94575d6a7ddeb3daccedf231974aefe73d",
+      "split": "candidate",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_candidate_1009_conflicting_output",
+      "seed": 1009,
+      "sha256": "484c4db7dd87135dffbdf4fc513144d17893fcd0c70effdae753d3dae583293a",
+      "split": "candidate",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1010_missing_electricity",
+      "seed": 1010,
+      "sha256": "b6a2a343d4d99c89812f60a2d0504b67c87a974b9ef8c199100647d5fd452e16",
+      "split": "candidate",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_candidate_1011_complete",
+      "seed": 1011,
+      "sha256": "f3f0987ddce589671a63809851bc12946281d0869e5fe618457743178d4e85ea",
+      "split": "candidate",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_candidate_1012_missing_output",
+      "seed": 1012,
+      "sha256": "dde9eb74654e1bfcfe803549d85090a6013701f4190660374912d0fcf5c84351",
+      "split": "candidate",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1013_ambiguous_output_unit",
+      "seed": 1013,
+      "sha256": "3b0b8e71dfa8bd677d7d440aadc179c7455efb2363a0fa8841c08aa43954c772",
+      "split": "candidate",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_candidate_1014_conflicting_output",
+      "seed": 1014,
+      "sha256": "79423b6457217cd6ba72347fdfec14b1368574dcc2dd86b04c26186b775f8691",
+      "split": "candidate",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_candidate_1015_missing_electricity",
+      "seed": 1015,
+      "sha256": "7240398c01ea73e593cf56a967981a21904e5aca1cfcd1ac339629fb9aa22742",
+      "split": "candidate",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_holdout_2001_complete",
+      "seed": 2001,
+      "sha256": "2246d9ca9a62b15685d82085e6b1d99c9133b6372dd361f40b87f61dfb8f3e87",
+      "split": "holdout",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_holdout_2002_missing_output",
+      "seed": 2002,
+      "sha256": "02098d990b8e901ced0562394fd823614e4abc8ee58fdf6d0c91717939fb17df",
+      "split": "holdout",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2003_ambiguous_output_unit",
+      "seed": 2003,
+      "sha256": "ecc6c30a5a2e7264dae8f506f32aad056d2e51b0c584b5d5bed38719e02c806d",
+      "split": "holdout",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_holdout_2004_conflicting_output",
+      "seed": 2004,
+      "sha256": "93229eb3d26976f501b989f858fa0dc1d507ab7f9bf4c5120d4dd558609b7bac",
+      "split": "holdout",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2005_missing_electricity",
+      "seed": 2005,
+      "sha256": "067eb622f36848c6dec07005e5178710fa91115fbf60c9bd3d13d441801ad574",
+      "split": "holdout",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_holdout_2006_complete",
+      "seed": 2006,
+      "sha256": "0fbd5b4a65cb208cd7345645a2df32122f06fe74f5eb83aefd73c46571404fe9",
+      "split": "holdout",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_holdout_2007_missing_output",
+      "seed": 2007,
+      "sha256": "10ba03088a90794adf79d1dcc2e1ce1a0b3f2e576872add341103aec421ed72f",
+      "split": "holdout",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2008_ambiguous_output_unit",
+      "seed": 2008,
+      "sha256": "5acd1907f7ba04bf92092676ad66932e84070bd5df89c6b302fb9618c5f2199e",
+      "split": "holdout",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_holdout_2009_conflicting_output",
+      "seed": 2009,
+      "sha256": "fb75d9ad9a46cd770e0cbaa1370771439d656c3b42d4035125c129997ffe6795",
+      "split": "holdout",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2010_missing_electricity",
+      "seed": 2010,
+      "sha256": "cada937bb04e3186e1ed80b7a0ecdc1bcefebbf6be3fd1de78f2a5b969ae690f",
+      "split": "holdout",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_holdout_2011_complete",
+      "seed": 2011,
+      "sha256": "a549757fc25cc6895cbb978781fa046be2ed02c145809ad904584639df047424",
+      "split": "holdout",
+      "variant": "complete"
+    },
+    {
+      "scenario_id": "syn_holdout_2012_missing_output",
+      "seed": 2012,
+      "sha256": "a84f639ca35c0e6ba10a05ac8227ec9d641cdf023516746b68b763fb477e170c",
+      "split": "holdout",
+      "variant": "missing_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2013_ambiguous_output_unit",
+      "seed": 2013,
+      "sha256": "c8f8820cedf29f6dcb80e0fc9bb6eee5239060e76bd6417dd462ace38652cc54",
+      "split": "holdout",
+      "variant": "ambiguous_output_unit"
+    },
+    {
+      "scenario_id": "syn_holdout_2014_conflicting_output",
+      "seed": 2014,
+      "sha256": "0f52a491190533270e2d1118560948b081d8b86a286078a29279885cc15bc817",
+      "split": "holdout",
+      "variant": "conflicting_output"
+    },
+    {
+      "scenario_id": "syn_holdout_2015_missing_electricity",
+      "seed": 2015,
+      "sha256": "fe90726eec7f9ad9a917e555514442f76d6d3a49b676ac5a43eef1a61e251bb4",
+      "split": "holdout",
+      "variant": "missing_electricity"
+    },
+    {
+      "scenario_id": "syn_adversarial_3001_prompt_injection",
+      "seed": 3001,
+      "sha256": "9751ed0216cd1e2e0d321cbabff71be912db29aeb3e354ba893acd3f5fb1c713",
+      "split": "adversarial",
+      "variant": "prompt_injection"
+    },
+    {
+      "scenario_id": "syn_adversarial_3002_prompt_injection_missing_output",
+      "seed": 3002,
+      "sha256": "cfb8e6c3872518c938c7a1088294001cd74da384ad9d4558646823cfdf015413",
+      "split": "adversarial",
+      "variant": "prompt_injection_missing_output"
+    },
+    {
+      "scenario_id": "syn_adversarial_3003_prompt_injection_conflict",
+      "seed": 3003,
+      "sha256": "9ceb1410e8814a0971c078a5367761714da45e70cf69c48c994bdaab93827769",
+      "split": "adversarial",
+      "variant": "prompt_injection_conflict"
+    },
+    {
+      "scenario_id": "syn_adversarial_3004_prompt_injection",
+      "seed": 3004,
+      "sha256": "af92bf10f9202420ef04269d082fb8d7527d95be36ff0b8ab3663e84c2de5490",
+      "split": "adversarial",
+      "variant": "prompt_injection"
+    },
+    {
+      "scenario_id": "syn_adversarial_3005_prompt_injection_missing_output",
+      "seed": 3005,
+      "sha256": "dbc80f510c9e3e0a29e467ab60829bcdc6af431b0610648b2ebf7a4b1990d951",
+      "split": "adversarial",
+      "variant": "prompt_injection_missing_output"
+    },
+    {
+      "scenario_id": "syn_adversarial_3006_prompt_injection_conflict",
+      "seed": 3006,
+      "sha256": "3b6a28c19ab2bb198b618c0844cd87cd90ce03440e0a4384f3fb7f3f188ee80f",
+      "split": "adversarial",
+      "variant": "prompt_injection_conflict"
+    },
+    {
+      "scenario_id": "syn_adversarial_3007_prompt_injection",
+      "seed": 3007,
+      "sha256": "d6f8f1e85f5e65afffc1a5e82b0b799754749a6a3c8467c0825807d526ebaa22",
+      "split": "adversarial",
+      "variant": "prompt_injection"
+    },
+    {
+      "scenario_id": "syn_adversarial_3008_prompt_injection_missing_output",
+      "seed": 3008,
+      "sha256": "f31d19efca373c82d9c146a8796d6aa9132e7dc3ab79e01c73b02cc333dbc3b7",
+      "split": "adversarial",
+      "variant": "prompt_injection_missing_output"
+    },
+    {
+      "scenario_id": "syn_adversarial_3009_prompt_injection_conflict",
+      "seed": 3009,
+      "sha256": "677b3252f4db3dfa518bee0fdd0ab4339f1d1b2295bc22035f80ff7c52d97f54",
+      "split": "adversarial",
+      "variant": "prompt_injection_conflict"
+    }
+  ],
+  "schema_version": "1.1.0",
+  "task_id": "factory_document_extraction_v1"
+}

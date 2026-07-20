@@ -1,0 +1,164 @@
+{
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n装置：二号板材生产装置（合成）\n生产路线：bf_bof\n经营者：海岳特钢（合成）有限公司\n产品：热轧卷板\n期间结束：2026-12-31\n期间开始：2026-10-01\nCN编码：72085100",
+      "document_id": "identity",
+      "document_type": "installation_profile"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-10-01 至 2026-12-31\n本期用电量：3,767,049.3 kWh",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：2,288.792 t",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger"
+    }
+  ],
+  "expected": {
+    "conflicts": [],
+    "fields": {
+      "cn_code": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "CN编码：72085100"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085100"
+      },
+      "installation_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "装置：二号板材生产装置（合成）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "二号板材生产装置（合成）"
+      },
+      "operator_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "经营者：海岳特钢（合成）有限公司"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "海岳特钢（合成）有限公司"
+      },
+      "period_end": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间结束：2026-12-31"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-12-31"
+      },
+      "period_start": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间开始：2026-10-01"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-10-01"
+      },
+      "product_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "产品：热轧卷板"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "热轧卷板"
+      },
+      "production_output": {
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：2,288.792 t"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "t",
+        "value": "2288.792"
+      },
+      "production_route": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "生产路线：bf_bof"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "quote": "本期用电量：3,767,049.3 kWh"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "3767049.3"
+      }
+    },
+    "formal_write_allowed": false,
+    "missing_fields": [],
+    "prompt_injection_detected": false,
+    "scenario_id": "syn_candidate_1011_complete",
+    "schema_version": "1.1.0",
+    "task_id": "factory_document_extraction_v1"
+  },
+  "scenario_id": "syn_candidate_1011_complete",
+  "seed": 1011,
+  "split": "candidate",
+  "truth": {
+    "cn_code": "72085100",
+    "electricity_factor_kgco2e_per_kwh": "0.500000",
+    "expected_indirect_emissions_tco2e": "1883.5246500000000000000000000000000000000000000",
+    "installation_name": "二号板材生产装置（合成）",
+    "operator_name": "海岳特钢（合成）有限公司",
+    "period_end": "2026-12-31",
+    "period_start": "2026-10-01",
+    "product_name": "热轧卷板",
+    "production_output_t": "2288.792",
+    "production_route": "bf_bof",
+    "purchased_electricity_kwh": "3767049.3"
+  },
+  "variant": "complete"
+}

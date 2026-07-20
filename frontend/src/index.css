@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --zc-bg: #f6f9ff;
+  --zc-surface: #ffffff;
+  --zc-border: #e3eaf5;
+  --zc-border-strong: #cfdcf0;
+  --zc-text: #0b1736;
+  --zc-muted: #60708f;
+  --zc-soft: #eef5ff;
+  --zc-blue: #2563eb;
+  --zc-blue-strong: #155dfc;
+  --zc-green: #18b981;
+  --zc-purple: #7c5cff;
+  --zc-orange: #f59e0b;
+  --zc-red: #ef4444;
+  --zc-sidebar: #0d1b36;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--zc-bg);
+  color: var(--zc-text);
+}
+
+button, input, select, textarea { font: inherit; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c9d5ea; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #aebdd5; }
+
+.input-dark,
+.zc-input {
+  @apply rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition;
+}
+
+.input-dark::placeholder,
+.zc-input::placeholder { color: #94a3b8; }
+
+.input-dark:focus,
+.zc-input:focus {
+  @apply border-blue-400 ring-4 ring-blue-100;
+}
+
+.zc-app { min-height: 100vh; background: radial-gradient(circle at top right, #ffffff 0, #f6f9ff 36%, #f3f7fd 100%); }
+.zc-main { min-height: 100vh; padding: 24px 28px 32px; }
+
+.zc-card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.04);
+}
+
+.zc-card-pad { @apply rounded-2xl border border-slate-200 bg-white p-5 shadow-sm; box-shadow: 0 16px 45px rgba(15, 23, 42, 0.04); }
+
+.zc-button { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-700; }
+.zc-button-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700; box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24); }
+.zc-button-soft { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-blue-100 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100; }
+.zc-button-danger { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50; }
+
+.zc-pill { @apply inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold; }
+.zc-pill-blue { @apply bg-blue-50 text-blue-700; }
+.zc-pill-green { @apply bg-emerald-50 text-emerald-700; }
+.zc-pill-amber { @apply bg-amber-50 text-amber-700; }
+.zc-pill-red { @apply bg-red-50 text-red-700; }
+.zc-pill-purple { @apply bg-violet-50 text-violet-700; }
+.zc-pill-slate { @apply bg-slate-100 text-slate-600; }
+
+.zc-table { @apply w-full border-collapse text-sm; }
+.zc-table th { @apply bg-slate-50 px-4 py-3 text-left text-xs font-semibold text-slate-500; }
+.zc-table td { @apply border-t border-slate-100 px-4 py-3 text-slate-700; }
+.zc-table tr:hover td { @apply bg-blue-50/40; }
+
+.zc-progress { @apply h-2 overflow-hidden rounded-full bg-slate-100; }
+.zc-progress > span { @apply block h-full rounded-full bg-blue-600; }
+
+.zc-muted { color: var(--zc-muted); }
+
+@media (min-width: 1024px) {
+  .zc-main { margin-left: 300px; }
+}

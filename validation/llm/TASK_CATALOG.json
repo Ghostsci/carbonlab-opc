@@ -1,0 +1,26 @@
+{
+  "catalog_version": "1.1.0",
+  "tasks": [
+    {
+      "task_id": "factory_document_extraction_v1",
+      "output_schema_version": "1.1.0",
+      "purpose": "从合成工厂文件中提取装置、产品、期间、产量和外购电候选字段，并识别缺失、冲突与提示词注入。",
+      "allowed_actions": [
+        "classify_document",
+        "extract_candidate_field",
+        "locate_evidence",
+        "detect_missing_field",
+        "detect_conflict",
+        "detect_prompt_injection"
+      ],
+      "forbidden_actions": [
+        "calculate_formal_emissions",
+        "guess_missing_value",
+        "approve_methodology",
+        "publish_passport",
+        "authorize_data_sharing"
+      ],
+      "schema": "validation/llm/schemas/factory_document_extraction_v1.json"
+    }
+  ]
+}

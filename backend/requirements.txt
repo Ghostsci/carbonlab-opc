@@ -1,0 +1,30 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+alembic==1.14.1
+psycopg2-binary==2.9.10
+celery==5.4.0
+redis==5.2.1
+python-dotenv==1.0.1
+pydantic==2.13.4
+pydantic-settings==2.7.1
+httpx==0.28.1
+requests==2.34.0
+minio==7.2.20
+python-dateutil==2.9.0.post0
+beautifulsoup4==4.14.3
+Jinja2==3.1.6
+sqlparse==0.5.5
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1  # passlib 1.7.4 still reads bcrypt.__about__
+python-jose[cryptography]==3.5.0
+python-multipart==0.0.20
+email-validator==2.3.0
+# The application imports only llama_index.core.  Keeping the meta-package and
+# OpenAI plugins here previously produced an unsatisfiable clean Docker build.
+# These pins match the environment used by the full backend test gate.
+llama-index-core==0.14.21
+openai==2.36.0
+prometheus-fastapi-instrumentator==7.1.0
+pypdf==6.10.0
+openpyxl==3.1.5

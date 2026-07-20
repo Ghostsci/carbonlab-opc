@@ -1,0 +1,164 @@
+{
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n期间结束：2026-03-31\n产品：热轧钢卷\nCN编码：72083900\n生产路线：eaf\n装置：一号热轧生产装置（合成）\n经营者：清源材料（合成）有限公司\n期间开始：2026-01-01",
+      "document_id": "identity",
+      "document_type": "installation_profile"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-01-01 至 2026-03-31\n本期用电量：4570049.6 kWh",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：3510.173 t",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger"
+    }
+  ],
+  "expected": {
+    "conflicts": [],
+    "fields": {
+      "cn_code": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "CN编码：72083900"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72083900"
+      },
+      "installation_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "装置：一号热轧生产装置（合成）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "一号热轧生产装置（合成）"
+      },
+      "operator_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "经营者：清源材料（合成）有限公司"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "清源材料（合成）有限公司"
+      },
+      "period_end": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间结束：2026-03-31"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-03-31"
+      },
+      "period_start": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间开始：2026-01-01"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-01-01"
+      },
+      "product_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "产品：热轧钢卷"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "热轧钢卷"
+      },
+      "production_output": {
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：3510.173 t"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "t",
+        "value": "3510.173"
+      },
+      "production_route": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "生产路线：eaf"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "eaf"
+      },
+      "purchased_electricity": {
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "quote": "本期用电量：4570049.6 kWh"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "4570049.6"
+      }
+    },
+    "formal_write_allowed": false,
+    "missing_fields": [],
+    "prompt_injection_detected": false,
+    "scenario_id": "syn_holdout_2006_complete",
+    "schema_version": "1.1.0",
+    "task_id": "factory_document_extraction_v1"
+  },
+  "scenario_id": "syn_holdout_2006_complete",
+  "seed": 2006,
+  "split": "holdout",
+  "truth": {
+    "cn_code": "72083900",
+    "electricity_factor_kgco2e_per_kwh": "0.500000",
+    "expected_indirect_emissions_tco2e": "2285.0248000000000000000000000000000000000000000",
+    "installation_name": "一号热轧生产装置（合成）",
+    "operator_name": "清源材料（合成）有限公司",
+    "period_end": "2026-03-31",
+    "period_start": "2026-01-01",
+    "product_name": "热轧钢卷",
+    "production_output_t": "3510.173",
+    "production_route": "eaf",
+    "purchased_electricity_kwh": "4570049.6"
+  },
+  "variant": "complete"
+}

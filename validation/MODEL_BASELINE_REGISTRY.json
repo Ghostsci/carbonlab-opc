@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "task_id": "factory_document_extraction_v1",
+  "status": "requalification_required_after_evaluator_hardening",
+  "shadow_eligible": false,
+  "production_eligible": false,
+  "required_evaluation_policy_sha256": "e1e5605e3e086115200846974096300d3c01ffbb3926cfcbade387ec2bb5b119",
+  "default_shadow_model": {
+    "current_qualification_valid": false,
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "qualification_report": "validation/reports/deepseek_v4_flash_qualification_v1.json",
+    "qualification_report_sha256": "56ac06354d3f1e1e2241ac2213d648c1faf1e20c1b7750e0e5e23ec6ed13889b",
+    "repeatability_report": "validation/reports/deepseek_v4_flash_repeatability_v1.json",
+    "repeatability_report_sha256": "912e02b284aaef5c9ed8874361b4357cc9ad84fdb12324b57e0d126c71a1ceaa",
+    "repeatability_comparison": "validation/comparisons/deepseek_v4_flash_repeatability_v1.json",
+    "repeatability_comparison_sha256": "b453e2a4cd850b3ca7a84e1dc76024daaccc49e13bfd4f2e86ad82088551b630"
+  },
+  "qualified_alternates": [
+    {
+      "current_qualification_valid": false,
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "qualification_report": "validation/reports/deepseek_v4_pro_qualification_v1.json",
+      "qualification_report_sha256": "9825c771bde8ff789f31a7f4fc95407ac6a4d98fcd4b038da1b94307125c4952",
+      "comparison_report": "validation/comparisons/deepseek_v4_pro_replacement_v1.json",
+      "comparison_report_sha256": "22976619d834ab1a18673c421fd91734796e9afa9b1958aa89b0f4f80c90fe47"
+    }
+  ],
+  "selection_reason": "历史选择基于存在字段证据错配漏洞的旧评分器，已于2026-07-11失效。旧报告仅保留审计与回放，不再授权任何模型进入人工影子。",
+  "frozen_contract_tag": "zcy-llm-contract-v1.1-frozen-20260711",
+  "frozen_evaluation_policy_tag": "zcy-llm-evaluator-v1.3-frozen-20260711",
+  "rollback_baseline_tag": "zcy-pre-llm-validation-20260711",
+  "mandatory_next_gate": "先由独立 Verifier 通过字段证据绑定与凭据泄漏攻击；随后冻结未见过的新资格集并重新运行模型资格测试。通过后仍只允许真实授权文档上的人工平行影子试验。"
+}

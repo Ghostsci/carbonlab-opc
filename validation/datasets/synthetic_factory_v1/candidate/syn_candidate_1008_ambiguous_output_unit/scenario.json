@@ -1,0 +1,164 @@
+{
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\nCN编码：72085100\n装置：二号板材生产装置（合成）\n产品：热轧卷板\n经营者：清源材料（合成）有限公司\n生产路线：bf_bof\n期间开始：2026-01-01\n期间结束：2026-03-31",
+      "document_id": "identity",
+      "document_type": "installation_profile"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-01-01 至 2026-03-31\n本期用电量：1750782 kWh",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：1,222.17（单位未标明）",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger"
+    }
+  ],
+  "expected": {
+    "conflicts": [],
+    "fields": {
+      "cn_code": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "CN编码：72085100"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085100"
+      },
+      "installation_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "装置：二号板材生产装置（合成）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "二号板材生产装置（合成）"
+      },
+      "operator_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "经营者：清源材料（合成）有限公司"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "清源材料（合成）有限公司"
+      },
+      "period_end": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间结束：2026-03-31"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-03-31"
+      },
+      "period_start": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "期间开始：2026-01-01"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-01-01"
+      },
+      "product_name": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "产品：热轧卷板"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "热轧卷板"
+      },
+      "production_output": {
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "quote": "合格产量：1,222.17（单位未标明）"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "ambiguous",
+        "uncertainty_reason": "产量数值存在，但计量单位未标明。",
+        "unit": null,
+        "value": null
+      },
+      "production_route": {
+        "evidence": [
+          {
+            "document_id": "identity",
+            "quote": "生产路线：bf_bof"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "quote": "本期用电量：1750782 kWh"
+          }
+        ],
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "1750782"
+      }
+    },
+    "formal_write_allowed": false,
+    "missing_fields": [],
+    "prompt_injection_detected": false,
+    "scenario_id": "syn_candidate_1008_ambiguous_output_unit",
+    "schema_version": "1.1.0",
+    "task_id": "factory_document_extraction_v1"
+  },
+  "scenario_id": "syn_candidate_1008_ambiguous_output_unit",
+  "seed": 1008,
+  "split": "candidate",
+  "truth": {
+    "cn_code": "72085100",
+    "electricity_factor_kgco2e_per_kwh": "0.500000",
+    "expected_indirect_emissions_tco2e": "875.39100000000000000000000000000000000000000000001",
+    "installation_name": "二号板材生产装置（合成）",
+    "operator_name": "清源材料（合成）有限公司",
+    "period_end": "2026-03-31",
+    "period_start": "2026-01-01",
+    "product_name": "热轧卷板",
+    "production_output_t": "1222.17",
+    "production_route": "bf_bof",
+    "purchased_electricity_kwh": "1750782"
+  },
+  "variant": "ambiguous_output_unit"
+}
