@@ -1,0 +1,6 @@
+command=python3 scripts/build_m5.py --output-dir <isolated-run-1> --run-id v103-run-1
+exit_code=0
+canonical_sha256=42425f22f2377d97777187eb837b84fa9f86602f244d405891c0b933cd7cb820
+m4_members=69/69
+upstream_members=29/29
+rejection_tests=8/8
