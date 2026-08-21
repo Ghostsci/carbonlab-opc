@@ -1,0 +1,16 @@
+artifact_version=M4_SYNTHETIC_UAT_V1.0.0
+run_index=2
+mode=SYNTHETIC_ONLY_LOCAL_CANDIDATE
+external_llm_calls=0
+remote_writes=0
+S01_NORMAL_SINGLE classification=PASS
+S02_BATCH_ISOLATION classification=PASS
+S03_MISSING_EVIDENCE classification=PASS
+S04_UNIT_ANOMALY classification=PASS
+S05_PERIOD_CONFLICT classification=PASS
+S06_PROMPT_INJECTION classification=PASS
+S07_UNAUTHORIZED_CONFIRMATION classification=PASS
+S08_UNCONFIRMED_PUBLISH classification=PASS
+scenario_count=8
+run_sha256=a08a2451a7083933ff314a009e29a04266b7dcc9203c069700df623cb327a997
+exit_code=0

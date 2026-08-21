@@ -1,0 +1,154 @@
+{
+  "candidate_fields_and_evidence": {
+    "cn_code": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "CN编码：72085100"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "72085100"
+    },
+    "installation_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "装置：一号热轧生产装置（合成）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "一号热轧生产装置（合成）"
+    },
+    "operator_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "经营者：东澜钢铁（合成）有限公司"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "东澜钢铁（合成）有限公司"
+    },
+    "period_end": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间结束：2026-12-31"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-12-31"
+    },
+    "period_start": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间开始：2026-10-01"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-10-01"
+    },
+    "product_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "产品：热轧卷板"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "热轧卷板"
+    },
+    "production_output": {
+      "evidence": [
+        {
+          "document_id": "production_ledger",
+          "quote": "合格产量：2144.05 t"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "t",
+      "value": "2144.05"
+    },
+    "production_route": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "生产路线：bf_bof"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "bf_bof"
+    },
+    "purchased_electricity": {
+      "evidence": [
+        {
+          "document_id": "energy_bill",
+          "quote": "本期用电量：3529181 kWh"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "kWh",
+      "value": "3529181"
+    }
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "caller_cannot_self_assert_identity": true,
+    "candidate_unchanged": true,
+    "forged_signature_rejected": true,
+    "formal_write_allowed_false": true,
+    "publish_allowed_false": true,
+    "unauthorized_role_rejected": true
+  },
+  "coverage": [
+    "未授权确认",
+    "凭据防伪",
+    "责任边界"
+  ],
+  "equivalent_text_evidence": "evidence/S07_UNAUTHORIZED_CONFIRMATION.json",
+  "expected_rejection": {
+    "forged_signature": "reviewer_credential_invalid",
+    "self_asserted_actor": "extra_forbidden",
+    "unauthorized_role": "reviewer_not_authorized"
+  },
+  "observable_result": [
+    "调用方自报 actor 字段被契约拒绝。",
+    "伪造签名返回 reviewer_credential_invalid。",
+    "未授权角色返回 reviewer_not_authorized。",
+    "候选未产生确认记录且仍为 candidate。"
+  ],
+  "operation_steps": [
+    "生成正常候选。",
+    "尝试在确认动作中自行注入 actor_id/actor_type。",
+    "分别使用伪造签名凭据和未授权角色凭据确认。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S07_UNAUTHORIZED_CONFIRMATION",
+  "state_transition": [
+    "uploaded",
+    "candidate",
+    "credential_rejected",
+    "candidate_unchanged"
+  ],
+  "synthetic_only": true,
+  "title": "伪造或越权人工确认凭据被拒绝",
+  "user_goal": "确认调用方不能自报身份，也不能用伪造签名或普通成员角色确认候选。"
+}

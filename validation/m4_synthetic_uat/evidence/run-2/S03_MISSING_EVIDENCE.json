@@ -1,0 +1,142 @@
+{
+  "candidate_fields_and_evidence": {
+    "cn_code": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "CN编码：72083900"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "72083900"
+    },
+    "installation_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "装置：二号板材生产装置（合成）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "二号板材生产装置（合成）"
+    },
+    "operator_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "经营者：清源材料（合成）有限公司"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "清源材料（合成）有限公司"
+    },
+    "period_end": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间结束：2026-12-31"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-12-31"
+    },
+    "period_start": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间开始：2026-10-01"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-10-01"
+    },
+    "product_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "产品：热轧钢卷"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "热轧钢卷"
+    },
+    "production_output": {
+      "evidence": [
+        {
+          "document_id": "production_ledger",
+          "quote": "合格产量：3,320.213 t"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "t",
+      "value": "3320.213"
+    },
+    "production_route": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "生产路线：eaf"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "eaf"
+    },
+    "purchased_electricity": {
+      "evidence": [],
+      "requires_human_confirmation": true,
+      "status": "missing",
+      "unit": null,
+      "value": null
+    }
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "fail_closed": true,
+    "formal_write_allowed_false": true,
+    "missing_evidence_not_invented": true,
+    "publish_allowed_false": true,
+    "valid_credential_cannot_bypass_missing_field": true
+  },
+  "coverage": [
+    "缺失证据",
+    "fail-closed",
+    "人工确认边界"
+  ],
+  "equivalent_text_evidence": "evidence/S03_MISSING_EVIDENCE.json",
+  "expected_rejection": "unresolved_candidates:purchased_electricity",
+  "observable_result": [
+    "用电字段显示 missing，未虚构字段级证据。",
+    "有效签名凭据也不能绕过未解决字段。",
+    "拒绝后原候选仍停留在 candidate。"
+  ],
+  "operation_steps": [
+    "提交声明未提供本期用电量的合成文件。",
+    "查看 purchased_electricity 的缺失状态和空证据列表。",
+    "尝试使用有效签名凭据确认。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S03_MISSING_EVIDENCE",
+  "state_transition": [
+    "uploaded",
+    "candidate_missing",
+    "guard_rejected"
+  ],
+  "synthetic_only": true,
+  "title": "缺失用电证据时阻断确认",
+  "user_goal": "识别缺失的用电证据，并确认不能靠人工点击跳过缺口。"
+}

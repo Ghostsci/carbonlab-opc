@@ -1,0 +1,100 @@
+[
+  {
+    "classification": "PASS",
+    "expected_rejection": {
+      "reason": "unresolved_candidates:production_output",
+      "scenario_id": "m4_batch_missing_output"
+    },
+    "scenario_id": "S02_BATCH_ISOLATION",
+    "state_transition": {
+      "m4_batch_complete_a": [
+        "uploaded",
+        "candidate",
+        "calculated_local_candidate"
+      ],
+      "m4_batch_complete_b": [
+        "uploaded",
+        "candidate",
+        "calculated_local_candidate"
+      ],
+      "m4_batch_missing_output": [
+        "uploaded",
+        "candidate_missing",
+        "guard_rejected"
+      ]
+    }
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": "unresolved_candidates:purchased_electricity",
+    "scenario_id": "S03_MISSING_EVIDENCE",
+    "state_transition": [
+      "uploaded",
+      "candidate_missing",
+      "guard_rejected"
+    ]
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": "unresolved_candidates:production_output",
+    "scenario_id": "S04_UNIT_ANOMALY",
+    "state_transition": [
+      "uploaded",
+      "candidate_ambiguous",
+      "guard_rejected"
+    ]
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": "invalid_period",
+    "scenario_id": "S05_PERIOD_CONFLICT",
+    "state_transition": [
+      "uploaded",
+      "validation_rejected",
+      "no_candidate"
+    ]
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": "document_instruction_detected",
+    "scenario_id": "S06_PROMPT_INJECTION",
+    "state_transition": [
+      "uploaded",
+      "candidate_risk_flagged",
+      "guard_rejected"
+    ]
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": {
+      "forged_signature": "reviewer_credential_invalid",
+      "self_asserted_actor": "extra_forbidden",
+      "unauthorized_role": "reviewer_not_authorized"
+    },
+    "scenario_id": "S07_UNAUTHORIZED_CONFIRMATION",
+    "state_transition": [
+      "uploaded",
+      "candidate",
+      "credential_rejected",
+      "candidate_unchanged"
+    ]
+  },
+  {
+    "classification": "PASS",
+    "expected_rejection": {
+      "fields": [
+        "formal_write_allowed",
+        "publish_allowed",
+        "state"
+      ],
+      "type": "contract_validation_error"
+    },
+    "scenario_id": "S08_UNCONFIRMED_PUBLISH",
+    "state_transition": [
+      "uploaded",
+      "candidate",
+      "publish_contract_rejected",
+      "candidate_unchanged"
+    ]
+  }
+]

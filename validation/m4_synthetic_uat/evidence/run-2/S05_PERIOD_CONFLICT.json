@@ -1,0 +1,41 @@
+{
+  "candidate_fields_and_evidence": {
+    "candidate": null,
+    "source_evidence": [
+      "期间结束：2026-12-31",
+      "期间开始：2027-01-01"
+    ]
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "calculation_not_executed": true,
+    "fail_closed": true,
+    "formal_write_allowed_false": true,
+    "invalid_period_rejected_before_candidate": true,
+    "publish_allowed_false": true
+  },
+  "coverage": [
+    "期间冲突",
+    "fail-closed"
+  ],
+  "equivalent_text_evidence": "evidence/S05_PERIOD_CONFLICT.json",
+  "expected_rejection": "invalid_period",
+  "observable_result": [
+    "期间冲突返回 invalid_period。",
+    "拒绝发生在候选护照生成前，没有计算、正式写入或发布状态。"
+  ],
+  "operation_steps": [
+    "提交开始日期为 2027-01-01、结束日期为 2026-12-31 的合成文件。",
+    "观察期间校验结果和候选生成状态。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S05_PERIOD_CONFLICT",
+  "state_transition": [
+    "uploaded",
+    "validation_rejected",
+    "no_candidate"
+  ],
+  "synthetic_only": true,
+  "title": "报告期起止冲突时在候选生成前拒绝",
+  "user_goal": "识别开始日期晚于结束日期的文件，避免生成误导性候选。"
+}

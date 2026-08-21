@@ -1,0 +1,41 @@
+{
+  "artifact_version": "M4_SYNTHETIC_UAT_V1.0.0",
+  "repository_url": "https://github.com/Ghostsci/carbonlab-opc.git",
+  "declared_branch": "main",
+  "fixed_commit_sha": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+  "fixed_tree_sha": "29276451fd21482cffdab828c655bfbb5c428221",
+  "commands": [
+    {
+      "command": "opc repo checkout https://github.com/Ghostsci/carbonlab-opc --ref c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+      "exit_code": 0,
+      "observation": "source bytes materialized in the workspace"
+    },
+    {
+      "command": "git status --short --branch; git rev-parse HEAD; git branch --show-current; git remote get-url origin",
+      "exit_code": 128,
+      "classification": "NOT_RUN_ENV",
+      "observation": "the materialized .git file referenced a missing worktree management directory"
+    },
+    {
+      "command": "opc repo checkout https://github.com/Ghostsci/carbonlab-opc.git --ref c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+      "exit_code": 255,
+      "classification": "NOT_RUN_ENV",
+      "observation": "retry could not create a second worktree because the task branch already existed"
+    }
+  ],
+  "alternative_input_closure": {
+    "m3_attachment_id": "01a000aa-67f3-7155-accd-e1971424770a",
+    "m3_attachment_sha256": "60abf4fd50a1b1922f31958c4a50ec56330da5b251b1a761973295cd5b178d63",
+    "devsecops_attachment_id": "01a000b1-ed19-7856-ab15-d56aceb7db43",
+    "independent_qa_attachment_id": "01a000b7-ddff-7e5a-b5d4-e08f90e308b2",
+    "qa_verdict_comment_id": "80d96eac-c79b-4474-a929-f3a785252726",
+    "owner_exit_comment_id": "d99ea43f-98b5-43f4-bcba-ef6df3a914d4",
+    "classification": "PASS_WITH_LIMITATIONS"
+  },
+  "workspace_boundaries": {
+    "source_materialization": "workspace checkout; treated as read-only",
+    "execution_copy": "/tmp/carb17-m4-88a97743/baseline",
+    "isolated_dependencies": "/tmp/carb17-m4-88a97743/deps",
+    "candidate_artifact": "M4_SYNTHETIC_UAT_V1.0.0"
+  }
+}

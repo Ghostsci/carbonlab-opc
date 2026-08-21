@@ -1,0 +1,174 @@
+{
+  "calculation_receipt": {
+    "formula": "purchased_electricity_kWh * factor_kgCO2e_per_kWh / 1000",
+    "input_sha256": "a6f41f164989806b1ce95642cf958357a97d9f91bc5bd78fc69467cc899291f0",
+    "inputs": {
+      "electricity_factor": {
+        "unit": "kgCO2e/kWh",
+        "value": "0.500000"
+      },
+      "production_output": {
+        "unit": "t",
+        "value": "2144.05"
+      },
+      "purchased_electricity": {
+        "unit": "kWh",
+        "value": "3529181"
+      }
+    },
+    "result": {
+      "unit": "tCO2e",
+      "value": "1764.5905000000000000000000000000000000000000000"
+    },
+    "rule_version": "synthetic-electricity-rule-v1"
+  },
+  "candidate_fields_and_evidence": {
+    "cn_code": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "CN编码：72085100"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "72085100"
+    },
+    "installation_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "装置：一号热轧生产装置（合成）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "一号热轧生产装置（合成）"
+    },
+    "operator_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "经营者：东澜钢铁（合成）有限公司"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "东澜钢铁（合成）有限公司"
+    },
+    "period_end": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间结束：2026-12-31"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-12-31"
+    },
+    "period_start": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间开始：2026-10-01"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-10-01"
+    },
+    "product_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "产品：热轧卷板"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "热轧卷板"
+    },
+    "production_output": {
+      "evidence": [
+        {
+          "document_id": "production_ledger",
+          "quote": "合格产量：2144.05 t"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "t",
+      "value": "2144.05"
+    },
+    "production_route": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "生产路线：bf_bof"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "bf_bof"
+    },
+    "purchased_electricity": {
+      "evidence": [
+        {
+          "document_id": "energy_bill",
+          "quote": "本期用电量：3529181 kWh"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "kWh",
+      "value": "3529181"
+    }
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "ai_output_remains_candidate_before_confirmation": true,
+    "deterministic_rule_calculation": true,
+    "formal_write_allowed_false": true,
+    "publish_allowed_false": true,
+    "signed_confirmation_credential_verified": true
+  },
+  "coverage": [
+    "正常单条",
+    "候选字段",
+    "字段级证据",
+    "确定性计算",
+    "人工确认"
+  ],
+  "equivalent_text_evidence": "evidence/S01_NORMAL_SINGLE.json",
+  "expected_rejection": null,
+  "observable_result": [
+    "9 个候选字段均带候选状态；已抽取字段带原文证据。",
+    "签名凭据通过后状态由 candidate 转为 calculated。",
+    "排放量由冻结规则计算为 1764.5905 tCO2e。",
+    "正式写入和发布标志在确认前后均为 false。"
+  ],
+  "operation_steps": [
+    "提交一组完整合成装置、用电量和产量文件。",
+    "查看候选字段、单位、证据引文和候选状态。",
+    "使用服务端签名的合成复核凭据确认候选。",
+    "查看确定性计算回执和候选护照边界。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S01_NORMAL_SINGLE",
+  "state_transition": [
+    "uploaded",
+    "candidate",
+    "calculated_local_candidate"
+  ],
+  "synthetic_only": true,
+  "title": "正常单条候选查看、来源追溯与人工确认",
+  "user_goal": "上传一组合成文件，核对候选字段和来源后完成候选确认。"
+}
