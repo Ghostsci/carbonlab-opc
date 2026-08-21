@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from decimal import Decimal
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -36,3 +36,20 @@ class ActivityData(Base, UUIDMixin, LedgerRecordMixin):
     notes: Mapped[str | None] = mapped_column(String(500))
 
     emission_source: Mapped["EmissionSource"] = relationship(back_populates="activity_data")
+
+
+# Keep the shared ledger constraints supplied by LedgerRecordMixin and append
+# activity-domain invariants to the same table.  These protect ORM and raw SQL
+# writes in databases created directly from metadata (including tests).
+ActivityData.__table__.append_constraint(
+    CheckConstraint(
+        "CAST(quantity AS NUMERIC) > 0",
+        name="ck_activity_data_positive_quantity",
+    )
+)
+ActivityData.__table__.append_constraint(
+    CheckConstraint(
+        "period_start < period_end",
+        name="ck_activity_data_valid_period",
+    )
+)

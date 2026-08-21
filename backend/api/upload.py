@@ -20,6 +20,11 @@ from backend.models.ai_os import WorkflowStep
 from backend.models.document import DocumentStore
 from backend.models.user import User
 from backend.services.activity_ingestion import persist_confirmed_activity
+from backend.services.candidate_confirmation import (
+    CandidateSnapshotError,
+    issue_candidate_snapshot,
+    verify_candidate_snapshot,
+)
 from backend.services.workflow_engine import ensure_demo_cbam_workflow, get_workflow_for_tenant, workflow_to_dict
 from backend.services.storage import (
     get_storage,
@@ -36,6 +41,7 @@ ocr_service = OCRService()
 
 
 class ConfirmActivityRequest(BaseModel):
+    candidate_token: str | None = None
     workflow_id: str | None = None
     file_id: str | None = None
     document_content_hash: str | None = Field(
@@ -49,6 +55,10 @@ class ConfirmActivityRequest(BaseModel):
     target_dataset: str = "能源消耗 - 外购电力"
     target_boundary: str = "华盛钢铁 - 炼钢厂（2026）"
     note: str | None = None
+
+
+class PrepareCandidateRequest(BaseModel):
+    fields: dict[str, Any] = Field(min_length=1)
 
 
 def _require_document_context(user: User) -> tuple[uuid.UUID, uuid.UUID]:
@@ -321,6 +331,53 @@ def download_file(
     )
 
 
+@router.post("/{file_id}/candidate")
+def prepare_document_candidate(
+    file_id: uuid.UUID,
+    req: PrepareCandidateRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Sign the exact candidate fields that the authenticated user will confirm."""
+    tenant_id, enterprise_id = _require_document_context(user)
+    document = (
+        db.query(DocumentStore)
+        .filter(
+            DocumentStore.id == file_id,
+            DocumentStore.tenant_id == tenant_id,
+            DocumentStore.enterprise_id == enterprise_id,
+        )
+        .first()
+    )
+    if document is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件不存在或无权访问")
+    try:
+        signed = issue_candidate_snapshot(
+            actor_user_id=str(user.id),
+            tenant_id=str(tenant_id),
+            enterprise_id=str(enterprise_id),
+            file_id=str(document.id),
+            document_content_hash=document.content_hash,
+            document_type=document.doc_type,
+            fields=req.fields,
+        )
+    except CandidateSnapshotError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return {
+        **signed,
+        "state": "candidate",
+        "confirmation_required": True,
+        "formal_write_allowed": False,
+        "source": {
+            "file_id": str(document.id),
+            "filename": document.filename,
+            "content_hash": document.content_hash,
+            "document_type": document.doc_type,
+        },
+        "fields": req.fields,
+    }
+
+
 @router.post("/confirm-activity")
 def confirm_activity_data(
     req: ConfirmActivityRequest,
@@ -371,21 +428,32 @@ def confirm_activity_data(
             detail="源文件 content_hash 与服务器记录不一致",
         )
 
-    workflow = (
-        get_workflow_for_tenant(
-            db,
-            req.workflow_id,
-            tenant_id,
-            enterprise_id,
-        )
-        if req.workflow_id
-        else ensure_demo_cbam_workflow(db, tenant_id=tenant_id, enterprise_id=user.enterprise_id, owner_user_id=user.id)
-    )
-    step = _find_step(workflow, "energy_data") or _find_step(workflow, workflow.current_step_key or "")
-    if step is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到可写入的数据收集步骤")
-
     activity_record = _activity_from_fields(req)
+    if not req.candidate_token:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="请先生成并核对服务端签名的候选快照",
+        )
+    try:
+        confirmation = verify_candidate_snapshot(
+            req.candidate_token,
+            actor_user_id=str(user.id),
+            tenant_id=str(tenant_id),
+            enterprise_id=str(enterprise_id),
+            file_id=str(document.id),
+            document_content_hash=document.content_hash,
+            document_type=req.document_type,
+            fields=req.fields,
+        )
+    except CandidateSnapshotError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    activity_record.update(
+        {
+            "candidate_id": confirmation["candidate_id"],
+            "candidate_fields_sha256": confirmation["fields_sha256"],
+            "candidate_subject_sha256": confirmation["subject_sha256"],
+        }
+    )
     # Evidence identity is server-authoritative.  The client may edit extracted
     # fields, but cannot substitute a filename or hash for the owned document.
     activity_record.update(
@@ -395,6 +463,29 @@ def confirm_activity_data(
             "filename": document.filename,
         }
     )
+    # Invalid or tampered candidates must not create workflow state as a side
+    # effect. Resolve the destination only after all confirmation bindings pass.
+    workflow = (
+        get_workflow_for_tenant(
+            db,
+            req.workflow_id,
+            tenant_id,
+            enterprise_id,
+        )
+        if req.workflow_id
+        else ensure_demo_cbam_workflow(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=user.enterprise_id,
+            owner_user_id=user.id,
+        )
+    )
+    step = _find_step(workflow, "energy_data") or _find_step(
+        workflow,
+        workflow.current_step_key or "",
+    )
+    if step is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="未找到可写入的数据收集步骤")
     try:
         formal_write = persist_confirmed_activity(db, user=user, activity_record=activity_record)
     except ValueError as exc:
@@ -410,6 +501,7 @@ def confirm_activity_data(
                 "at": confirmed_at.isoformat(),
                 "actor_user_id": str(user.id),
                 "value_origin": "human_confirmed",
+                **confirmation,
             },
         }
     )
@@ -447,4 +539,5 @@ def confirm_activity_data(
         "formal_write": formal_write,
         "checkpoint": checkpoint,
         "workflow": workflow_to_dict(workflow, include_steps=True),
+        "confirmation": confirmation,
     }

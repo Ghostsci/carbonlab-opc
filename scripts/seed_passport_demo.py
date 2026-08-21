@@ -196,11 +196,15 @@ def _ensure_demo_factor(db: Session) -> EmissionFactor:
         known_region_state = (factor.region, bool(factor.is_default)) in {
             (LEGACY_DEMO_FACTOR_REGION, True),
             (DEMO_FACTOR_REGION, False),
+            (DEMO_FACTOR_REGION, True),
         }
         if not expected_content or not known_region_state:
             raise RuntimeError("existing demo factor code is bound to different content")
         factor.region = DEMO_FACTOR_REGION
-        factor.is_default = False
+        # Safe only because both the factor and seeded sites use the synthetic
+        # DEMO_ONLY region.  This makes the interactive demo calculable without
+        # allowing the fixture to match any real regional activity.
+        factor.is_default = True
         db.flush()
         return factor
 
@@ -211,7 +215,7 @@ def _ensure_demo_factor(db: Session) -> EmissionFactor:
         region=DEMO_FACTOR_REGION,
         year=2026,
         version_year=2026,
-        is_default=False,
+        is_default=True,
         value=Decimal("0.5"),
         unit="kgCO2e/kWh",
         source="DEMO ONLY — synthetic factor; not for reporting",

@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     minio_bucket: str = "carbon-footprint"
     minio_secure: bool = False
     storage_backend: str = "local"  # "local" or "minio"
+    local_storage_dir: str = ""
 
     # Redis / Celery
     redis_url: str = "redis://localhost:6379/0"

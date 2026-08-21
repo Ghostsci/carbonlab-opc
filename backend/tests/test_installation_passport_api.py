@@ -407,19 +407,27 @@ def test_complete_passport_can_be_replayed_reviewed_and_published():
         )
         assert uploaded.status_code == 200, uploaded.json()
         document = uploaded.json()
+        fields = {
+            "electricity_kwh": "2000000",
+            "period": "2026-01-01 至 2026-03-31",
+            "facility": "热轧卷板生产装置",
+        }
+        candidate = client.post(
+            f"/api/upload/{document['file_id']}/candidate",
+            headers=headers,
+            json={"fields": fields},
+        )
+        assert candidate.status_code == 200, candidate.json()
         confirmed = client.post(
             "/api/upload/confirm-activity",
             headers=headers,
             json={
+                "candidate_token": candidate.json()["candidate_token"],
                 "file_id": document["file_id"],
                 "document_content_hash": document["content_hash"],
                 "filename": document["filename"],
                 "document_type": "electricity_bill",
-                "fields": {
-                    "electricity_kwh": "2000000",
-                    "period": "2026-01-01 至 2026-03-31",
-                    "facility": "热轧卷板生产装置",
-                },
+                "fields": fields,
             },
         )
         assert confirmed.status_code == 200, confirmed.json()

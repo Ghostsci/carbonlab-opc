@@ -7,6 +7,8 @@ from unittest.mock import Mock
 
 from fastapi.testclient import TestClient
 from passlib.context import CryptContext
+import pytest
+from sqlalchemy.exc import IntegrityError
 
 from backend.database import Base, get_engine, get_sessionmaker
 from backend.main import app
@@ -102,6 +104,82 @@ def _document(
     return document
 
 
+def _prepare_candidate(
+    client: TestClient,
+    token: str,
+    document: DocumentStore,
+    fields: dict,
+) -> dict:
+    response = client.post(
+        f"/api/upload/{document.id}/candidate",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"fields": fields},
+    )
+    assert response.status_code == 200, response.json()
+    return response.json()
+
+
+def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-candidate-lock")
+        enterprise = _enterprise(db, tenant, "81")
+        _user(db, tenant, enterprise, "upload-candidate-lock@example.com")
+        document = _document(db, tenant, enterprise, filename="candidate-lock.csv")
+        token = _login(client, "upload-candidate-lock@example.com")
+        fields = {
+            "electricity_kwh": "632600",
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
+
+        tampered = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": {**fields, "electricity_kwh": "1"},
+            },
+        )
+        assert tampered.status_code == 409, tampered.json()
+        assert "候选快照" in tampered.json()["detail"]
+        assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
+
+        confirmed = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+        assert confirmed.status_code == 200, confirmed.json()
+        assert confirmed.json()["confirmation"]["candidate_id"] == candidate["candidate_id"]
+        assert confirmed.json()["confirmation"]["subject_sha256"] == candidate["subject_sha256"]
+
+        activity_id = uuid.UUID(confirmed.json()["formal_write"]["activity_data_id"])
+        with pytest.raises(IntegrityError):
+            db.execute(
+                ActivityData.__table__.update()
+                .where(ActivityData.id == activity_id)
+                .values(quantity=Decimal("-1"))
+            )
+            db.commit()
+        db.rollback()
+    finally:
+        db.close()
+
+
 def test_confirm_activity_writes_workflow_checkpoint():
     client = TestClient(app)
     db = _session()
@@ -116,23 +194,26 @@ def test_confirm_activity_writes_workflow_checkpoint():
             filename="电费单_2026-03.pdf",
         )
         token = _login(client, "upload-confirm@example.com")
+        fields = {
+            "electricity_kwh": "632600",
+            "total_amount": "645805.08",
+            "period": "2026-03-01 至 2026-03-31",
+            "customer_name": "华盛钢铁有限公司（炼钢厂）",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
 
         resp = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
+                "candidate_token": candidate["candidate_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
                 "document_type": "electricity_bill",
                 "confidence": 93.0,
-                "fields": {
-                    "electricity_kwh": "632600",
-                    "total_amount": "645805.08",
-                    "period": "2026-03-01 至 2026-03-31",
-                    "customer_name": "华盛钢铁有限公司（炼钢厂）",
-                    "facility": "炼钢厂",
-                },
+                "fields": fields,
             },
         )
         assert resp.status_code == 200, resp.json()
@@ -710,20 +791,23 @@ def test_confirm_activity_preserves_large_integer_quantity_exactly():
         _user(db, tenant, enterprise, "upload-exact-integer@example.com")
         document = _document(db, tenant, enterprise, filename="large-meter-reading.csv")
         token = _login(client, "upload-exact-integer@example.com")
+        fields = {
+            "electricity_kwh": 9007199254740993,
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
 
         response = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
+                "candidate_token": candidate["candidate_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
                 "document_type": "electricity_bill",
-                "fields": {
-                    "electricity_kwh": 9007199254740993,
-                    "period": "2026-03",
-                    "facility": "炼钢厂",
-                },
+                "fields": fields,
             },
         )
 
@@ -765,6 +849,42 @@ def test_confirm_activity_rejects_binary_float_quantity():
 
         assert response.status_code == 400
         assert response.json()["detail"] == "缺少可写入的用电量字段"
+    finally:
+        db.close()
+
+
+def test_confirm_activity_rejects_negative_quantity_after_candidate_lock():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-reject-negative")
+        enterprise = _enterprise(db, tenant, "82")
+        _user(db, tenant, enterprise, "upload-reject-negative@example.com")
+        document = _document(db, tenant, enterprise, filename="negative-reading.csv")
+        token = _login(client, "upload-reject-negative@example.com")
+        fields = {
+            "electricity_kwh": "-632600",
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
+
+        response = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+
+        assert response.status_code == 400, response.json()
+        assert response.json()["detail"] == "活动数据数量必须大于 0"
+        assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
     finally:
         db.close()
 
@@ -903,6 +1023,8 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
                 "facility": "炼钢厂",
             },
         }
+        candidate = _prepare_candidate(client, token, document, payload["fields"])
+        payload["candidate_token"] = candidate["candidate_token"]
 
         first = client.post(
             "/api/upload/confirm-activity",
@@ -949,4 +1071,3 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
         assert confirmed_document.ocr_result["human_confirmation"]["value_origin"] == "human_confirmed"
     finally:
         db.close()
-

@@ -15,7 +15,11 @@ from backend.config import settings
 
 logger = logging.getLogger(__name__)
 
-UPLOAD_DIR = Path(__file__).resolve().parent.parent / ".uploads"
+UPLOAD_DIR = (
+    Path(settings.local_storage_dir).expanduser()
+    if settings.local_storage_dir
+    else Path(__file__).resolve().parent.parent / ".uploads"
+)
 
 
 # ── Interface ──

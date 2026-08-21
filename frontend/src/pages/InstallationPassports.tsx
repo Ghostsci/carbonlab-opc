@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Archive,
   ArrowRight,
@@ -67,6 +67,8 @@ const SHARE_SCOPES = [
 export default function InstallationPassports() {
   const { getHeaders } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const incomingEmissionResultId = searchParams.get("emission_result_id");
   const [passports, setPassports] = useState<PassportDetail[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<PassportDetail | null>(null);
@@ -143,6 +145,9 @@ export default function InstallationPassports() {
   const draftReview = latestDraft
     ? detail?.reviews.find((item) => item.profile_version_id === latestDraft.id) || null
     : null;
+  const orderedCandidates = incomingEmissionResultId
+    ? [...candidates].sort((left, right) => Number(right.id === incomingEmissionResultId) - Number(left.id === incomingEmissionResultId))
+    : candidates;
 
   return (
     <div className="mx-auto max-w-[1640px] space-y-6 pt-1">
@@ -222,6 +227,12 @@ export default function InstallationPassports() {
               </div>
             )}
 
+            {incomingEmissionResultId && (
+              <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm font-semibold leading-6 text-blue-900">
+                <b>数据已从收件箱带入。</b> 系统已锁定人工确认内容并生成正式活动排放；请在第 02 步核对高亮记录，再归集到当前生产工序。归集不会自动发布护照。
+              </div>
+            )}
+
             <section className="grid grid-cols-1 gap-4 md:grid-cols-4">
               <Metric
                 icon={Gauge}
@@ -257,16 +268,18 @@ export default function InstallationPassports() {
                 </WorkflowCard>
 
                 <WorkflowCard number="02" title="接入已确认的活动排放与源文件" icon={Database} done={detail.assessment.checks.find((item) => item.key === "attributed_emissions")?.passed}>
-                  {candidates.length ? (
+                  {orderedCandidates.length ? (
                     <div className="space-y-3">
-                      {candidates.map((candidate) => {
+                      {orderedCandidates.map((candidate) => {
                         const assigned = (current?.attributions || []).some((item) => item.source_ref === `emission_result:${candidate.id}`);
+                        const incoming = candidate.id === incomingEmissionResultId;
                         return (
-                          <div key={candidate.id} className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 md:flex-row md:items-center">
+                          <div key={candidate.id} className={`flex flex-col gap-3 rounded-2xl border p-4 md:flex-row md:items-center ${incoming ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100" : "border-slate-100 bg-slate-50"}`}>
                             <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${candidate.evidence_ready ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}><FileCheck2 size={19} /></span>
                             <span className="min-w-0 flex-1">
                               <b className="block text-sm text-slate-900">{candidate.source_name}</b>
                               <small className="mt-1 block text-slate-500">{compact(candidate.emissions)} {candidate.unit} · {candidate.document_name || "没有源文件"}</small>
+                              {incoming && <small className="mt-1 block font-bold text-blue-700">刚刚确认的数据 · 请核对后归集</small>}
                             </span>
                             <button
                               disabled={assigned || !!busy || !detail.processes[0]}

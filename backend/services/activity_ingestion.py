@@ -72,6 +72,8 @@ def persist_confirmed_activity(
     quantity = _as_decimal(activity_record.get("quantity"))
     if quantity is None:
         raise ValueError("活动数据缺少有效数量，无法写入正式活动数据")
+    if quantity <= 0:
+        raise ValueError("活动数据数量必须大于 0")
 
     period_start, period_end = _parse_period(activity_record.get("period"))
     unit = str(activity_record.get("unit") or "unknown")
@@ -350,6 +352,7 @@ def _get_or_create_activity(
         "document_id": document_id,
         "source_file_id": file_id,
         "value_origin": value_origin,
+        "candidate_subject_sha256": activity_record.get("candidate_subject_sha256"),
     }
     record_hash = content_hash(payload)
     for _attempt in range(5):
@@ -375,7 +378,14 @@ def _get_or_create_activity(
             data_source="ocr",
             document_id=document_id,
             notes=_activity_notes(activity_record),
-            derived_from=[f"document:{file_id}"] if file_id else [],
+            derived_from=[
+                *([f"document:{file_id}"] if file_id else []),
+                *(
+                    [f"candidate:{activity_record['candidate_subject_sha256']}"]
+                    if activity_record.get("candidate_subject_sha256")
+                    else []
+                ),
+            ],
             content_hash=record_hash,
             idempotency_key=idempotency_key,
             version=(latest.version + 1) if latest else 1,
@@ -416,6 +426,8 @@ def _activity_notes(activity_record: dict[str, Any]) -> str:
         f"source_file_id={activity_record.get('file_id') or ''}",
         f"filename={activity_record.get('filename') or ''}",
         f"confidence={activity_record.get('confidence') if activity_record.get('confidence') is not None else ''}",
+        f"candidate_id={activity_record.get('candidate_id') or ''}",
+        f"candidate_subject_sha256={activity_record.get('candidate_subject_sha256') or ''}",
     ]
     return "; ".join(parts)[:500]
 

@@ -86,6 +86,11 @@ type ConfirmResponse = {
   };
   workflow_id: string;
   step_key: string;
+  confirmation: {
+    candidate_id: string;
+    fields_sha256: string;
+    subject_sha256: string;
+  };
   formal_write?: {
     activity_data_id: string;
     emission_source_id: string;
@@ -97,6 +102,14 @@ type ConfirmResponse = {
       factor_id?: string | null;
     } | null;
   };
+};
+
+type CandidateSnapshotResponse = {
+  candidate_id: string;
+  candidate_token: string;
+  fields_sha256: string;
+  subject_sha256: string;
+  expires_at: string;
 };
 
 type Notice = { tone: NoticeTone; text: string };
@@ -529,15 +542,27 @@ export default function Upload() {
     const fileId = selected.id;
     const editedFields = fieldsToObject(selected.fields);
     setOperation("confirm");
-    setNotice({ tone: "info", text: "正在写入当前租户正式活动账本..." });
+    setNotice({ tone: "info", text: "正在锁定本次人工确认内容，然后写入正式活动账本..." });
     setConfirmResult(null);
 
     try {
+      const candidateResponse = await fetch(`/api/upload/${selected.id}/candidate`, {
+        method: "POST",
+        headers: { ...getHeaders(), "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ fields: editedFields }),
+      });
+      if (!candidateResponse.ok) {
+        throw new Error(await responseError(candidateResponse, "锁定候选数据失败"));
+      }
+      const candidate = await candidateResponse.json() as CandidateSnapshotResponse;
+
       const response = await fetch("/api/upload/confirm-activity", {
         method: "POST",
         headers: { ...getHeaders(), "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
+          candidate_token: candidate.candidate_token,
           file_id: selected.id,
           document_content_hash: selected.contentHash,
           filename: selected.name,
@@ -565,7 +590,7 @@ export default function Upload() {
       setSelectedId(fileId);
       setNotice({
         tone: "success",
-        text: `${data.message} 记录 ID：${data.activity_record.record_id}`,
+        text: `${data.message} 已锁定本次确认内容，记录 ID：${data.activity_record.record_id}`,
       });
     } catch (error) {
       setNotice({ tone: "error", text: error instanceof Error ? error.message : "写入失败" });
@@ -704,6 +729,13 @@ export default function Upload() {
               if (file) void handleUpload(file);
             }}
           />
+          <a
+            href="/demo/electricity-q1.csv"
+            download
+            className="mt-3 flex w-full items-center justify-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800"
+          >
+            <Download size={14} /> 下载合成演示账单
+          </a>
         </aside>
 
         <main className="zc-card overflow-hidden">
@@ -838,6 +870,9 @@ export default function Upload() {
                         : ""}
                     </p>
                     <p>排放源：{selectedConfirm.formal_write?.emission_source_name || selectedConfirm.step_key}</p>
+                    <p title={selectedConfirm.confirmation.subject_sha256}>
+                      确认指纹：{selectedConfirm.confirmation.subject_sha256.slice(0, 16)}…
+                    </p>
                     {selectedConfirm.formal_write?.emission_result ? (
                       <p>
                         已计算 · {selectedConfirm.formal_write.emission_result.co2_tonnes.toLocaleString()} tCO₂e
@@ -863,11 +898,16 @@ export default function Upload() {
                       ? `请补齐：${selectedMissingFields.join("、")}`
                   : selectedConfirm || selected.status === "已完成"
                     ? "已确认并写入活动数据"
-                    : "确认并写入活动数据"}
+                    : "锁定候选并确认写入"}
               </button>
 
               {(selectedConfirm || selected.status === "已完成" || !writeSupported) && (
-                <Link to="/passports" className="mt-3 flex w-full items-center justify-center gap-2 zc-button-soft py-3">
+                <Link
+                  to={selectedConfirm?.formal_write?.emission_result?.emission_result_id
+                    ? `/passports?emission_result_id=${encodeURIComponent(selectedConfirm.formal_write.emission_result.emission_result_id)}&source_file_id=${encodeURIComponent(selected.id)}`
+                    : "/passports"}
+                  className="mt-3 flex w-full items-center justify-center gap-2 zc-button-soft py-3"
+                >
                   进入护照归集
                   <ChevronRight size={16} />
                 </Link>

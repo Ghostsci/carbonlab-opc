@@ -130,7 +130,7 @@ def test_seed_builds_both_demo_paths_once_and_reuses_them(tmp_path, monkeypatch)
 
             factor = db.query(EmissionFactor).filter_by(code=seed.FACTOR_CODE).one()
             assert factor.region == seed.DEMO_FACTOR_REGION
-            assert factor.is_default is False
+            assert factor.is_default is True
             demo_tenant = db.query(Tenant).filter(Tenant.slug == seed.TENANT_SLUG).one()
             demo_sites = db.query(Site).filter(Site.tenant_id == demo_tenant.id).all()
             assert {item.name for item in demo_sites} == {
@@ -325,7 +325,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
                 db.query(EmissionFactor).filter(EmissionFactor.code == seed.FACTOR_CODE).one()
             )
             assert demo_factor.region == seed.DEMO_FACTOR_REGION
-            assert demo_factor.is_default is False
+            assert demo_factor.is_default is True
 
             demo_tenant = db.query(Tenant).filter(Tenant.slug == seed.TENANT_SLUG).one()
             demo_sites = (
