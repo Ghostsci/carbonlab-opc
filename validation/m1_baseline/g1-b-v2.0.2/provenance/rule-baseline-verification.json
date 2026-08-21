@@ -1,0 +1,11 @@
+{
+  "archive_attachment_id": "019ffe39-350c-7337-8537-f6caa2420820",
+  "archive_path": "sources/G1-A-v2.0.0-candidate.4.tar",
+  "archive_sha256": "afabf7b7f8ff7b5c6366949324de1ff82db0d7d45f2aecfb4bd2b7dc2bb59749",
+  "independent_audit_accept_comment_id": "4c8ed6ec-6657-4c9b-8590-ce886b08d8d4",
+  "members_verified": 19,
+  "methodology_version": "G1-A-v2.0.0-candidate.4",
+  "owner_approval_comment_id": "001a6925-5e52-47d8-bbd1-21b528c36f2a",
+  "package_content_sha256": "5cfff813eec8c811d57dc75691037a4d8d8aed9c0bf279f6d05b768395d8df58",
+  "result": "PASS"
+}

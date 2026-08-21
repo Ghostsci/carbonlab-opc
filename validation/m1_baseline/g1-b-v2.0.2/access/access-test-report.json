@@ -1,0 +1,22 @@
+{
+  "audit_chain_valid": true,
+  "audit_mode": "append_only_sha256_hash_chain_candidate_evidence",
+  "audit_redaction": "roles and logical resource paths only; no identity or credential",
+  "audit_tail_hash": "7ec534138c0e7160808550426c949c9626b4c3c633f7abaf63cc6067511b0c41",
+  "audit_tamper_test_detected": true,
+  "control_system_id": "G1B-V2.0.2-PACKAGE-GUARD",
+  "developer_restricted_truth_deny": "PASS",
+  "external_iam": "NOT_USED_NO_CREDENTIALS_NO_REMOTE_WRITE",
+  "external_worm_or_object_lock": "NOT_USED_DEGRADED_READ_ONLY",
+  "failed": 0,
+  "implementation_scope": "package_local_deterministic_enforcement",
+  "leakage_check": "PASS",
+  "passed": 9,
+  "policy_sha256": "26a5e9dd965dd5b08bd48f012750e0946d1bdf2f43654d210eb719c38828da8a",
+  "policy_version": "g1-b-access-2.0.2",
+  "qa_cannot_approve_freeze": "PASS",
+  "qa_minimum_authorization_allow": "PASS",
+  "qa_unneeded_development_deny": "PASS",
+  "request_tests": 9,
+  "result": "PASS"
+}

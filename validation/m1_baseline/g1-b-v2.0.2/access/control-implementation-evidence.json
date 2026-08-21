@@ -1,0 +1,33 @@
+{
+  "audit_file_sha256": "a776e01b2e46d4e626d428cc31c0ddd724e7dc9ad2088218ee20858dd9dc4887",
+  "audit_tail_hash": "7ec534138c0e7160808550426c949c9626b4c3c633f7abaf63cc6067511b0c41",
+  "control_system_id": "G1B-V2.0.2-PACKAGE-GUARD",
+  "external_control_boundary": "No credential, external IAM mutation, remote write, or WORM claim is made. Independent QA must assess this package-local enforcement evidence.",
+  "policy_sha256": "26a5e9dd965dd5b08bd48f012750e0946d1bdf2f43654d210eb719c38828da8a",
+  "policy_version": "g1-b-access-2.0.2",
+  "request_count": 9,
+  "request_exit_codes": [
+    0,
+    13,
+    13,
+    0,
+    13,
+    13,
+    0,
+    13,
+    13
+  ],
+  "resource_ids": {
+    "audit": "artifact://access-audit-jsonl",
+    "development": "artifact://development-zone",
+    "restricted_qa": "artifact://restricted-qa-zone",
+    "usability": "artifact://usability-zone"
+  },
+  "result": "PASS",
+  "subjects": {
+    "developer": "subject-dev-anonymized-001",
+    "qa": "subject-qa-anonymized-001",
+    "researcher": "subject-research-anonymized-001",
+    "unauthorized": "subject-unauthorized-anonymized-001"
+  }
+}

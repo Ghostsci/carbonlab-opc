@@ -1,0 +1,88 @@
+{
+  "checkout_mode": "OPC checkout plus detached read-only verification clone",
+  "clean_status": true,
+  "commit_sha": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+  "parent_sha": "155aaf909d3cd9fb3673fe60f6aeed564b0126e1",
+  "remote_main_resolved_to_commit": true,
+  "repository_url": "https://github.com/Ghostsci/carbonlab-opc.git",
+  "requested_ref": "main",
+  "source_inputs": [
+    {
+      "path": "README.md",
+      "sha256": "1cc3093006f3ec64700714b9f8f940a36420ff1afa5032d89b90bb7a6604c95a",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/00-governance/decision-log.md",
+      "sha256": "7f601c5a1182b485e8e68f194877f275085a70cffe29888a479b98fc625ab02d",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/00-governance/project-charter.md",
+      "sha256": "b2b3936354d56c80b20de92e7008ce8593f5be7d02448cf54884365f209cd404",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/00-governance/scope-and-exclusions.md",
+      "sha256": "a38dd848a26545b4d09b4b996887819eea78e9e4356c0f179fba0538b7fa1267",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/01-methodology/README.md",
+      "sha256": "82d66e699740c454d0478a1d846ef36e3dd4ae90564648b01504c2ab080f5eff",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/02-datasets/README.md",
+      "sha256": "05ad4b21ca99854bab3f818556439f437cc8ba93a532c24323696bc283213641",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "ai/memory-bank/05-product/README.md",
+      "sha256": "686818e09823cfd74ed3ec734c717edb88ff6a43ef3f147a76f8504a1427e9fe",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "backend/core/ledger.py",
+      "sha256": "293badcac85d34c6e81c6397cbabb6803e732535068f97989ad201979327f038",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "backend/core/quantity.py",
+      "sha256": "8d380e54abda51e3238ee737ea7c884324d37cbd467f471798848fbc0d979d1c",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "backend/validation/contracts.py",
+      "sha256": "284ab8faaba03c7d7289acd003d695ae8ae18f2f503567905ad81616434a3231",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "backend/validation/synthetic_factory.py",
+      "sha256": "37af67aee6db6cef2d062f896654383aaed2ceb08e9f9b1f23c451fb49531466",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "docs/INSTALLATION_PASSPORT_PRODUCT_SPEC.md",
+      "sha256": "152d3b6411c617ef09c279d578a6b054b8134b83170951f874b6acf37449ac60",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "validation/datasets/synthetic_factory_v1/manifest.json",
+      "sha256": "0bb893470367233f074d7a31c8a404ff41af1851534e92ed6b6e6b1e6f2eb842",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    },
+    {
+      "path": "validation/llm/schemas/factory_document_extraction_v1.json",
+      "sha256": "91e1ae2be399b0888af5c3fba763fbe3a38bd1f92a2674f5fa4ef397a4d1b1b8",
+      "status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED"
+    }
+  ],
+  "tree_sha": "29276451fd21482cffdab828c655bfbb5c428221",
+  "verification_commands": [
+    "opc repo checkout <repository> --ref c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+    "git ls-remote origin refs/heads/main",
+    "git rev-parse HEAD HEAD^{tree} HEAD^",
+    "git status --porcelain=v1"
+  ]
+}

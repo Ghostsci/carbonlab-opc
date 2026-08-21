@@ -1,0 +1,46 @@
+{
+  "control_system_id": "G1B-V2.0.2-PACKAGE-GUARD",
+  "default": "DENY",
+  "external_iam_or_worm_claimed": false,
+  "implementation_scope": "package_local_deterministic_enforcement",
+  "policy_version": "g1-b-access-2.0.2",
+  "roles": {
+    "developer": {
+      "allow": [
+        "access/storage/development-zone.json"
+      ],
+      "deny": [
+        "access/storage/restricted-qa-zone.json",
+        "access/storage/usability-zone.json",
+        "governance/final-freeze-approval"
+      ]
+    },
+    "qa": {
+      "allow": [
+        "access/storage/restricted-qa-zone.json"
+      ],
+      "deny": [
+        "access/storage/development-zone.json",
+        "access/storage/usability-zone.json",
+        "governance/final-freeze-approval"
+      ]
+    },
+    "researcher": {
+      "allow": [
+        "access/storage/usability-zone.json"
+      ],
+      "deny": [
+        "access/storage/development-zone.json",
+        "access/storage/restricted-qa-zone.json",
+        "governance/final-freeze-approval"
+      ]
+    }
+  },
+  "subjects": {
+    "developer": "subject-dev-anonymized-001",
+    "qa": "subject-qa-anonymized-001",
+    "researcher": "subject-research-anonymized-001",
+    "unauthorized": "subject-unauthorized-anonymized-001"
+  },
+  "truth_exposure_rule": "Holdout and Adversarial truth may be read only from the restricted QA zone."
+}

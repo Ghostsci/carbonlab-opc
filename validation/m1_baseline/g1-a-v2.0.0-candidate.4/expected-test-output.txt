@@ -1,0 +1,24 @@
+PASS package_schema
+PASS eight_rule_items
+PASS field_contract_9
+PASS confirmation_state_machine
+PASS unit_dictionary
+PASS calculation_and_rounding
+PASS decimal_precision
+PASS reporting_period
+PASS evidence_location
+PASS emission_factor
+PASS exception_contract
+PASS exception_code_closure
+PASS exception_closure_negative_control
+PASS prompt_injection_fixtures
+PASS prompt_label_independence
+PASS prompt_classifier_adversarial_coverage
+PASS applicability_boundary
+PASS source_approval_mapping
+PASS no_material_semantic_change
+PASS package_content_hashes
+PASS source_file_hashes
+PASS baseline_dataset_manifest
+PASS baseline_scenarios_39
+SUMMARY 23/23 PASS

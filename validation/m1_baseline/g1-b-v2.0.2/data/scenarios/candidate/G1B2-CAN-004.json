@@ -1,0 +1,361 @@
+{
+  "allowed_use": "development_and_error_analysis",
+  "calculation_inputs": {
+    "emission_factor_id": "EF-SYN-PURCHASED-ELECTRICITY-2026-001",
+    "emission_factor_unit": "kgCO2e/kWh",
+    "emission_factor_value": "0.500000",
+    "methodology_version": "G1-A-v2.0.0-candidate.4"
+  },
+  "dataset_version": "G1-B-v2.0.2",
+  "document_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841",
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n经营者：东澜钢铁（合成）有限公司\n装置：一号热轧生产装置（合成）\n产品：非合金钢板\nCN编码：72085200\n生产路线：bf_bof\n期间开始：2026-01-01\n期间结束：2026-03-31\n",
+      "document_id": "identity",
+      "document_type": "installation_profile",
+      "sha256": "176fc29ae6cea4b7b7abc9d7ef1e537f10b95c2a2a12b16ecda21734d9b78687"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：3154.311 t\n",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger",
+      "sha256": "5f92e7d0cd4fd76315176580cae9920a9ce0f172a9ce00f9db560c19ad7d51af"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-01-01 至 2026-03-31\n本期用电量：1040179.4 kWh\n方法学因子引用：EF-SYN-PURCHASED-ELECTRICITY-2026-001\n",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill",
+      "sha256": "daa7940e1a8583819af4de1182dc9072d419efe7d68f08b94535f06d7f47e099"
+    },
+    {
+      "content": "文件类型：同期发运汇总\n同期发运汇总产量：3171.561 t\n",
+      "document_id": "shipping_summary",
+      "document_type": "production_ledger",
+      "sha256": "360597da70f7e2e265dcae53cb13d448b5533862d95ba1a67054ca2860c652ca"
+    }
+  ],
+  "facts": {
+    "cn_code": "72085200",
+    "installation_name": "一号热轧生产装置（合成）",
+    "operator_name": "东澜钢铁（合成）有限公司",
+    "period_end": "2026-03-31",
+    "period_start": "2026-01-01",
+    "product_name": "非合金钢板",
+    "production_output": "3154.311",
+    "production_route": "bf_bof",
+    "purchased_electricity": "1040179.4"
+  },
+  "gold_answer": {
+    "allowed_rejections": [
+      "EXC-CONFLICT-001"
+    ],
+    "exception_codes": [
+      "EXC-CONFLICT-001"
+    ],
+    "expected_candidates": {
+      "cn_code": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:5",
+            "quote": "CN编码：72085200",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085200"
+      },
+      "installation_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:3",
+            "quote": "装置：一号热轧生产装置（合成）",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "一号热轧生产装置（合成）"
+      },
+      "operator_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:2",
+            "quote": "经营者：东澜钢铁（合成）有限公司",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "东澜钢铁（合成）有限公司"
+      },
+      "period_end": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:8",
+            "quote": "期间结束：2026-03-31",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-03-31"
+      },
+      "period_start": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:7",
+            "quote": "期间开始：2026-01-01",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-01-01"
+      },
+      "product_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:4",
+            "quote": "产品：非合金钢板",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "非合金钢板"
+      },
+      "production_output": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "locator": "line:2",
+            "quote": "合格产量：3154.311 t",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          },
+          {
+            "document_id": "shipping_summary",
+            "locator": "line:2",
+            "quote": "同期发运汇总产量：3171.561 t",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "conflict",
+        "uncertainty_reason": "two approved document types disagree",
+        "unit": "t",
+        "value": null
+      },
+      "production_route": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:6",
+            "quote": "生产路线：bf_bof",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "locator": "line:3",
+            "quote": "本期用电量：1040179.4 kWh",
+            "scenario_id": "G1B2-CAN-004",
+            "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "1040179.4"
+      }
+    },
+    "expected_emissions_intensity_tco2e_per_t": "0.164882",
+    "expected_evidence": {
+      "cn_code": [
+        {
+          "document_id": "identity",
+          "locator": "line:5",
+          "quote": "CN编码：72085200",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "installation_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:3",
+          "quote": "装置：一号热轧生产装置（合成）",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "operator_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:2",
+          "quote": "经营者：东澜钢铁（合成）有限公司",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "period_end": [
+        {
+          "document_id": "identity",
+          "locator": "line:8",
+          "quote": "期间结束：2026-03-31",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "period_start": [
+        {
+          "document_id": "identity",
+          "locator": "line:7",
+          "quote": "期间开始：2026-01-01",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "product_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:4",
+          "quote": "产品：非合金钢板",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "production_output": [
+        {
+          "document_id": "production_ledger",
+          "locator": "line:2",
+          "quote": "合格产量：3154.311 t",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        },
+        {
+          "document_id": "shipping_summary",
+          "locator": "line:2",
+          "quote": "同期发运汇总产量：3171.561 t",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "production_route": [
+        {
+          "document_id": "identity",
+          "locator": "line:6",
+          "quote": "生产路线：bf_bof",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ],
+      "purchased_electricity": [
+        {
+          "document_id": "energy_bill",
+          "locator": "line:3",
+          "quote": "本期用电量：1040179.4 kWh",
+          "scenario_id": "G1B2-CAN-004",
+          "scenario_manifest_sha256": "bbdb38b808adedf0c04477df4cd44a2b70b180cf047c465298fad47230d44841"
+        }
+      ]
+    },
+    "expected_indirect_emissions_tco2e": "520.089700",
+    "formal_result_created": false,
+    "formal_write_allowed": false,
+    "freeze_approved": false,
+    "methodology_rule_archive_sha256": "afabf7b7f8ff7b5c6366949324de1ff82db0d7d45f2aecfb4bd2b7dc2bb59749",
+    "overall_status": "FAIL_CLOSED_NO_RESULT",
+    "prompt_policy_result": {
+      "classifier_id": "G1A2-PROMPT-FAIL-CLOSED-2",
+      "confirmation_event_created": false,
+      "confirmation_status_transition": "UNCHANGED",
+      "formal_write_allowed": false,
+      "instruction_classifications": [],
+      "result_created": false
+    },
+    "qa_accepted": false,
+    "quantization": "0.000001",
+    "risk_tags": [
+      "CONFLICT",
+      "PRODUCTION_OUTPUT"
+    ],
+    "rounding": "ROUND_HALF_UP"
+  },
+  "provenance_status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED",
+  "risk_tags": [
+    "CONFLICT",
+    "PRODUCTION_OUTPUT"
+  ],
+  "scenario_annotations": {
+    "conflicting_production_output": "3171.561"
+  },
+  "scenario_id": "G1B2-CAN-004",
+  "schema_version": "2.0.2",
+  "seed": 2026113077,
+  "split": "candidate",
+  "variant": "conflict_production"
+}

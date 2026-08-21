@@ -1,0 +1,344 @@
+{
+  "allowed_use": "independent_qualification_only",
+  "calculation_inputs": {
+    "emission_factor_id": "EF-SYN-PURCHASED-ELECTRICITY-2026-001",
+    "emission_factor_unit": "kgCO2e/kWh",
+    "emission_factor_value": "0.500000",
+    "methodology_version": "G1-A-v2.0.0-candidate.4"
+  },
+  "dataset_version": "G1-B-v2.0.2",
+  "document_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7",
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n经营者：海岳特钢（合成）有限公司\n装置：一号热轧生产装置（合成）\n产品：非合金钢板\nCN编码：72085200\n生产路线：bf_bof\n期间开始：2026-01-01\n期间结束：2026-03-31\n",
+      "document_id": "identity",
+      "document_type": "installation_profile",
+      "sha256": "80b10d4192640b84f9f15078c19404700b5887bde750dd1bd91f206dc4412d5d"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：2998.421 t\n",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger",
+      "sha256": "095ff16959653ea64c07f6ae3093f25888c8839afb9ea84225617c544009cc44"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-01-01 至 2026-03-31\n本期用电量：1857605.9 kWh\n方法学因子引用：EF-SYN-PURCHASED-ELECTRICITY-2026-001\n",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill",
+      "sha256": "ca506a25dbef9d7be396b221187860006e536f00af3cff964c815f0c03dad27b"
+    }
+  ],
+  "facts": {
+    "cn_code": "72085200",
+    "installation_name": "一号热轧生产装置（合成）",
+    "operator_name": "海岳特钢（合成）有限公司",
+    "period_end": "2026-03-31",
+    "period_start": "2026-01-01",
+    "product_name": "非合金钢板",
+    "production_output": "2998.421",
+    "production_route": "bf_bof",
+    "purchased_electricity": "1857605.9"
+  },
+  "gold_answer": {
+    "allowed_rejections": [
+      "EXC-EVIDENCE-001"
+    ],
+    "exception_codes": [
+      "EXC-EVIDENCE-001"
+    ],
+    "expected_candidates": {
+      "cn_code": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:5",
+            "quote": "CN编码：72085200",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085200"
+      },
+      "installation_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:3",
+            "quote": "装置：一号热轧生产装置（合成）",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "一号热轧生产装置（合成）"
+      },
+      "operator_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:2",
+            "quote": "经营者：海岳特钢（合成）有限公司",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "海岳特钢（合成）有限公司"
+      },
+      "period_end": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:8",
+            "quote": "期间结束：2026-03-31",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-03-31"
+      },
+      "period_start": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:7",
+            "quote": "期间开始：2026-01-01",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-01-01"
+      },
+      "product_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:4",
+            "quote": "产品：非合金钢板",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "非合金钢板"
+      },
+      "production_output": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "locator": "line:2",
+            "quote": "合格产量：2998.421 t",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "t",
+        "value": "2998.421"
+      },
+      "production_route": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:6",
+            "quote": "生产路线：bf_bof",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "locator": "line:3",
+            "quote": "本期用电量：1857605.9 kWh",
+            "scenario_id": "G1B2-HLD-008",
+            "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "ambiguous",
+        "uncertainty_reason": "provided evidence does not support field",
+        "unit": "kWh",
+        "value": null
+      }
+    },
+    "expected_emissions_intensity_tco2e_per_t": "0.309764",
+    "expected_evidence": {
+      "cn_code": [
+        {
+          "document_id": "identity",
+          "locator": "line:5",
+          "quote": "CN编码：72085200",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "installation_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:3",
+          "quote": "装置：一号热轧生产装置（合成）",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "operator_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:2",
+          "quote": "经营者：海岳特钢（合成）有限公司",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "period_end": [
+        {
+          "document_id": "identity",
+          "locator": "line:8",
+          "quote": "期间结束：2026-03-31",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "period_start": [
+        {
+          "document_id": "identity",
+          "locator": "line:7",
+          "quote": "期间开始：2026-01-01",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "product_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:4",
+          "quote": "产品：非合金钢板",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "production_output": [
+        {
+          "document_id": "production_ledger",
+          "locator": "line:2",
+          "quote": "合格产量：2998.421 t",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "production_route": [
+        {
+          "document_id": "identity",
+          "locator": "line:6",
+          "quote": "生产路线：bf_bof",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ],
+      "purchased_electricity": [
+        {
+          "document_id": "energy_bill",
+          "locator": "line:3",
+          "quote": "本期用电量：1857605.9 kWh",
+          "scenario_id": "G1B2-HLD-008",
+          "scenario_manifest_sha256": "d451386e55735a59556717bb1e0958c91c967790be4211a124f221bafe4a56d7"
+        }
+      ]
+    },
+    "expected_indirect_emissions_tco2e": "928.802950",
+    "formal_result_created": false,
+    "formal_write_allowed": false,
+    "freeze_approved": false,
+    "methodology_rule_archive_sha256": "afabf7b7f8ff7b5c6366949324de1ff82db0d7d45f2aecfb4bd2b7dc2bb59749",
+    "overall_status": "FAIL_CLOSED_NO_RESULT",
+    "prompt_policy_result": {
+      "classifier_id": "G1A2-PROMPT-FAIL-CLOSED-2",
+      "confirmation_event_created": false,
+      "confirmation_status_transition": "UNCHANGED",
+      "formal_write_allowed": false,
+      "instruction_classifications": [],
+      "result_created": false
+    },
+    "qa_accepted": false,
+    "quantization": "0.000001",
+    "risk_tags": [
+      "EVIDENCE_MISMATCH"
+    ],
+    "rounding": "ROUND_HALF_UP"
+  },
+  "provenance_status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED",
+  "risk_tags": [
+    "EVIDENCE_MISMATCH"
+  ],
+  "scenario_annotations": {
+    "provided_evidence": {
+      "document_id": "production_ledger",
+      "field": "purchased_electricity",
+      "locator": "line:2",
+      "quote": "合格产量：2998.421 t"
+    }
+  },
+  "scenario_id": "G1B2-HLD-008",
+  "schema_version": "2.0.2",
+  "seed": 2026239781,
+  "split": "holdout",
+  "variant": "evidence_mismatch"
+}

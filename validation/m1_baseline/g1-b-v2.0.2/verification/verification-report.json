@@ -1,0 +1,373 @@
+{
+  "access_checks": "PASS",
+  "dataset_version": "G1-B-v2.0.2",
+  "manifest_checked": false,
+  "render_checks": {
+    "facts_csv": "PASS",
+    "pdf_rows": "PASS",
+    "rendered_csv": "PASS",
+    "rendered_pdf": "PASS",
+    "rendered_text": "PASS",
+    "rendered_xlsx": "PASS",
+    "text_rows": "PASS",
+    "xlsx_rows": "PASS"
+  },
+  "result": "PASS",
+  "scenario_checks": [
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-001",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-002",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-003",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-004",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-005",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-006",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-007",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-008",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-ADV-009",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-001",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-002",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-003",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-004",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-005",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-006",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-007",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-008",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-009",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-010",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-011",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-CAN-012",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-001",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-002",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-003",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-004",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-005",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-006",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-007",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-008",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-009",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-HLD-010",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-001",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-002",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-003",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-004",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-005",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-006",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-007",
+      "status_contract": "PASS",
+      "units": "PASS"
+    },
+    {
+      "emissions_and_intensity": "PASS",
+      "evidence": "PASS",
+      "field_values": "PASS",
+      "period": "PASS",
+      "scenario_id": "G1B2-USA-008",
+      "status_contract": "PASS",
+      "units": "PASS"
+    }
+  ],
+  "scenario_count_actual": 39,
+  "scenario_count_expected": 39,
+  "scenarios_passed": 39,
+  "verification_scope": "39/39 fields, units, periods, evidence, emissions, intensity, status; multi-format renderings; access isolation"
+}

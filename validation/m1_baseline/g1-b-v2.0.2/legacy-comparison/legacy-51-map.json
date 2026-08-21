@@ -1,0 +1,364 @@
+{
+  "entries": [
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_001",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "access/authorization-matrix.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_002",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "answers/golden-answers.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_003",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/facts.csv"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_004",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-001.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_005",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-002.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_006",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-003.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_007",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-004.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_008",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-005.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_009",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-006.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_010",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-007.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_011",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-008.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_012",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/adversarial/G1B2-ADV-009.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_013",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-001.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_014",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-002.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_015",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-003.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_016",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-004.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_017",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-005.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_018",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-006.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_019",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-007.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_020",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-008.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_021",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-009.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_022",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-010.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_023",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-011.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_024",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/candidate/G1B2-CAN-012.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_025",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-001.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_026",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-002.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_027",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-003.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_028",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-004.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_029",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-005.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_030",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-006.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_031",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-007.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_032",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-008.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_033",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-009.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_034",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/holdout/G1B2-HLD-010.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_035",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-001.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_036",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-002.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_037",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-003.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_038",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-004.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_039",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-005.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_040",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-006.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_041",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-007.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_042",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "data/scenarios/usability/G1B2-USA-008.json"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_043",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "generator/contracts.py"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_044",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "generator/generate.py"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_045",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "legacy-comparison/legacy-to-v2-diff.md"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_046",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "rendered/scenarios.csv"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_047",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "rendered/scenarios.pdf"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_048",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "rendered/scenarios.txt"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_049",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "rendered/scenarios.xlsx"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_050",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "requirements.lock"
+    },
+    {
+      "legacy_identity_status": "UNRECOVERABLE",
+      "legacy_path": null,
+      "legacy_slot": "LEGACY_SLOT_051",
+      "relation": "NEW_NOT_IDENTITY_MAPPING",
+      "v2_controlled_path": "rules/rules-snapshot.json"
+    }
+  ],
+  "mapping_semantics": "NEW_NOT_IDENTITY_MAPPING",
+  "slot_count": 51,
+  "status": "LEGACY_EVIDENCE_UNRECOVERABLE"
+}

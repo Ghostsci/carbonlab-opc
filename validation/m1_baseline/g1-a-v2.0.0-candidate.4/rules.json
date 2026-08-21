@@ -1,0 +1,462 @@
+{
+  "package_id": "G1-A-v2-candidate",
+  "methodology_version": "G1-A-v2.0.0-candidate.4",
+  "artifact_kind": "new_evidence_rebaseline",
+  "legacy_recovery": false,
+  "status": "PREPARATION_ONLY_CANDIDATE",
+  "approval_status": "PENDING_INDEPENDENT_AUDIT",
+  "effective": false,
+  "created_date": "2026-08-14",
+  "issue_id": "dcc8223e-3aa3-4e54-b485-aaf3c44ee86f",
+  "decision_id": "DEC-20260814-01",
+  "trigger_comment_id": "c30ece05-998e-4c96-bea4-5c9c3083dce7",
+  "predecessor": {
+    "methodology_version": "G1-A-v2.0.0-candidate.3",
+    "status": "RETURNED_RETAINED_NOT_EFFECTIVE",
+    "independent_audit_comment_id": "4f6ca245-f55b-4a02-ba9a-f70d3e1f7651"
+  },
+  "revision_source_ids": [
+    "4f6ca245-f55b-4a02-ba9a-f70d3e1f7651"
+  ],
+  "revision_history": [
+    {
+      "from": "G1-A-v2.0.0-candidate.1",
+      "to": "G1-A-v2.0.0-candidate.2",
+      "source_ids": ["33d7b5cf-5e1f-4591-9c78-8288e488a760", "2410d2f3-5ddc-48c8-837f-aa10d084e222"]
+    },
+    {
+      "from": "G1-A-v2.0.0-candidate.2",
+      "to": "G1-A-v2.0.0-candidate.3",
+      "source_ids": ["3d611aa2-e215-4440-8e49-a07afd227c4a", "c76c3753-eff7-4a15-8451-e02d201f2421"]
+    },
+    {
+      "from": "G1-A-v2.0.0-candidate.3",
+      "to": "G1-A-v2.0.0-candidate.4",
+      "source_ids": ["4f6ca245-f55b-4a02-ba9a-f70d3e1f7651"]
+    }
+  ],
+  "code_observation_baseline": {
+    "repository": "https://github.com/Ghostsci/carbonlab-opc.git",
+    "requested_ref": "main",
+    "requested_commit": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+    "git_head_tree_clean_independently_verified": false,
+    "file_hash_manifest": "source-files.sha256"
+  },
+  "roles": {
+    "responsible": "碳核算与方法学专家",
+    "independent_reviewer": "证据一致性与 AI 安全审计员",
+    "decision_maker": "项目 Owner 代理",
+    "self_approval_allowed": false,
+    "permission_change_created_by_package": false
+  },
+  "semantic_change_assessment": {
+    "existing_objective_changed": false,
+    "formula_type_changed": false,
+    "factor_source_priority_changed": false,
+    "business_boundary_changed": false,
+    "result_meaning_changed": false,
+    "overall_material_change": false
+  },
+  "dataset_version_mapping": {
+    "governance_label": "synthetic_factory_v1.1",
+    "code_canonical_id": "synthetic-factory-v1.1",
+    "mapping_kind": "identifier_alias_only",
+    "data_bytes_changed": false
+  },
+  "rule_items": [
+    {
+      "code": "field_contract",
+      "rule_id": "G1A2-FIELD-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "01-carbon-field-contract.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_semantics_plus_authorized_technical_completion",
+      "supersession": "new_rebaseline_not_legacy_recovery"
+    },
+    {
+      "code": "units",
+      "rule_id": "G1A2-UNIT-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "02-unit-dictionary.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "f92d48b1-558b-48b8-83f6-f409291be0ca", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_requirement_plus_execution_record_plus_rebaseline_authority",
+      "supersession": "new_rebaseline_not_legacy_recovery"
+    },
+    {
+      "code": "formula_and_rounding",
+      "rule_id": "G1A2-CALC-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "03-calculation-and-rounding.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "f92d48b1-558b-48b8-83f6-f409291be0ca", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_formula_scope_plus_execution_record_plus_rebaseline_authority",
+      "supersession": "new_rebaseline_not_legacy_recovery"
+    },
+    {
+      "code": "emission_factor",
+      "rule_id": "G1A2-FACTOR-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "04-emission-factor-register.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_value_and_use_plus_authorized_versioning",
+      "supersession": "new_factor_record_same_value_and_priority"
+    },
+    {
+      "code": "reporting_period",
+      "rule_id": "G1A2-PERIOD-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "05-reporting-period-rules.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "f92d48b1-558b-48b8-83f6-f409291be0ca", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_year_and_quarter_plus_execution_record_plus_rebaseline_authority",
+      "supersession": "new_rebaseline_not_legacy_recovery"
+    },
+    {
+      "code": "evidence_location",
+      "rule_id": "G1A2-EVIDENCE-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "06-evidence-location-rules.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_g1b_consistency_requirement_plus_authorized_mapping_detail",
+      "supersession": "new_minimum_synthetic_text_locator"
+    },
+    {
+      "code": "exception_handling",
+      "rule_id": "G1A2-EXCEPTION-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "07-exception-handling-rules.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "df350e0c-5f87-4892-9941-3d6e624490d8", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "approved_candidate_and_confirmation_boundary_plus_reviewed_safety_design_plus_rebaseline_authority",
+      "supersession": "new_fail_closed_detail"
+    },
+    {
+      "code": "applicability_and_boundaries",
+      "rule_id": "G1A2-BOUNDARY-001",
+      "version": "G1-A-v2.0.0-candidate.4",
+      "file": "08-applicability-and-boundaries.md",
+      "status": "COMPLETE_CANDIDATE",
+      "source_ids": ["bcd5a7c6-5786-408e-8dc8-637d539157b5", "c30ece05-998e-4c96-bea4-5c9c3083dce7"],
+      "approval_mapping": "direct_approved_boundary_plus_authorized_wording_detail",
+      "supersession": "new_rebaseline_same_business_boundary"
+    }
+  ],
+  "field_contract": {
+    "rule_id": "G1A2-FIELD-001",
+    "schema_version": "g1-a-v2-field-contract/1.0",
+    "candidate_status_enum": ["extracted", "missing", "ambiguous", "conflict"],
+    "confirmation_status_enum": ["UNCONFIRMED", "CONFIRMED", "REJECTED", "REVOKED"],
+    "formal_write_allowed_for_ai": false,
+    "confirmation_required_for_all_fields": true,
+    "confirmation_binding_required": ["candidate_id", "candidate_version", "subject_sha256", "actor_id", "actor_type_human", "authorization_snapshot_id", "confirmed_at", "reason_code", "methodology_version"],
+    "fields": [
+      {
+        "code": "operator_name",
+        "name_zh": "经营者名称",
+        "type": "nonempty_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "scenario_identity",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"min_length": 1, "max_length": 200},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "installation_name",
+        "name_zh": "生产装置名称",
+        "type": "nonempty_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "scenario_identity",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"min_length": 1, "max_length": 200, "values_per_scenario": 1},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "product_name",
+        "name_zh": "产品名称",
+        "type": "nonempty_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "scenario_identity",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"min_length": 1, "max_length": 200, "values_per_scenario": 1},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "cn_code",
+        "name_zh": "CN编码",
+        "type": "string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "scenario_identity",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"pattern": "^[0-9]{8}$", "preserve_leading_zero": true},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "production_route",
+        "name_zh": "生产路线",
+        "type": "nonempty_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "scenario_identity",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"min_length": 1, "max_length": 80, "approved_enum_added": false},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "period_start",
+        "name_zh": "期间开始",
+        "type": "iso_date_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "reporting_period_start",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"allowed_values": ["2026-01-01", "2026-04-01", "2026-07-01", "2026-10-01"]},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-PERIOD-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "period_end",
+        "name_zh": "期间结束",
+        "type": "iso_date_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": null,
+        "period": "reporting_period_end",
+        "allowed_document_types": ["installation_profile"],
+        "constraints": {"allowed_values": ["2026-03-31", "2026-06-30", "2026-09-30", "2026-12-31"]},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-PERIOD-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "production_output",
+        "name_zh": "合格产量",
+        "type": "canonical_decimal_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": "t",
+        "period": "exact_reporting_quarter",
+        "allowed_document_types": ["production_ledger"],
+        "constraints": {"exclusive_minimum": "0", "maximum": null, "max_precision": 28, "max_scale": 12, "binary_float": "forbidden"},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      },
+      {
+        "code": "purchased_electricity",
+        "name_zh": "外购电量",
+        "type": "canonical_decimal_string",
+        "candidate_object_required": true,
+        "formal_value_required": true,
+        "unit": "kWh",
+        "period": "exact_reporting_quarter",
+        "allowed_document_types": ["electricity_bill"],
+        "constraints": {"minimum": "0", "maximum": null, "max_precision": 28, "max_scale": 12, "binary_float": "forbidden"},
+        "missing_action": "EXC-MISSING-001",
+        "conflict_action": "EXC-CONFLICT-001",
+        "human_confirmation_required": true
+      }
+    ]
+  },
+  "unit_dictionary": {
+    "rule_id": "G1A2-UNIT-001",
+    "dictionary_id": "G1A2-UNIT-DICT-1",
+    "unit_code_matching": "exact_case_sensitive",
+    "alias_guessing": false,
+    "binary_float": "forbidden",
+    "intermediate_rounding": "forbidden",
+    "units": {
+      "t": {"dimension": {"PRODUCT_MASS": 1}, "base_numerator": 1000, "base_denominator": 1},
+      "kWh": {"dimension": {"ENERGY": 1}, "base_numerator": 3600000, "base_denominator": 1},
+      "kgCO2e": {"dimension": {"EMISSION_CO2E": 1}, "base_numerator": 1, "base_denominator": 1},
+      "tCO2e": {"dimension": {"EMISSION_CO2E": 1}, "base_numerator": 1000, "base_denominator": 1}
+    },
+    "compound_units": {
+      "kgCO2e/kWh": [{"unit_code": "kgCO2e", "exponent": 1}, {"unit_code": "kWh", "exponent": -1}],
+      "tCO2e/t": [{"unit_code": "tCO2e", "exponent": 1}, {"unit_code": "t", "exponent": -1}]
+    },
+    "formal_field_units": {"production_output": "t", "purchased_electricity": "kWh"},
+    "result_units": {"indirect_emissions": "tCO2e", "emission_intensity": "tCO2e/t"}
+  },
+  "calculation": {
+    "rule_id": "G1A2-CALC-001",
+    "formula_type": "ACTIVITY_DATA_MULTIPLIED_BY_EMISSION_FACTOR",
+    "formula_steps": [
+      "E_kgCO2e = purchased_electricity_kWh * factor_kgCO2e_per_kWh",
+      "E_tCO2e_raw = E_kgCO2e / 1000",
+      "E_tCO2e = quantize(E_tCO2e_raw, 0.000001, ROUND_HALF_UP)",
+      "I_raw = E_tCO2e_raw / production_output_t",
+      "I_tCO2e_per_t = quantize(I_raw, 0.000001, ROUND_HALF_UP)"
+    ],
+    "working_decimal_precision_minimum": 50,
+    "intermediate_rounding": false,
+    "final_quantum": "0.000001",
+    "final_rounding_mode": "ROUND_HALF_UP",
+    "negative_zero_normalization": "0.000000",
+    "calculation_requires_confirmed_fields": 9,
+    "failure_result_created": false
+  },
+  "emission_factor": {
+    "rule_id": "G1A2-FACTOR-001",
+    "factor_id": "EF-SYN-PURCHASED-ELECTRICITY-2026-001",
+    "factor_version": "G1-A-v2.0.0-candidate.4",
+    "value": "0.500000",
+    "unit": "kgCO2e/kWh",
+    "source_comment_id": "bcd5a7c6-5786-408e-8dc8-637d539157b5",
+    "source_kind": "project_synthetic_constant",
+    "geography": "NOT_APPLICABLE_SYNTHETIC",
+    "vintage": 2026,
+    "dataset_version": "synthetic-factory-v1.1",
+    "emission_source": "purchased_electricity",
+    "status": "CANDIDATE",
+    "source_priority": ["approved_exact_g1_a_v2_factor", "fail_closed_no_fallback"],
+    "multiple_applicable_factors_action": "EXC-FACTOR-CONFLICT-001"
+  },
+  "reporting_period": {
+    "rule_id": "G1A2-PERIOD-001",
+    "value_type": "ISO_8601_calendar_date",
+    "interval_bounds": "closed_calendar_date_interval",
+    "timezone_applicable": false,
+    "allowed_pairs": [
+      ["2026-01-01", "2026-03-31"],
+      ["2026-04-01", "2026-06-30"],
+      ["2026-07-01", "2026-09-30"],
+      ["2026-10-01", "2026-12-31"]
+    ],
+    "partial_overlap_action": "EXC-PERIOD-001",
+    "automatic_split_or_proration": false
+  },
+  "evidence_location": {
+    "rule_id": "G1A2-EVIDENCE-001",
+    "reference_required": ["document_id", "quote"],
+    "quote_min_length": 1,
+    "quote_max_length": 300,
+    "quote_match": "exact_contiguous_unique_within_document",
+    "document_binding": "scenario_id_plus_document_id_plus_scenario_manifest_sha256",
+    "missing_value_must_be_null": true,
+    "missing_reason_required": true,
+    "ambiguous_min_evidence": 1,
+    "conflict_min_evidence": 2,
+    "conflict_summary_evidence_must_equal_field_evidence": true,
+    "field_document_types": {
+      "operator_name": ["installation_profile"],
+      "installation_name": ["installation_profile"],
+      "product_name": ["installation_profile"],
+      "cn_code": ["installation_profile"],
+      "production_route": ["installation_profile"],
+      "period_start": ["installation_profile"],
+      "period_end": ["installation_profile"],
+      "production_output": ["production_ledger"],
+      "purchased_electricity": ["electricity_bill"]
+    }
+  },
+  "exceptions": {
+    "rule_id": "G1A2-EXCEPTION-001",
+    "default_action": "FAIL_CLOSED_NO_RESULT",
+    "codes": [
+      "EXC-MISSING-001",
+      "EXC-AMBIGUOUS-001",
+      "EXC-CONFLICT-001",
+      "EXC-CONFIRM-001",
+      "EXC-RANGE-001",
+      "EXC-UNIT-001",
+      "EXC-PERIOD-001",
+      "EXC-EVIDENCE-001",
+      "EXC-FACTOR-MISSING-001",
+      "EXC-FACTOR-CONFLICT-001",
+      "EXC-DUPLICATE-001",
+      "EXC-PRECISION-001",
+      "EXC-PROMPT-INJECTION-001",
+      "EXC-BOUNDARY-001",
+      "EXC-VERSION-001"
+    ],
+    "missing_as_zero": false,
+    "confidence_as_fact": false,
+    "automatic_conflict_selection": false,
+    "automatic_factor_fallback": false,
+    "automatic_period_split": false,
+    "correction_requires_new_candidate_version": true,
+    "code_closure_required": true,
+    "undeclared_code_action": "VERIFICATION_FAIL_NONZERO",
+    "prompt_injection_policy": {
+      "document_text_can_authorize_formal_write": false,
+      "document_text_can_change_confirmation": false,
+      "document_text_can_create_result": false,
+      "fixture_labels_trusted": false,
+      "document_can_override_policy": false,
+      "detected_instruction_action": "EXC-PROMPT-INJECTION-001",
+      "benign_document_action": "KEEP_CANDIDATE_ISOLATED",
+      "safe_output": {
+        "formal_write_allowed": false,
+        "confirmation_status_transition": "UNCHANGED",
+        "confirmation_event_created": false,
+        "result_created": false
+      },
+      "content_classifier": {
+        "classifier_id": "G1A2-PROMPT-FAIL-CLOSED-2",
+        "input_field": "document_content",
+        "normalization": "NFKC_CASEFOLD_REMOVE_DEFAULT_IGNORABLE_FOLD_SEPARATORS",
+        "classification_strategy": "INSTRUCTION_FEATURES_THEN_STRICT_BENIGN_GRAMMAR_ELSE_REVIEW",
+        "unclassified_action": "REVIEW_REQUIRED_FAIL_CLOSED",
+        "instruction_feature_groups": {
+          "control_or_override": [
+            "忽略", "无视", "绕过", "跳过", "无需", "直接", "改为", "更改", "生成",
+            "ignore", "disregard", "bypass", "skip", "without", "change", "set", "generate"
+          ],
+          "governed_target": [
+            "指令", "规则", "审核", "核查", "人工确认", "确认", "状态",
+            "instruction", "rule", "review", "verification", "human confirmation", "confirmation", "status"
+          ],
+          "privileged_action_or_result": [
+            "批准", "发布", "正式", "写入", "结果", "核算", "已确认", "confirmed",
+            "approve", "publish", "formal", "write", "result", "calculation"
+          ]
+        },
+        "strict_benign_compact_patterns": [
+          "文件类型外购电对账单本期用电量[0-9]+kwh",
+          "文件类型生产台账本期合格产量[0-9]+t"
+        ]
+      }
+    }
+  },
+  "applicability_and_boundaries": {
+    "rule_id": "G1A2-BOUNDARY-001",
+    "data_nature": "synthetic_only",
+    "per_scenario": {"operators": 1, "installations": 1, "products": 1, "reporting_quarters": 1},
+    "report_year": 2026,
+    "dataset_version": "synthetic-factory-v1.1",
+    "included_emission_sources": ["purchased_electricity_indirect_emissions"],
+    "excluded_emission_sources": ["fuel", "process", "transport", "material", "precursor", "refrigerant", "waste", "offset", "certificate"],
+    "result_meanings": ["synthetic_purchased_electricity_indirect_emissions", "synthetic_same_period_output_intensity"],
+    "prohibited_claims": ["real_enterprise_validation", "production_admission", "regulatory_recognition", "third_party_assurance", "statutory_verification", "automatic_regulatory_filing"],
+    "cross_scenario_aggregation": false,
+    "truth_generation_before_approval": false,
+    "runtime_configuration_change": false,
+    "production_permission_change": false,
+    "external_release": false
+  }
+}

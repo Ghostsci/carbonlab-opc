@@ -1,0 +1,1057 @@
+{
+  "comparison_only_source": {
+    "dataset_version": "G1-B-v2.0.0",
+    "package_sha256": "9dd04297636235fda5f669f5f8f9a2eb2c0de177a12f63d081dc1b5aa0455681",
+    "status": "WITHDRAWN_CONFLICTED_PREPARATION_SKELETON_ONLY",
+    "used_as_truth_source": false
+  },
+  "entries": [
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2460.568700",
+        "exception_codes": [],
+        "intensity_tco2e_per_t": "2.612462",
+        "status": "CANDIDATE_READY"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "762.977550",
+        "intensity_tco2e_per_t": "0.471608",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-001"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "966.429100",
+        "exception_codes": [
+          "EXC-MISSING-001"
+        ],
+        "intensity_tco2e_per_t": "0.843375",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1655.615600",
+        "intensity_tco2e_per_t": "0.502256",
+        "status": "REJECT_MISSING"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-002"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1231.636900",
+        "exception_codes": [
+          "EXC-MISSING-001"
+        ],
+        "intensity_tco2e_per_t": "1.042275",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1406.991450",
+        "intensity_tco2e_per_t": "0.553080",
+        "status": "REJECT_MISSING"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-003"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "520.089700",
+        "exception_codes": [
+          "EXC-CONFLICT-001"
+        ],
+        "intensity_tco2e_per_t": "0.164882",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "691.819200",
+        "intensity_tco2e_per_t": "0.773469",
+        "status": "REJECT_CONFLICT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-004"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2358.383700",
+        "exception_codes": [
+          "EXC-UNIT-001"
+        ],
+        "intensity_tco2e_per_t": "1.084170",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2447.472100",
+        "intensity_tco2e_per_t": "0.619948",
+        "status": "REJECT_UNIT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-005"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1260.241100",
+        "exception_codes": [
+          "EXC-PERIOD-001"
+        ],
+        "intensity_tco2e_per_t": "1.196817",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1249.747250",
+        "intensity_tco2e_per_t": "0.819761",
+        "status": "REJECT_PERIOD"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-006"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "819.641850",
+        "exception_codes": [
+          "EXC-DUPLICATE-001"
+        ],
+        "intensity_tco2e_per_t": "0.392394",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1609.577900",
+        "intensity_tco2e_per_t": "0.516352",
+        "status": "REJECT_DUPLICATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-007"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "49999999999999999999999999.999500",
+        "exception_codes": [
+          "EXC-PRECISION-001"
+        ],
+        "intensity_tco2e_per_t": "48740781899623233755915.912403",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "499999999.999950",
+        "intensity_tco2e_per_t": "312736.506983",
+        "status": "REJECT_EXTREME_VALUE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-008"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1094.379600",
+        "exception_codes": [
+          "EXC-EVIDENCE-001"
+        ],
+        "intensity_tco2e_per_t": "0.331236",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1571.764500",
+        "intensity_tco2e_per_t": "0.491242",
+        "status": "REJECT_EVIDENCE_MISMATCH"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-009"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "407.916800",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001"
+        ],
+        "intensity_tco2e_per_t": "0.371710",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1928.239650",
+        "intensity_tco2e_per_t": "0.707202",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-010"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "808.606150",
+        "exception_codes": [],
+        "intensity_tco2e_per_t": "0.225277",
+        "status": "CANDIDATE_READY"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1983.292550",
+        "intensity_tco2e_per_t": "0.713390",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-011"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2220.581350",
+        "exception_codes": [
+          "EXC-UNIT-001"
+        ],
+        "intensity_tco2e_per_t": "0.548005",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2027.092050",
+        "intensity_tco2e_per_t": "0.963748",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-CAN-012"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2451.374900",
+        "exception_codes": [],
+        "intensity_tco2e_per_t": "1.381031",
+        "status": "CANDIDATE_READY"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1531.639450",
+        "intensity_tco2e_per_t": "0.799678",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-001"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "475.634250",
+        "exception_codes": [
+          "EXC-MISSING-001"
+        ],
+        "intensity_tco2e_per_t": "0.387691",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1216.673100",
+        "intensity_tco2e_per_t": "0.310283",
+        "status": "REJECT_MISSING"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-002"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "573.361850",
+        "exception_codes": [
+          "EXC-CONFLICT-001"
+        ],
+        "intensity_tco2e_per_t": "0.260924",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1094.970850",
+        "intensity_tco2e_per_t": "0.411276",
+        "status": "REJECT_CONFLICT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-003"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1477.323950",
+        "exception_codes": [
+          "EXC-UNIT-001"
+        ],
+        "intensity_tco2e_per_t": "0.562738",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2347.354500",
+        "intensity_tco2e_per_t": "0.497026",
+        "status": "REJECT_UNIT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-004"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1840.875900",
+        "exception_codes": [
+          "EXC-PERIOD-001"
+        ],
+        "intensity_tco2e_per_t": "0.422319",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2032.571900",
+        "intensity_tco2e_per_t": "0.551638",
+        "status": "REJECT_PERIOD"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-005"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "975.502100",
+        "exception_codes": [
+          "EXC-DUPLICATE-001"
+        ],
+        "intensity_tco2e_per_t": "0.316879",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1039.174350",
+        "intensity_tco2e_per_t": "1.121344",
+        "status": "REJECT_DUPLICATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-006"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1405.648600",
+        "exception_codes": [
+          "EXC-PRECISION-001"
+        ],
+        "intensity_tco2e_per_t": "0.000000",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2232.786950",
+        "intensity_tco2e_per_t": "0.000002",
+        "status": "REJECT_EXTREME_VALUE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-007"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "928.802950",
+        "exception_codes": [
+          "EXC-EVIDENCE-001"
+        ],
+        "intensity_tco2e_per_t": "0.309764",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "405.299450",
+        "intensity_tco2e_per_t": "0.147539",
+        "status": "REJECT_EVIDENCE_MISMATCH"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-008"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1059.436750",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001"
+        ],
+        "intensity_tco2e_per_t": "0.281100",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1359.982700",
+        "intensity_tco2e_per_t": "0.572465",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-009"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1357.693600",
+        "exception_codes": [],
+        "intensity_tco2e_per_t": "0.277904",
+        "status": "CANDIDATE_READY"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1464.290350",
+        "intensity_tco2e_per_t": "0.701784",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-HLD-010"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1141.802150",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001"
+        ],
+        "intensity_tco2e_per_t": "0.461294",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "508.606150",
+        "intensity_tco2e_per_t": "0.282765",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-001"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2039.909850",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001",
+          "EXC-MISSING-001"
+        ],
+        "intensity_tco2e_per_t": "0.637094",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "431.632600",
+        "intensity_tco2e_per_t": "0.109975",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-002"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "2423.886850",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001",
+          "EXC-CONFLICT-001"
+        ],
+        "intensity_tco2e_per_t": "0.805384",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2470.789850",
+        "intensity_tco2e_per_t": "0.515378",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-003"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "597.077500",
+        "exception_codes": [
+          "EXC-EVIDENCE-001"
+        ],
+        "intensity_tco2e_per_t": "0.172203",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1467.008200",
+        "intensity_tco2e_per_t": "0.635506",
+        "status": "REJECT_EVIDENCE_MISMATCH"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-004"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "49999999999999999999999999.999500",
+        "exception_codes": [
+          "EXC-PRECISION-001"
+        ],
+        "intensity_tco2e_per_t": "21825778776525414591580.749488",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "499999999.999950",
+        "intensity_tco2e_per_t": "168241.236398",
+        "status": "REJECT_EXTREME_VALUE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-005"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1776.234400",
+        "exception_codes": [
+          "EXC-DUPLICATE-001"
+        ],
+        "intensity_tco2e_per_t": "0.396746",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1502.659050",
+        "intensity_tco2e_per_t": "0.461363",
+        "status": "REJECT_DUPLICATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-006"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1785.322400",
+        "exception_codes": [
+          "EXC-UNIT-001"
+        ],
+        "intensity_tco2e_per_t": "0.429694",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "643.869350",
+        "intensity_tco2e_per_t": "0.267059",
+        "status": "REJECT_UNIT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-007"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1952.581400",
+        "exception_codes": [
+          "EXC-PERIOD-001"
+        ],
+        "intensity_tco2e_per_t": "0.548191",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "819.515200",
+        "intensity_tco2e_per_t": "0.744833",
+        "status": "REJECT_PERIOD"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-008"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1576.138950",
+        "exception_codes": [
+          "EXC-CONFLICT-001"
+        ],
+        "intensity_tco2e_per_t": "1.230466",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2475.000650",
+        "intensity_tco2e_per_t": "0.821390",
+        "status": "REJECT_CONFLICT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-ADV-009"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1606.464600",
+        "exception_codes": [],
+        "intensity_tco2e_per_t": "0.402064",
+        "status": "CANDIDATE_READY"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1946.837850",
+        "intensity_tco2e_per_t": "0.703873",
+        "status": "ACCEPT_CANDIDATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-001"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1259.423900",
+        "exception_codes": [
+          "EXC-MISSING-001"
+        ],
+        "intensity_tco2e_per_t": "0.422463",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1514.368250",
+        "intensity_tco2e_per_t": "0.348431",
+        "status": "REJECT_MISSING"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-002"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1740.851950",
+        "exception_codes": [
+          "EXC-CONFLICT-001"
+        ],
+        "intensity_tco2e_per_t": "1.099878",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1402.078050",
+        "intensity_tco2e_per_t": "0.808220",
+        "status": "REJECT_CONFLICT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-003"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "444.523150",
+        "exception_codes": [
+          "EXC-UNIT-001"
+        ],
+        "intensity_tco2e_per_t": "0.153535",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "2425.991050",
+        "intensity_tco2e_per_t": "1.744616",
+        "status": "REJECT_UNIT"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-004"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "1943.670250",
+        "exception_codes": [
+          "EXC-PERIOD-001"
+        ],
+        "intensity_tco2e_per_t": "0.488687",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1389.337350",
+        "intensity_tco2e_per_t": "0.378379",
+        "status": "REJECT_PERIOD"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-005"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "578.399600",
+        "exception_codes": [
+          "EXC-DUPLICATE-001"
+        ],
+        "intensity_tco2e_per_t": "0.313094",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "844.481400",
+        "intensity_tco2e_per_t": "0.502829",
+        "status": "REJECT_DUPLICATE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-006"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "49999999999999999999999999.999500",
+        "exception_codes": [
+          "EXC-PRECISION-001"
+        ],
+        "intensity_tco2e_per_t": "11369752773821735465419.692821",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "499999999.999950",
+        "intensity_tco2e_per_t": "235468.530573",
+        "status": "REJECT_EXTREME_VALUE"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-007"
+    },
+    {
+      "changed": true,
+      "identity_relation": "NEW_REBASELINE_NOT_CONTINUATION",
+      "new_candidate": {
+        "dataset_version": "G1-B-v2.0.2",
+        "emissions_tco2e": "552.077450",
+        "exception_codes": [
+          "EXC-PROMPT-INJECTION-001"
+        ],
+        "intensity_tco2e_per_t": "0.158862",
+        "status": "FAIL_CLOSED_NO_RESULT"
+      },
+      "old_withdrawn": {
+        "dataset_version": "G1-B-v2.0.0",
+        "emissions_tco2e": "1363.980050",
+        "intensity_tco2e_per_t": "0.426796",
+        "status": "REJECT_DOCUMENT_INSTRUCTION"
+      },
+      "reason_codes": [
+        "NEW_MASTER_SEED",
+        "APPROVED_G1_A_RULE_ARCHIVE",
+        "ROUND_HALF_UP_RAW_INTENSITY",
+        "NINE_FIELD_CONTRACT",
+        "APPROVED_EXCEPTION_CODE_CLOSURE"
+      ],
+      "scenario_id": "G1B2-USA-008"
+    }
+  ],
+  "entry_count": 39,
+  "new_dataset_version": "G1-B-v2.0.2"
+}

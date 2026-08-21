@@ -1,0 +1,333 @@
+{
+  "allowed_use": "development_and_error_analysis",
+  "calculation_inputs": {
+    "emission_factor_id": "EF-SYN-PURCHASED-ELECTRICITY-2026-001",
+    "emission_factor_unit": "kgCO2e/kWh",
+    "emission_factor_value": "0.500000",
+    "methodology_version": "G1-A-v2.0.0-candidate.4"
+  },
+  "dataset_version": "G1-B-v2.0.2",
+  "document_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562",
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n经营者：东澜钢铁（合成）有限公司\n装置：一号热轧生产装置（合成）\n产品：热轧卷板\nCN编码：72085100\n生产路线：bf_bof\n期间开始：2026-07-01\n期间结束：2026-09-30\n",
+      "document_id": "identity",
+      "document_type": "installation_profile",
+      "sha256": "1cf4247e951214be151bbaec2dfeeb82d3ff0a53e0cd1ef3ff30377db4376d30"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：3589.38 t\n",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger",
+      "sha256": "fe0812a5f45f37fb7202a343c25ce649ed469e475c96967b0bf1196e65f12aa1"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-07-01 至 2026-09-30\n本期用电量：1617212.3 kWh\n方法学因子引用：EF-SYN-PURCHASED-ELECTRICITY-2026-001\n",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill",
+      "sha256": "12a460af2b342f335b410a34a43e7cb6aa6b80f46fdf39ec0308c7fcf3e46640"
+    }
+  ],
+  "facts": {
+    "cn_code": "72085100",
+    "installation_name": "一号热轧生产装置（合成）",
+    "operator_name": "东澜钢铁（合成）有限公司",
+    "period_end": "2026-09-30",
+    "period_start": "2026-07-01",
+    "product_name": "热轧卷板",
+    "production_output": "3589.38",
+    "production_route": "bf_bof",
+    "purchased_electricity": "1617212.3"
+  },
+  "gold_answer": {
+    "allowed_rejections": [],
+    "exception_codes": [],
+    "expected_candidates": {
+      "cn_code": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:5",
+            "quote": "CN编码：72085100",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085100"
+      },
+      "installation_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:3",
+            "quote": "装置：一号热轧生产装置（合成）",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "一号热轧生产装置（合成）"
+      },
+      "operator_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:2",
+            "quote": "经营者：东澜钢铁（合成）有限公司",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "东澜钢铁（合成）有限公司"
+      },
+      "period_end": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:8",
+            "quote": "期间结束：2026-09-30",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-09-30"
+      },
+      "period_start": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:7",
+            "quote": "期间开始：2026-07-01",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-07-01"
+      },
+      "product_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:4",
+            "quote": "产品：热轧卷板",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "热轧卷板"
+      },
+      "production_output": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "locator": "line:2",
+            "quote": "合格产量：3589.38 t",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "t",
+        "value": "3589.38"
+      },
+      "production_route": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:6",
+            "quote": "生产路线：bf_bof",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "locator": "line:3",
+            "quote": "本期用电量：1617212.3 kWh",
+            "scenario_id": "G1B2-CAN-011",
+            "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "1617212.3"
+      }
+    },
+    "expected_emissions_intensity_tco2e_per_t": "0.225277",
+    "expected_evidence": {
+      "cn_code": [
+        {
+          "document_id": "identity",
+          "locator": "line:5",
+          "quote": "CN编码：72085100",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "installation_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:3",
+          "quote": "装置：一号热轧生产装置（合成）",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "operator_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:2",
+          "quote": "经营者：东澜钢铁（合成）有限公司",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "period_end": [
+        {
+          "document_id": "identity",
+          "locator": "line:8",
+          "quote": "期间结束：2026-09-30",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "period_start": [
+        {
+          "document_id": "identity",
+          "locator": "line:7",
+          "quote": "期间开始：2026-07-01",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "product_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:4",
+          "quote": "产品：热轧卷板",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "production_output": [
+        {
+          "document_id": "production_ledger",
+          "locator": "line:2",
+          "quote": "合格产量：3589.38 t",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "production_route": [
+        {
+          "document_id": "identity",
+          "locator": "line:6",
+          "quote": "生产路线：bf_bof",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ],
+      "purchased_electricity": [
+        {
+          "document_id": "energy_bill",
+          "locator": "line:3",
+          "quote": "本期用电量：1617212.3 kWh",
+          "scenario_id": "G1B2-CAN-011",
+          "scenario_manifest_sha256": "1b62b1d81ae2f5e1adc427307756d4235bdeb7d36d09a94c7ded4946d48ab562"
+        }
+      ]
+    },
+    "expected_indirect_emissions_tco2e": "808.606150",
+    "formal_result_created": false,
+    "formal_write_allowed": false,
+    "freeze_approved": false,
+    "methodology_rule_archive_sha256": "afabf7b7f8ff7b5c6366949324de1ff82db0d7d45f2aecfb4bd2b7dc2bb59749",
+    "overall_status": "CANDIDATE_READY",
+    "prompt_policy_result": {
+      "classifier_id": "G1A2-PROMPT-FAIL-CLOSED-2",
+      "confirmation_event_created": false,
+      "confirmation_status_transition": "UNCHANGED",
+      "formal_write_allowed": false,
+      "instruction_classifications": [],
+      "result_created": false
+    },
+    "qa_accepted": false,
+    "quantization": "0.000001",
+    "risk_tags": [
+      "NORMAL"
+    ],
+    "rounding": "ROUND_HALF_UP"
+  },
+  "provenance_status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED",
+  "risk_tags": [
+    "NORMAL"
+  ],
+  "scenario_annotations": {},
+  "scenario_id": "G1B2-CAN-011",
+  "schema_version": "2.0.2",
+  "seed": 2026168510,
+  "split": "candidate",
+  "variant": "normal"
+}
