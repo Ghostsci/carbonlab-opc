@@ -1,0 +1,221 @@
+{
+  "input_sha256": "b9b1457a975a597e76516c62b770292a62ed92c2f3dcdd7358d0775b4268a0fe",
+  "results": [
+    {
+      "classification": "PASS",
+      "passport": {
+        "calculation_receipt": {
+          "formula": "purchased_electricity_kWh * factor_kgCO2e_per_kWh / 1000",
+          "input_sha256": "a6f41f164989806b1ce95642cf958357a97d9f91bc5bd78fc69467cc899291f0",
+          "inputs": {
+            "electricity_factor": {
+              "unit": "kgCO2e/kWh",
+              "value": "0.500000"
+            },
+            "production_output": {
+              "unit": "t",
+              "value": "2144.05"
+            },
+            "purchased_electricity": {
+              "unit": "kWh",
+              "value": "3529181"
+            }
+          },
+          "result": {
+            "unit": "tCO2e",
+            "value": "1764.5905000000000000000000000000000000000000000"
+          },
+          "rule_version": "synthetic-electricity-rule-v1"
+        },
+        "candidate": {
+          "conflicts": [],
+          "fields": {
+            "cn_code": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "CN编码：72085100"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "72085100"
+            },
+            "installation_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "装置：一号热轧生产装置（合成）"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "一号热轧生产装置（合成）"
+            },
+            "operator_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "经营者：东澜钢铁（合成）有限公司"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "东澜钢铁（合成）有限公司"
+            },
+            "period_end": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间结束：2026-12-31"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "2026-12-31"
+            },
+            "period_start": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间开始：2026-10-01"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "2026-10-01"
+            },
+            "product_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "产品：热轧卷板"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "热轧卷板"
+            },
+            "production_output": {
+              "evidence": [
+                {
+                  "document_id": "production_ledger",
+                  "quote": "合格产量：2144.05 t"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": "t",
+              "value": "2144.05"
+            },
+            "production_route": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "生产路线：bf_bof"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": null,
+              "value": "bf_bof"
+            },
+            "purchased_electricity": {
+              "evidence": [
+                {
+                  "document_id": "energy_bill",
+                  "quote": "本期用电量：3529181 kWh"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "uncertainty_reason": null,
+              "unit": "kWh",
+              "value": "3529181"
+            }
+          },
+          "formal_write_allowed": false,
+          "missing_fields": [],
+          "prompt_injection_detected": false,
+          "scenario_id": "syn_candidate_1001_complete",
+          "schema_version": "1.1.0",
+          "task_id": "factory_document_extraction_v1"
+        },
+        "confirmation": {
+          "actor_id": "synthetic-reviewer",
+          "actor_role": "auditor",
+          "authentication": "signed_confirmation_credential",
+          "decision": "confirm",
+          "occurred_at": "2026-08-14T00:00:00Z",
+          "reason": "synthetic acceptance fixture"
+        },
+        "formal_write_allowed": false,
+        "pipeline_version": "m3-candidate-passport-v1.0.3",
+        "provenance": {
+          "extraction_provider": "static/static-v1",
+          "source_sha256": {
+            "energy_bill": "96b2d964f659d7cec857ab35585ba600f2c3a6b4b3ff5e3e69a4063f10f84767",
+            "identity": "44a5cb7cdc05a434239c9f3c78fe05f023bd2c2afa703fb74327cb0ce18c3c08",
+            "production_ledger": "010fd1eddbf4f3c98cbaee94a73ad06dac8ac6e6f49d3e652726e081464a2dd5"
+          },
+          "truth_isolated": true
+        },
+        "publish_allowed": false,
+        "scenario_id": "syn_candidate_1001_complete",
+        "state": "calculated",
+        "synthetic_only": true
+      },
+      "scenario_id": "syn_candidate_1001_complete"
+    },
+    {
+      "classification": "PASS",
+      "outcome": "expected_rejection",
+      "reason": "unresolved_candidates:production_output",
+      "scenario_id": "syn_candidate_1002_missing_output"
+    },
+    {
+      "classification": "PASS",
+      "outcome": "expected_rejection",
+      "reason": "unresolved_candidates:production_output",
+      "scenario_id": "syn_candidate_1003_ambiguous_output_unit"
+    },
+    {
+      "classification": "PASS",
+      "outcome": "expected_rejection",
+      "reason": "unresolved_candidates:production_output",
+      "scenario_id": "syn_candidate_1004_conflicting_output"
+    },
+    {
+      "classification": "PASS",
+      "outcome": "expected_rejection",
+      "reason": "unresolved_candidates:purchased_electricity",
+      "scenario_id": "syn_candidate_1005_missing_electricity"
+    },
+    {
+      "classification": "PASS",
+      "outcome": "expected_rejection",
+      "reason": "document_instruction_detected",
+      "scenario_id": "syn_candidate_3001_prompt_injection"
+    }
+  ],
+  "run_sha256": [
+    "ca94fd62e6e4d3bee3442280d65ff49174117451f4ce1024dd7532450e4e1680",
+    "ca94fd62e6e4d3bee3442280d65ff49174117451f4ce1024dd7532450e4e1680",
+    "ca94fd62e6e4d3bee3442280d65ff49174117451f4ce1024dd7532450e4e1680"
+  ],
+  "semantic_consistency": true
+}
