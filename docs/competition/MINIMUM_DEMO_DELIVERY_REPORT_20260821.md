@@ -64,6 +64,11 @@ GitHub 交付：
 - `output/playwright/minimum-demo-upload.png`
 - `output/playwright/minimum-demo-passport-handoff.png`
 
+带中文旁白和字幕的完整演示视频：
+
+- `demo_video/CarbonLab_最小闭环演示_20260821.mp4`
+- 视频时长约 39 秒，使用合成数据录制；录制脚本、旁白文本与字幕源文件均已保留。
+
 ## 4. 已验证的攻击
 
 1. 用合法签名确认后再修改任一字段：返回冲突，不写 ActivityData。
