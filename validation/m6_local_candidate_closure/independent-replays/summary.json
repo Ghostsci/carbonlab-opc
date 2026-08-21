@@ -1,0 +1,24 @@
+{
+  "archive_byte_hashes_expected_to_differ_by_run_id": true,
+  "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+  "canonical_semantic_consistency": "100%",
+  "canonical_sha256": "c4a7f12dad66d95d1cae8f3015a5ec047082cc6678885a9c3f77a90a76e1fbb0",
+  "evidence_index_sha256": "f14a0d225322d82d96c6eef2de098cdb1214c0198a0e185ed446de962e025fa5",
+  "evidence_mapping_consistency": "100%",
+  "m5_members_each_round": "34/34",
+  "member_count_each_round": 115,
+  "member_list_consistency": "100%",
+  "member_list_sha256": "257e5821e2f702a6525d52e19f93f4410824d8341db8c0a318258f879f679612",
+  "negative_cases_each_round": "32/32",
+  "positive_control_each_round": "1/1",
+  "package_file_count_each_round": 104,
+  "round_exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "stage_chain_sha256": "4d00e2c8ed3b9132981f4663f1d3f592e7171861fb1f5dadb59fff3494d98308",
+  "stage_mapping_consistency": "100%",
+  "verdict_consistency": "100%",
+  "verdict_sha256": "735e5076bbe727de4f3e53ce7d0458a43f3f72a667f67fae705f26e0adf3dd59"
+}

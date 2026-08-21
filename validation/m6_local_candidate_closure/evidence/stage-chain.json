@@ -1,0 +1,81 @@
+{
+  "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+  "fixed_baseline": {
+    "commit": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+    "limitation": "fixed checkout materialized; Git administrative metadata is unavailable in the isolated build",
+    "repository": "https://github.com/Ghostsci/carbonlab-opc.git",
+    "status": "PASS_WITH_LIMITATIONS"
+  },
+  "legacy_boundary": {
+    "objects": [
+      "M0",
+      "M1-A",
+      "M1-B",
+      "M2",
+      "field contract",
+      "evidence policy",
+      "permission matrix"
+    ],
+    "status": "LEGACY_EVIDENCE_UNRECOVERABLE / NOT_SUPPLIED_TO_M5",
+    "treatment": "retained as history; not represented as recovered or continued"
+  },
+  "mode": [
+    "PREPARATION_ONLY",
+    "SYNTHETIC_ONLY",
+    "LOCAL_CANDIDATE",
+    "NOT_FOR_SUBMISSION"
+  ],
+  "orphan_references": [],
+  "stages": [
+    {
+      "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+      "stage": "M0",
+      "status": "PASS",
+      "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+    },
+    {
+      "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+      "stage": "M1-A",
+      "status": "PASS",
+      "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+    },
+    {
+      "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+      "stage": "M1-B",
+      "status": "PASS",
+      "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+    },
+    {
+      "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+      "stage": "M2",
+      "status": "PASS",
+      "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+    },
+    {
+      "artifact": "M3_MINIMUM_CLOSED_LOOP_V1.0.3_CORRECTED_CANONICAL",
+      "sha256": "60abf4fd50a1b1922f31958c4a50ec56330da5b251b1a761973295cd5b178d63",
+      "stage": "M3",
+      "status": "PASS"
+    },
+    {
+      "artifact": "M4_SYNTHETIC_UAT_V1.0.0",
+      "sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "stage": "M4",
+      "status": "PASS",
+      "verified_members": 69
+    },
+    {
+      "artifact": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3",
+      "artifact_sha256": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+      "independent_qa_comment": "d3249ac5-6e15-4d25-acb2-154debe15883",
+      "owner_exit_comment": "a71f3665-e338-48b3-a0ab-5a9c6df4359a",
+      "stage": "M5",
+      "stage_exit": "ACCEPT",
+      "status": "PASS",
+      "verified_members": 34
+    }
+  ],
+  "unapproved_replacements": [],
+  "unresolved_conflicts": [],
+  "verdict": "ACCEPT"
+}

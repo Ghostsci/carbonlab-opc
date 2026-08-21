@@ -1,0 +1,32 @@
+{
+  "action": "LOCAL_VALIDATE_FIXED_M5",
+  "authority_scope": "LOCAL_EVIDENCE_VALIDATION_ONLY / NO_FORMAL_ACTION_AUTHORITY",
+  "binding_id": "M5_TO_M6_LOCAL_EVIDENCE_USE_V1",
+  "object": {
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "type": "evidence_archive",
+    "version": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3"
+  },
+  "schema_version": "m6.approval-binding.v1",
+  "subjects": [
+    {
+      "actor_id": "39aab9d9-d5ff-4556-a761-c94f4640e417",
+      "actor_type": "agent",
+      "comment_id": "d3249ac5-6e15-4d25-acb2-154debe15883",
+      "role": "independent_qa",
+      "verdict": "ACCEPT"
+    },
+    {
+      "actor_id": "ad3e35d5-2e86-4306-b0f5-1b78e692da3a",
+      "actor_type": "agent",
+      "comment_id": "a71f3665-e338-48b3-a0ab-5a9c6df4359a",
+      "role": "stage_owner_exit_record",
+      "verdict": "ACCEPT"
+    }
+  ],
+  "target": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+  "validity": {
+    "not_after": "2030-12-31T23:59:59Z",
+    "not_before": "2026-08-14T00:00:00Z"
+  }
+}

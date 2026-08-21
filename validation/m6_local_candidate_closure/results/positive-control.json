@@ -1,0 +1,22 @@
+{
+  "assertions": {
+    "exit_code_is_0": true,
+    "local_action_completed": true,
+    "no_side_effects": true
+  },
+  "classification": "PASS",
+  "command": [
+    "python3",
+    "scripts/action_boundary.py",
+    "fixtures/valid-request.json"
+  ],
+  "exit_code": 0,
+  "observed": {
+    "decision": "LOCAL_ACTION_COMPLETED",
+    "executed_action": "LOCAL_VALIDATE_FIXED_M5",
+    "side_effects": [],
+    "target": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1"
+  },
+  "stderr": "",
+  "stdout": "{\"decision\": \"LOCAL_ACTION_COMPLETED\", \"executed_action\": \"LOCAL_VALIDATE_FIXED_M5\", \"side_effects\": [], \"target\": \"M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1\"}\n"
+}

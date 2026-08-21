@@ -1,0 +1,51 @@
+{
+  "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+  "entries": [
+    {
+      "id": "repository-baseline",
+      "kind": "git_commit_reference",
+      "sha_or_reference": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+      "status": "PASS_WITH_LIMITATIONS"
+    },
+    {
+      "boundary": "NEW_BASELINE / NOT_A_CONTINUATION",
+      "id": "candidate2-new-baseline",
+      "kind": "nested_upstream_archive",
+      "path": "input/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3.tar.gz::input/M5_UPSTREAM_EVIDENCE_CLOSURE_V2.0.0-candidate.2.tar.gz",
+      "sha_or_reference": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a",
+      "status": "PASS"
+    },
+    {
+      "id": "m5-candidate-evidence",
+      "kind": "archive",
+      "path": "input/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3.tar.gz",
+      "sha_or_reference": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+      "status": "PASS",
+      "verified_members": 34
+    },
+    {
+      "binding_id": "M5_TO_M6_LOCAL_EVIDENCE_USE_V1",
+      "id": "m5-to-m6-evidence-use-binding",
+      "kind": "subject_object_action_target_validity_binding",
+      "limitation": "offline binding verifies complete scope and package integrity; it grants no formal-action authority",
+      "path": "policy/approval-binding.json",
+      "status": "PASS_WITH_LIMITATIONS"
+    },
+    {
+      "id": "m6-v1.0.0-security-audit",
+      "kind": "superseded_candidate_audit",
+      "qa_comment": "d18aa4f3-5f31-4493-906c-6875d91271db",
+      "sha_or_reference": "099f6e04255278960cfa267e4bfb67e4bd1d04a5743acebbe98fb1cf0dbf48db",
+      "status": "FAIL_CODE",
+      "verdict": "CHANGES_REQUIRED"
+    }
+  ],
+  "integrity_checks": {
+    "m0_through_m5_stage_sequence": "PASS",
+    "m5_archive_sha256": "PASS",
+    "m5_member_hashes": "34/34",
+    "orphan_references": 0,
+    "unapproved_replacements": 0,
+    "unresolved_conflicts": 0
+  }
+}

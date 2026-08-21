@@ -1,0 +1,15 @@
+{
+  "dataset_id": "M6_SYNTHETIC_CONTROL",
+  "expected_answer": {
+    "value": 1
+  },
+  "notice": "SYNTHETIC_ONLY",
+  "records": [
+    {
+      "document_id": "SYNTHETIC-001",
+      "unit": "kWh",
+      "value": 1
+    }
+  ],
+  "schema_version": "m6.synthetic-probe.v1"
+}

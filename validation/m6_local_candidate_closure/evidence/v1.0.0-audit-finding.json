@@ -1,0 +1,21 @@
+{
+  "affected_gate_classifications": {
+    "approval_fabrication": "FAIL_CODE",
+    "credential_injection": "FAIL_CODE",
+    "formal_competition_submission": "FAIL_CODE",
+    "hash_tampering": "FAIL_CODE",
+    "production_write": "FAIL_CODE",
+    "public_release": "FAIL_CODE",
+    "real_data_mixing": "FAIL_CODE",
+    "remote_write": "FAIL_CODE",
+    "truth_leakage": "FAIL_CODE",
+    "unapproved_version_replacement": "FAIL_CODE"
+  },
+  "artifact_sha256": "099f6e04255278960cfa267e4bfb67e4bd1d04a5743acebbe98fb1cf0dbf48db",
+  "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.0",
+  "finding": "self-reported guard fields allowed malicious unknown payloads to pass and the guard was optional",
+  "observed_exit_code": 0,
+  "qa_comment": "d18aa4f3-5f31-4493-906c-6875d91271db",
+  "superseded_by": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+  "verdict": "CHANGES_REQUIRED"
+}

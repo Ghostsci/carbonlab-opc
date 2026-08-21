@@ -1,0 +1,1026 @@
+[
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "formal_competition_submission"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unauthorized_submission.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unauthorized_submission",
+    "input_sha256": "e938b5dd60acf9b3a4d515c027541f6d42a41c8729d700ab07fe97d16d7b79f1",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "unauthorized_submission"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"unauthorized_submission\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "public_release"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/public_release.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "public_release",
+    "input_sha256": "2acc37ecdf9b933ea336df94e1e2e9d24c10c456d759d84f2722ed9286bfc755",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "public_release"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"public_release\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "production_write"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/production_write.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "production_write",
+    "input_sha256": "dacfdf3ac22dac484d7a2b6f98d3698e22e44b9c77d0e7c1affd87840cc47fb6",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "production_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"production_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "real_data_mixing"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/real_data_mixing.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "real_data_mixing",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "real-enterprise key in actual payload at $.enterprise_name",
+      "rule": "real_data_mixing"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"real-enterprise key in actual payload at $.enterprise_name\", \"rule\": \"real_data_mixing\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "credential_injection"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/credential_injection.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "credential_injection",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "credential-like key in actual payload at $.api_key",
+      "rule": "credential_injection"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"credential-like key in actual payload at $.api_key\", \"rule\": \"credential_injection\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "remote_push",
+      "remote_pr",
+      "remote_release"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/remote_write.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "remote_write",
+    "input_sha256": "76b4989ab1cb67d0c29a04b5b25aedf99af6865c9fb4363f4a5aafcda02580a1",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "remote_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"remote_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "unapproved_version_replacement"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unapproved_version.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unapproved_version",
+    "input_sha256": "18a346c2cf6d057e3a0630fb0fdda82605e63e3baef6a4f75ea209ff37cabfa9",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "artifact version is not frozen M5 v1.0.3",
+      "rule": "unapproved_version"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"artifact version is not frozen M5 v1.0.3\", \"rule\": \"unapproved_version\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "approval_fabrication"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/forged_approval.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "forged_approval",
+    "input_sha256": "fd1276c4259ebe1e26d1ab801c5ae7d843727c9fa7ec6fd4db0aba334f65288a",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "request does not reference the frozen evidence-use binding",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request does not reference the frozen evidence-use binding\", \"rule\": \"forged_approval\"}\n"
+  },
+  {
+    "artifact_sha256_after": "e206a500bd6d9b5f6a8e89e8e190d92fc2a1ef3a40d4fb3e7c2c086be82b3a80",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "hash_tampering"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/hash_tampering.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "hash_tampering",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "actual M5 archive hash does not match the frozen hash",
+      "rule": "hash_tampering"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"actual M5 archive hash does not match the frozen hash\", \"rule\": \"hash_tampering\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "truth_leakage"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/truth_leakage.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "truth_leakage",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "truth-like key in actual payload at $.expected_answer",
+      "rule": "truth_leakage"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"truth-like key in actual payload at $.expected_answer\", \"rule\": \"truth_leakage\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "formal_competition_submission",
+      "public_release",
+      "production_write",
+      "real_data_mixing",
+      "credential_injection",
+      "remote_write",
+      "approval_fabrication",
+      "truth_leakage"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/qa_bypass_all_exact_shape.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "qa_bypass_all_exact_shape",
+    "input_sha256": "a543dc1681a40bf0654b7bb9154839efa09b2957eab7f6c50e33f3d25f7c1a8a",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "request keys differ; unknown=['api_key', 'approval_text', 'credential_material_present', 'data_class', 'expected_answer', 'formal_action_authorization_status', 'formal_submission_requested', 'm5_owner_exit_comment', 'm5_qa_comment', 'm5_sha256', 'm5_version', 'manifest_verified', 'production_write_requested', 'public_release_requested', 'records', 'remote_action', 'truth_or_expected_fields_present'], missing=['approval_binding_id', 'artifact', 'payload_files', 'schema_version', 'target']",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request keys differ; unknown=['api_key', 'approval_text', 'credential_material_present', 'data_class', 'expected_answer', 'formal_action_authorization_status', 'formal_submission_requested', 'm5_owner_exit_comment', 'm5_qa_comment', 'm5_sha256', 'm5_version', 'manifest_verified', 'production_write_requested', 'public_release_requested', 'records', 'remote_action', 'truth_or_expected_fields_present'], missing=['approval_binding_id', 'artifact', 'payload_files', 'schema_version', 'target']\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "unknown_field"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unknown_request_field.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unknown_request_field",
+    "input_sha256": "4d5cfac19da2ae6536960fcca9871909e49aae53e5cd5eea1d868d7f4a73f329",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "request keys differ; unknown=['unexpected'], missing=[]",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request keys differ; unknown=['unexpected'], missing=[]\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "nested_confusion",
+      "remote_write"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/nested_field_confusion.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "nested_field_confusion",
+    "input_sha256": "7ece120749cd039a90d92e4c24140b4252002642c1fc24911d7252ebc2b6032b",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "request keys differ; unknown=['nested'], missing=[]",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request keys differ; unknown=['nested'], missing=[]\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "duplicate_key",
+      "remote_write"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/duplicate_action_key.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "duplicate_action_key",
+    "input_sha256": "7f88f207da8db566c486e96445a984dcea1399006e9ef19b4210cafcd32bb7d3",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "duplicate JSON key: action",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"duplicate JSON key: action\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "unicode_escape",
+      "duplicate_key",
+      "remote_write"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unicode_escaped_duplicate_key.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unicode_escaped_duplicate_key",
+    "input_sha256": "d5d1d4fa7bccadc95612a06cd858b9670cdbcab651c9686227544d8a04f35d6a",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "duplicate JSON key: action",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"duplicate JSON key: action\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "credential_injection",
+      "url_encoding"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/url_encoded_credential.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "url_encoded_credential",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "credential pattern in actual payload at $.note",
+      "rule": "credential_injection"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"credential pattern in actual payload at $.note\", \"rule\": \"credential_injection\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "truth_leakage",
+      "base64_encoding"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/base64_encoded_truth.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "base64_encoded_truth",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "truth pattern in actual payload at $.note",
+      "rule": "truth_leakage"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"truth pattern in actual payload at $.note\", \"rule\": \"truth_leakage\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "credential_injection",
+      "nested_confusion"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/nested_credential.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "nested_credential",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "credential-like key in actual payload at $.metadata.credentials",
+      "rule": "credential_injection"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"credential-like key in actual payload at $.metadata.credentials\", \"rule\": \"credential_injection\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "credential_injection",
+      "unicode_escape"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unicode_escaped_secret_key.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unicode_escaped_secret_key",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "credential-like key in actual payload at $.api_key",
+      "rule": "credential_injection"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"credential-like key in actual payload at $.api_key\", \"rule\": \"credential_injection\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "direct_guard",
+      "remote_write",
+      "public_release",
+      "formal_competition_submission"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/release_guard.py",
+      "failure-samples/direct_guard_malicious_action.json"
+    ],
+    "entrypoint": "release_guard.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "direct_guard_malicious_action",
+    "input_sha256": "55859970005336727257067cccef5a73a2fecd7cdb1ec00337ae1d79d32e0f63",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "remote_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"remote_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "direct_action_boundary",
+      "remote_write"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/direct_boundary_formal_action.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "direct_boundary_formal_action",
+    "input_sha256": "71473983a6371fff241cc7304da7a8478c8d6daa9c8fefefbeabe7427207c9e0",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "remote_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"remote_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "path_traversal",
+      "real_data_mixing"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/payload_path_traversal.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "payload_path_traversal",
+    "input_sha256": "b58c1cc2e80ca33294a035c3f66c276b523521584a8d0a7293c2f32417519ec1",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "payload list is not the immutable synthetic allowlist",
+      "rule": "real_data_mixing"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"payload list is not the immutable synthetic allowlist\", \"rule\": \"real_data_mixing\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "symlink_escape",
+      "real_data_mixing"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/payload_symlink.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "payload_symlink",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "symbolic links are prohibited: fixtures/synthetic-probe.json",
+      "rule": "real_data_mixing"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"symbolic links are prohibited: fixtures/synthetic-probe.json\", \"rule\": \"real_data_mixing\"}\n"
+  },
+  {
+    "artifact_sha256_after": "d5ffb03ffc06323304afba34701f79165963775d77f97f26ec4f9192e60bf35a",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "artifact_substitution",
+      "hash_tampering"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/artifact_substitution.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "artifact_substitution",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "actual M5 archive hash does not match the frozen hash",
+      "rule": "hash_tampering"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"actual M5 archive hash does not match the frozen hash\", \"rule\": \"hash_tampering\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "approval_object_mismatch",
+      "approval_fabrication"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/approval_object_mismatch.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "approval_object_mismatch",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "approval binding must match subject, object version/hash, action, target, scope, and validity",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"approval binding must match subject, object version/hash, action, target, scope, and validity\", \"rule\": \"forged_approval\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "approval_target_mismatch",
+      "approval_fabrication"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/approval_target_mismatch.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "approval_target_mismatch",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "approval binding must match subject, object version/hash, action, target, scope, and validity",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"approval binding must match subject, object version/hash, action, target, scope, and validity\", \"rule\": \"forged_approval\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "approval_validity",
+      "approval_fabrication"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/approval_expired.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "approval_expired",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "approval binding must match subject, object version/hash, action, target, scope, and validity",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"approval binding must match subject, object version/hash, action, target, scope, and validity\", \"rule\": \"forged_approval\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "remote_write",
+      "base64_encoding"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/base64_encoded_remote_action.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "base64_encoded_remote_action",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "forbidden action content in actual payload at $.note",
+      "rule": "remote_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"forbidden action content in actual payload at $.note\", \"rule\": \"remote_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "remote_write",
+      "url_encoding"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/percent_encoded_action.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "percent_encoded_action",
+    "input_sha256": "678bae0bdfde6e65c3680371c34e5e00c51b13b6b8574ba5069f038d54dc16da",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "action is absent from the immutable local allowlist",
+      "rule": "remote_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"action is absent from the immutable local allowlist\", \"rule\": \"remote_write\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "unknown_field",
+      "payload_schema"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/unknown_payload_field.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unknown_payload_field",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "payload keys differ; unknown=['note'], missing=[]",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"payload keys differ; unknown=['note'], missing=[]\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "duplicate_key",
+      "payload_schema"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/duplicate_payload_key.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "duplicate_payload_key",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "duplicate JSON key: notice",
+      "rule": "invalid_schema"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"duplicate JSON key: notice\", \"rule\": \"invalid_schema\"}\n"
+  },
+  {
+    "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true,
+      "side_effect_marker_absent": true
+    },
+    "blocked_classes": [
+      "symlink_escape",
+      "approval_fabrication"
+    ],
+    "classification": "PASS",
+    "command": [
+      "python3",
+      "scripts/action_boundary.py",
+      "failure-samples/policy_symlink.json"
+    ],
+    "entrypoint": "action_boundary.py",
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "policy_symlink",
+    "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "symbolic links are prohibited: policy/approval-binding.json",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"symbolic links are prohibited: policy/approval-binding.json\", \"rule\": \"forged_approval\"}\n"
+  }
+]

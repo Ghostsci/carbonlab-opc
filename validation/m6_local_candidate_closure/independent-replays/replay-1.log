@@ -1,0 +1,16 @@
+round=1
+source=fresh extraction of M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1.tar.gz
+command_1=mkdir -p "$FRESH_ROOT/round-1/unpack" "$FRESH_ROOT/round-1/build"
+command_2=tar -xzf M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1.tar.gz -C "$FRESH_ROOT/round-1/unpack"
+command_3=PYTHONDONTWRITEBYTECODE=1 python3 "$FRESH_ROOT/round-1/unpack/M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1/scripts/build_m6.py" --output-dir "$FRESH_ROOT/round-1/build" --run-id fresh-unpack-1
+exit_code=0
+m5_members=34/34
+positive_control=1/1
+negative_cases=32/32
+canonical_sha256=c4a7f12dad66d95d1cae8f3015a5ec047082cc6678885a9c3f77a90a76e1fbb0
+evidence_index_sha256=f14a0d225322d82d96c6eef2de098cdb1214c0198a0e185ed446de962e025fa5
+stage_chain_sha256=4d00e2c8ed3b9132981f4663f1d3f592e7171861fb1f5dadb59fff3494d98308
+verdict_sha256=735e5076bbe727de4f3e53ce7d0458a43f3f72a667f67fae705f26e0adf3dd59
+member_count=115
+package_file_count=104
+member_list_sha256=257e5821e2f702a6525d52e19f93f4410824d8341db8c0a318258f879f679612

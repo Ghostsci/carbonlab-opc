@@ -1,0 +1,32 @@
+{
+  "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "assertions": {
+    "decision_is_rejected": true,
+    "exit_code_is_42": true,
+    "rule_matches_case": true,
+    "side_effect_marker_absent": true
+  },
+  "blocked_classes": [
+    "nested_confusion",
+    "remote_write"
+  ],
+  "classification": "PASS",
+  "command": [
+    "python3",
+    "scripts/action_boundary.py",
+    "failure-samples/nested_field_confusion.json"
+  ],
+  "entrypoint": "action_boundary.py",
+  "exit_code": 42,
+  "fail_closed": true,
+  "id": "nested_field_confusion",
+  "input_sha256": "7ece120749cd039a90d92e4c24140b4252002642c1fc24911d7252ebc2b6032b",
+  "observed": {
+    "decision": "REJECTED",
+    "reason": "request keys differ; unknown=['nested'], missing=[]",
+    "rule": "invalid_schema"
+  },
+  "stderr": "",
+  "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request keys differ; unknown=['nested'], missing=[]\", \"rule\": \"invalid_schema\"}\n"
+}
