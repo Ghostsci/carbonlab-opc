@@ -1,0 +1,14 @@
+--- a/backend/validation/providers.py
++++ b/backend/validation/providers.py
+@@
+-from openai import OpenAI
+@@
+         _validate_base_url(base_url)
+         api_key = os.environ.get(api_key_env)
+         if not api_key:
+             raise RuntimeError(f"required provider credential is missing: {api_key_env}")
++        # Import the external SDK only after configuration validation. Static
++        # runs and fail-closed configuration checks do not require the SDK.
++        from openai import OpenAI
++
+         self.provider_id = provider_id

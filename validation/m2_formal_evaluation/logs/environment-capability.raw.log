@@ -1,0 +1,17 @@
+Linux pop-os 6.8.0-76060800daily20240311-generic #202403110203~1715181801~22.04~aba43ee SMP PREEMPT_DYNAMIC Wed M x86_64 x86_64 x86_64 GNU/Linux
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs            16G  319M   16G   2% /tmp
+Python 3.12.11
+v22.23.1
+10.9.8
+Client:
+ Version:           24.0.7
+ API version:       1.43
+ Go version:        go1.21.1
+ Git commit:        24.0.7-0ubuntu2~22.04.1
+ Built:             Wed Mar 13 20:23:54 2024
+ OS/Arch:           linux/amd64
+ Context:           default
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+/bin/bash: line 1: sqlite3: command not found
+/bin/bash: line 1: psql: command not found

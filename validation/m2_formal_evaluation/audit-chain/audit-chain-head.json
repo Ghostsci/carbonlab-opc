@@ -1,0 +1,9 @@
+{
+  "algorithm": "SHA-256",
+  "append_api": "append_hash_chain(open_mode='a')",
+  "canonicalization": "UTF-8_JSON_SORT_KEYS_NO_WHITESPACE",
+  "chain_head_sha256": "891a3006f3ae29be03dcdd6452858766ce4d9b896378a8606fd1c8331d239c36",
+  "event_count": 11,
+  "genesis_previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "sealed_mode": "0400"
+}
