@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["profile_version_id", "status", "completeness_score", "data_quality_grade", "derived_from", "next_gate"],
+  "properties": {
+    "profile_version_id": {"type": "string", "format": "uuid"},
+    "status": {"enum": ["draft", "blocked", "ready_for_review"]},
+    "completeness_score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "data_quality_grade": {"enum": ["A", "B", "C", "D"]},
+    "derived_from": {"type": "array", "items": {"type": "string"}},
+    "blocking_items": {"type": "array", "items": {"type": "string"}},
+    "next_gate": {"const": "H-03"}
+  },
+  "additionalProperties": false
+}

@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Archive,
+  Activity,
   ArrowRight,
   BadgeCheck,
-  BookOpenCheck,
   Building2,
   Check,
   ChevronRight,
@@ -24,35 +24,52 @@ import {
   Scale,
   Send,
   ShieldCheck,
-  Sparkles,
   Unplug,
 } from "lucide-react";
+import ProductJourney from "../components/ProductJourney";
+import { AgentRunDrawer } from "../components/AgentRunDetail";
+import PlainPassportView from "../components/PlainPassportView";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  agentStatusLabel,
+  agentStatusTone,
+  fetchAgentRuns,
+  type AgentRun,
+} from "../utils/agentOps";
 import {
   addAttribution,
   addOutput,
-  calculateSEE,
   createGrant,
   createPassport,
   exportGrant,
   fetchEmissionCandidates,
+  fetchPlainEmissionPassport,
   fetchPassport,
   fetchPassports,
-  fetchRules,
   freezeProfile,
   publishProfile,
-  registerRule,
   reviewProfile,
   revokeGrant,
   type EmissionCandidate,
   type PassportDetail,
   type PassportProfile,
-  type RuleRecord,
+  type PlainEmissionPassport,
   type SharingGrant,
 } from "../utils/passports";
 
 const DEFAULT_PERIOD = { start: "2026-01-01", end: "2026-03-31" };
 const DEFAULT_SHARE_EXPIRY = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+const DEFAULT_PASSPORT_FORM = {
+  installation_name: "热轧卷板生产装置",
+  operator_name: "华盛钢铁有限公司",
+  country_code: "CN",
+  unlocode: "CNTGS",
+  process_name: "高炉—转炉—热轧主流程",
+  aggregate_goods_category: "iron_steel",
+  production_route: "bf_bof",
+  product_name: "热轧卷板",
+  cn_code: "72085100",
+};
 const SHARE_SCOPES = [
   ["identity", "装置身份"],
   ["processes", "生产工序"],
@@ -68,41 +85,70 @@ export default function InstallationPassports() {
   const { getHeaders } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const incomingAccountId = searchParams.get("account_id");
   const incomingEmissionResultId = searchParams.get("emission_result_id");
   const [passports, setPassports] = useState<PassportDetail[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<PassportDetail | null>(null);
   const [candidates, setCandidates] = useState<EmissionCandidate[]>([]);
-  const [rules, setRules] = useState<RuleRecord[]>([]);
   const [period, setPeriod] = useState(DEFAULT_PERIOD);
   const [createOpen, setCreateOpen] = useState(false);
-  const [ruleOpen, setRuleOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [publishedOpen, setPublishedOpen] = useState(true);
+  const [viewMode, setViewMode] = useState<"plain" | "professional">("plain");
+  const [incomingPassport, setIncomingPassport] = useState<PlainEmissionPassport | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [passportAgentRuns, setPassportAgentRuns] = useState<AgentRun[]>([]);
+  const [selectedAgentRunId, setSelectedAgentRunId] = useState<string | null>(null);
 
   const loadList = useCallback(async () => {
-    const items = await fetchPassports(getHeaders());
+    const headers = getHeaders();
+    const [items, incoming] = await Promise.all([
+      fetchPassports(headers),
+      incomingEmissionResultId
+        ? fetchPlainEmissionPassport(incomingEmissionResultId, headers)
+        : Promise.resolve(null),
+    ]);
     setPassports(items);
-    setSelectedId((current) => current || items[0]?.account.id || null);
-  }, [getHeaders]);
+    setIncomingPassport(incoming);
+    if (incoming) {
+      const nextPeriod = {
+        start: incoming.period.start.slice(0, 10),
+        end: incoming.period.end.slice(0, 10),
+      };
+      setPeriod((current) => (
+        current.start === nextPeriod.start && current.end === nextPeriod.end
+          ? current
+          : nextPeriod
+      ));
+    }
+    setSelectedId((current) => (
+      (incomingAccountId || incoming?.matched_account_id)
+      && items.some((item) => item.account.id === (incomingAccountId || incoming?.matched_account_id))
+        ? (incomingAccountId || incoming?.matched_account_id || null)
+        : incoming
+          ? null
+        : current && items.some((item) => item.account.id === current)
+          ? current
+          : items[0]?.account.id || null
+    ));
+  }, [getHeaders, incomingAccountId, incomingEmissionResultId]);
 
   const loadDetail = useCallback(async () => {
     if (!selectedId) {
       setDetail(null);
+      setCandidates([]);
       return;
     }
     const headers = getHeaders();
-    const [passport, emissions, methodologyRules] = await Promise.all([
+    const [passport, emissions] = await Promise.all([
       fetchPassport(selectedId, period.start, period.end, headers),
       fetchEmissionCandidates(selectedId, period.start, period.end, headers),
-      fetchRules(headers),
     ]);
     setDetail(passport);
     setCandidates(emissions);
-    setRules(methodologyRules);
   }, [getHeaders, period.end, period.start, selectedId]);
 
   useEffect(() => {
@@ -112,6 +158,31 @@ export default function InstallationPassports() {
   useEffect(() => {
     loadDetail().catch((err: Error) => setError(err.message));
   }, [loadDetail]);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setPassportAgentRuns([]);
+      return;
+    }
+    const controller = new AbortController();
+    const loadRuns = async () => {
+      try {
+        const runs = await fetchAgentRuns(getHeaders, { limit: 200 }, controller.signal);
+        setPassportAgentRuns(runs.filter((run) => (
+          ["A-04", "H-02", "H-03"].includes(run.agent_id)
+          && (run.trigger_ref === selectedId || run.input_snapshot.account_id === selectedId)
+        )));
+      } catch (reason) {
+        if (reason instanceof DOMException && reason.name === "AbortError") return;
+      }
+    };
+    void loadRuns();
+    const timer = window.setInterval(() => void loadRuns(), 5000);
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+    };
+  }, [getHeaders, selectedId]);
 
   const refresh = useCallback(async () => {
     await Promise.all([loadList(), loadDetail()]);
@@ -148,6 +219,27 @@ export default function InstallationPassports() {
   const orderedCandidates = incomingEmissionResultId
     ? [...candidates].sort((left, right) => Number(right.id === incomingEmissionResultId) - Number(left.id === incomingEmissionResultId))
     : candidates;
+  const attributions = current?.attributions || [];
+  const attributed = attributions.length > 0;
+  const candidatesHumanConfirmed = attributed || (
+    candidates.length > 0
+    && candidates.every((item) => item.enterprise_confirmation_status === "completed")
+  );
+  const visiblePlainContext = selectedId
+    ? incomingPassport?.matched_account_id === selectedId
+      ? incomingPassport
+      : orderedCandidates[0]?.plain_view || null
+    : incomingPassport;
+  const visiblePlainAttributed = Boolean(
+    visiblePlainContext
+    && attributions.some((item) => item.source_ref === `emission_result:${visiblePlainContext.calculation.result_id}`),
+  );
+  const visiblePlainIncludedInPublished = Boolean(
+    visiblePlainContext
+    && published?.snapshot.attributions?.some(
+      (item) => item.source_ref === `emission_result:${visiblePlainContext.calculation.result_id}`,
+    ),
+  );
 
   return (
     <div className="mx-auto max-w-[1640px] space-y-6 pt-1">
@@ -158,10 +250,28 @@ export default function InstallationPassports() {
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-950">工厂碳数据护照</h1>
           <p className="mt-3 max-w-3xl text-sm font-medium leading-6 text-slate-500">
-            把装置身份、工序、产品、产量、活动排放、证据和方法学组织成可重放、可复核、可授权共享的版本；报告只是护照的一个输出。
+            {viewMode === "plain"
+              ? "把一笔碳数据从原始文件到计算结果的来龙去脉讲清楚：谁的数据、用了多少、按什么因子计算、谁确认过。"
+              : "把装置身份、工序、产品、产量、活动排放、证据和方法学组织成可重放、可复核、可授权共享的版本；报告只是护照的一个输出。"}
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
+          <div className="flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setViewMode("plain")}
+              className={`rounded-lg px-3 py-2 text-sm font-bold transition ${viewMode === "plain" ? "bg-blue-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
+            >
+              一眼看懂
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("professional")}
+              className={`rounded-lg px-3 py-2 text-sm font-bold transition ${viewMode === "professional" ? "bg-blue-600 text-white" : "text-slate-500 hover:bg-slate-50"}`}
+            >
+              专业操作
+            </button>
+          </div>
           <button className="zc-button" onClick={() => refresh()} disabled={!!busy}>
             <RefreshCw size={17} /> 刷新事实
           </button>
@@ -177,6 +287,20 @@ export default function InstallationPassports() {
         </div>
       )}
 
+      <ProductJourney
+        active="passport"
+        states={{
+          data: incomingPassport || candidatesHumanConfirmed ? "completed" : candidates.length ? "warning" : "pending",
+          calculation: incomingPassport?.calculation.replay_match || seeResults.length ? "completed" : outputs.length && attributed ? "warning" : "pending",
+          passport: visiblePlainContext
+            ? visiblePlainIncludedInPublished ? "completed" : "active"
+            : published ? "completed" : "active",
+        }}
+        note={viewMode === "plain"
+          ? "AI 负责提取和整理，人确认事实与因子，确定性引擎负责计算；护照发布仍由人决定。"
+          : "A-04 只编制草稿，H-03 承担最终复核、发布与共享授权责任。"}
+      />
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="zc-card-pad h-fit xl:sticky xl:top-5">
           <div className="mb-4 flex items-center justify-between">
@@ -187,6 +311,29 @@ export default function InstallationPassports() {
             <span className="zc-pill zc-pill-blue">{passports.length}</span>
           </div>
           <div className="space-y-3">
+            {incomingPassport && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedId(null);
+                  setViewMode("plain");
+                }}
+                className={`w-full rounded-2xl border p-4 text-left transition ${selectedId === null ? "border-blue-300 bg-blue-50 shadow-sm" : "border-amber-200 bg-amber-50/60 hover:border-blue-200"}`}
+              >
+                <div className="flex items-start gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm"><FileCheck2 size={20} /></span>
+                  <span className="min-w-0 flex-1">
+                    <b className="block truncate text-sm text-slate-900">本次上传的护照草稿</b>
+                    <small className="mt-1 block truncate text-[11px] text-slate-500">{incomingPassport.installation.name}</small>
+                  </span>
+                  <ChevronRight size={17} className="mt-1 text-slate-400" />
+                </div>
+                <div className="mt-3 flex items-center justify-between text-xs font-bold">
+                  <span className="text-slate-500">{incomingPassport.period.start.slice(0, 10)} 至 {incomingPassport.period.end.slice(0, 10)}</span>
+                  <span className={incomingPassport.matched_account_id ? "text-emerald-700" : "text-amber-700"}>{incomingPassport.matched_account_id ? "已匹配装置" : "待建装置账户"}</span>
+                </div>
+              </button>
+            )}
             {passports.map((item) => (
               <button
                 key={item.account.id}
@@ -215,7 +362,31 @@ export default function InstallationPassports() {
           </div>
         </aside>
 
-        {!detail ? (
+        {(viewMode === "plain" || !detail) && (detail || visiblePlainContext) ? (
+          <main>
+            <PlainPassportView
+              detail={detail}
+              context={visiblePlainContext}
+              published={published}
+              includedInPublished={visiblePlainIncludedInPublished}
+              attributed={visiblePlainAttributed}
+              busy={!!busy}
+              onCreateAccount={() => setCreateOpen(true)}
+              onAttribute={() => {
+                if (!detail || !visiblePlainContext || !detail.processes[0]) return;
+                void run("归集排放", () => addAttribution(detail.account.id, {
+                  process_id: detail.processes[0].id,
+                  emission_result_id: visiblePlainContext.calculation.result_id,
+                  period_start: visiblePlainContext.period.start,
+                  period_end: visiblePlainContext.period.end,
+                  share: "1",
+                  method: "metered_allocation",
+                }, getHeaders()), "本笔活动排放已归入当前装置；下一步需创建新版草稿、补充产量并完成方法学复核。");
+              }}
+              onOpenProfessional={() => detail ? setViewMode("professional") : setCreateOpen(true)}
+            />
+          </main>
+        ) : !detail ? (
           <EmptyPassport onCreate={() => setCreateOpen(true)} />
         ) : (
           <main className="space-y-6">
@@ -299,6 +470,15 @@ export default function InstallationPassports() {
                         );
                       })}
                     </div>
+                  ) : attributed ? (
+                    <div className="flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 md:flex-row md:items-center">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-700 shadow-sm"><BadgeCheck size={19} /></span>
+                      <span className="min-w-0 flex-1">
+                        <b className="block text-sm text-emerald-900">{attributions.length} 条正式活动排放已归集</b>
+                        <small className="mt-1 block leading-5 text-emerald-700">完成状态以追加式归集账本为准；候选列表为空不会把已完成事实误判为未上传。</small>
+                      </span>
+                      <button className="zc-button" onClick={() => navigate(`/calculations?account_id=${encodeURIComponent(detail.account.id)}`)}><Scale size={16} /> 查看锁定输入</button>
+                    </div>
                   ) : (
                     <Callout icon={FilePlus2} title="当前期间还没有可归集的正式排放" text="先在数据收件箱上传账单或生产记录，并完成人工字段确认。" action="去数据收集" onClick={() => navigate("/upload")} />
                   )}
@@ -319,45 +499,45 @@ export default function InstallationPassports() {
                   />
                 </WorkflowCard>
 
-                <WorkflowCard number="04" title="锁定权威方法学并生成确定性 SEE" icon={Scale} done={seeResults.length > 0}>
-                  <div className="space-y-4">
-                    <div className="flex flex-col gap-3 rounded-2xl border border-slate-100 p-4 md:flex-row md:items-center">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700"><BookOpenCheck size={19} /></span>
-                      <span className="min-w-0 flex-1">
-                        <b className="block text-sm text-slate-900">{rules[0]?.title || "尚未登记适用规则"}</b>
-                        <small className="mt-1 block text-slate-500">{rules[0] ? `${rules[0].publisher} · ${rules[0].document_number} · vintage ${rules[0].vintage}` : "规则必须包含权威发布者、文号、适用期、来源 URL 与内容哈希。"}</small>
-                      </span>
-                      <button onClick={() => setRuleOpen((value) => !value)} className="zc-button">{ruleOpen ? "收起" : rules.length ? "登记新版本" : "登记规则"}</button>
-                    </div>
-                    {ruleOpen && <RuleForm busy={!!busy} onSubmit={(payload) => run("登记规则", () => registerRule(payload, getHeaders()), "权威规则版本已登记且不可原地修改。").then(() => setRuleOpen(false))} />}
-                    {seeResults[0] ? (
+                <WorkflowCard number="04" title="方法规则与确定性 SEE" icon={Scale} done={seeResults.length > 0}>
+                  {seeResults[0] ? (
+                    <div className="space-y-4">
                       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-                        <div className="flex items-center gap-3"><BadgeCheck className="text-emerald-600" /><b className="text-emerald-900">SEE 已生成并通过重放</b></div>
-                        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                          <div className="flex items-start gap-3">
+                            <BadgeCheck className="mt-0.5 shrink-0 text-emerald-600" />
+                            <div>
+                              <b className="text-emerald-900">H-02 方法决定与 R-01 计算均已完成</b>
+                              <p className="mt-1 text-sm text-emerald-700">规则引用、精确输入版本和确定性重放结果已经写入正式记录。</p>
+                            </div>
+                          </div>
+                          <button className="zc-button" onClick={() => navigate(`/calculations?account_id=${encodeURIComponent(detail.account.id)}`)}>
+                            <Scale size={16} /> 查看核算工作台
+                          </button>
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
                           <Fact label="直接排放" value={`${compact(seeResults[0].direct_emissions)} tCO₂e`} />
                           <Fact label="间接排放" value={`${compact(seeResults[0].indirect_emissions)} tCO₂e`} />
                           <Fact label="总排放" value={`${compact(seeResults[0].total_emissions)} tCO₂e`} />
-                          <Fact label="单位产品" value={`${compact(seeResults[0].specific_emissions)} tCO₂e/t`} />
+                          <Fact label="单位产品" value={`${compact(seeResults[0].specific_emissions)} ${seeResults[0].specific_unit}`} />
                         </div>
+                        <p className="mt-4 break-all text-[11px] font-semibold text-emerald-700">方法规则：{seeResults[0].methodology_ref} · 重放 {seeResults[0].replay_match ? "通过" : "待检查"}</p>
                       </div>
-                    ) : (
-                      <button
-                        className="zc-button-primary w-full py-3"
-                        disabled={!outputs[0] || !rules[0] || !(current?.attributions || []).length || !!busy}
-                        onClick={() => run("计算 SEE", () => calculateSEE(detail.account.id, {
-                          process_id: detail.processes[0].id,
-                          product_id: detail.products[0].id,
-                          production_output_id: outputs[0].id,
-                          methodology_ref: `rule_record:${rules[0].id}`,
-                        }, getHeaders()), "确定性 SEE 已生成并绑定精确输入版本。")}
-                      >
-                        <Sparkles size={17} /> 生成并重放 SEE
-                      </button>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <Callout
+                      icon={Scale}
+                      title="尚未形成正式 SEE"
+                      text={outputs.length && attributed
+                        ? "输入已经准备好；请在核算工作台由 H-02 选择方法，再由 R-01 执行确定性计算。"
+                        : "请先完成活动排放归集和报告期产量登记，再进入核算工作台。"}
+                      action="进入核算工作台"
+                      onClick={() => navigate(`/calculations?account_id=${encodeURIComponent(detail.account.id)}`)}
+                    />
+                  )}
                 </WorkflowCard>
 
-                <WorkflowCard number="05" title="冻结、方法学复核并发布" icon={ShieldCheck} done={!!published}>
+                <WorkflowCard number="05" title="A-04 编制护照草稿，H-03 复核并发布" icon={ShieldCheck} done={!!published}>
                   <ReleasePanel
                     detail={detail}
                     latestDraft={latestDraft}
@@ -400,6 +580,32 @@ export default function InstallationPassports() {
               <aside className="space-y-5 2xl:sticky 2xl:top-5 2xl:h-fit">
                 <ReadinessPanel detail={detail} published={published} />
                 <div className="zc-card-pad">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-black text-slate-950">版本协作记录</h3>
+                      <p className="mt-1 text-xs text-slate-500">点击查看 A-04、H-02、H-03 的真实执行过程</p>
+                    </div>
+                    <Activity className="text-blue-600" size={20} />
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {passportAgentRuns.slice(0, 6).map((runItem) => (
+                      <button
+                        type="button"
+                        key={runItem.run_id}
+                        onClick={() => setSelectedAgentRunId(runItem.run_id)}
+                        className="w-full rounded-xl border border-slate-100 bg-slate-50 p-3 text-left transition hover:border-blue-200 hover:bg-blue-50"
+                      >
+                        <div className="flex items-center gap-2">
+                          <b className="min-w-0 flex-1 truncate text-sm text-slate-900">{runItem.agent_id} {runItem.agent_name}</b>
+                          <span className={`zc-pill ${agentStatusTone(runItem.status)}`}>{agentStatusLabel(runItem.status)}</span>
+                        </div>
+                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{runItem.summary || runItem.run_id}</p>
+                      </button>
+                    ))}
+                    {!passportAgentRuns.length && <p className="rounded-xl bg-slate-50 p-3 text-sm leading-6 text-slate-500">冻结第一版草稿后，这里会出现真实岗位运行记录。</p>}
+                  </div>
+                </div>
+                <div className="zc-card-pad">
                   <div className="flex items-center gap-3"><ShieldCheck className="text-blue-600" /><h3 className="text-lg font-black text-slate-950">系统不会替你说谎</h3></div>
                   <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
                     <Guardrail text="完整度来自正式记录，不接受客户端填写。" />
@@ -426,7 +632,22 @@ export default function InstallationPassports() {
         )}
       </div>
 
-      {createOpen && <CreatePassportModal busy={!!busy} onClose={() => setCreateOpen(false)} onSubmit={(payload) => run("创建护照", async () => {
+      <AgentRunDrawer runId={selectedAgentRunId} onClose={() => setSelectedAgentRunId(null)} />
+      {createOpen && <CreatePassportModal
+        busy={!!busy}
+        initial={incomingPassport && !incomingPassport.matched_account_id ? {
+          installation_name: incomingPassport.installation.name,
+          operator_name: incomingPassport.installation.operator_name,
+          country_code: "CN",
+          unlocode: "",
+          process_name: "",
+          aggregate_goods_category: "iron_steel",
+          production_route: "",
+          product_name: "",
+          cn_code: "",
+        } : undefined}
+        onClose={() => setCreateOpen(false)}
+        onSubmit={(payload) => run("创建护照", async () => {
         const created = await createPassport(payload, getHeaders());
         setSelectedId(created.account.id);
       }, "装置护照账户和第一版正式事实已创建。").then(() => setCreateOpen(false))} />}
@@ -504,20 +725,15 @@ function OutputForm({ output, busy, onSubmit }: { output?: { quantity: string; u
   return <div className="flex flex-col gap-3 md:flex-row"><label className="flex-1"><span className="mb-2 block text-xs font-bold text-slate-500">合格产品产量（t）</span><input className="zc-input w-full" inputMode="decimal" value={quantity} onChange={(event) => setQuantity(event.target.value)} placeholder="例如 1000" /></label><button disabled={busy || !quantity} onClick={() => onSubmit(quantity)} className="zc-button-primary self-end"><Archive size={17} /> 写入正式产量</button></div>;
 }
 
-function RuleForm({ busy, onSubmit }: { busy: boolean; onSubmit: (payload: Record<string, unknown>) => void }) {
-  const [form, setForm] = useState({ title: "CBAM embedded emissions methodology", document_number: "EU-2023-1773", vintage: "2023", valid_from: "2023-05-17", source_url: "https://eur-lex.europa.eu/eli/reg_impl/2023/1773/oj", source_content_hash: "" });
-  return <div className="grid gap-3 rounded-2xl border border-blue-100 bg-blue-50/40 p-4 md:grid-cols-2"><Field label="规则标题" value={form.title} onChange={(value) => setForm({ ...form, title: value })} /><Field label="EU 文号" value={form.document_number} onChange={(value) => setForm({ ...form, document_number: value })} /><Field label="Vintage" value={form.vintage} onChange={(value) => setForm({ ...form, vintage: value })} /><Field label="生效日期" type="date" value={form.valid_from} onChange={(value) => setForm({ ...form, valid_from: value })} /><div className="md:col-span-2"><Field label="官方 HTTPS 来源" value={form.source_url} onChange={(value) => setForm({ ...form, source_url: value })} /></div><div className="md:col-span-2"><Field label="人工核对后的原文 SHA-256（64 位小写十六进制）" value={form.source_content_hash} onChange={(value) => setForm({ ...form, source_content_hash: value.toLowerCase() })} /><p className="mt-2 text-xs text-amber-700">P0 不会代下载法规原文；登记人必须确认 URL、文号与哈希对应同一版本。</p></div><div className="md:col-span-2 flex justify-end"><button disabled={busy || !/^[0-9a-f]{64}$/.test(form.source_content_hash)} onClick={() => onSubmit({ rule_kind: "cbam_methodology", title: form.title, publisher: "European Commission", document_number: form.document_number, jurisdiction: "EU", vintage: Number(form.vintage), valid_from: `${form.valid_from}T00:00:00Z`, valid_to: null, source_url: form.source_url, source_content_hash: form.source_content_hash })} className="zc-button-primary"><BookOpenCheck size={17} /> 登记不可变规则版本</button></div></div>;
-}
-
 function ReleasePanel({ detail, latestDraft, draftReview, published, busy, onFreeze, onReview, onPublish }: { detail: PassportDetail; latestDraft: PassportProfile | null; draftReview: { id: string } | null; published: PassportProfile | null; busy: boolean; onFreeze: () => void; onReview: (profile: PassportProfile, review: Record<string, unknown>) => void; onPublish: (profile: PassportProfile, reviewId: string) => void }) {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [verdict, setVerdict] = useState("pass");
   const [summary, setSummary] = useState("");
   const [findings, setFindings] = useState("");
-  if (published && !latestDraft) return <div className="space-y-4"><div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><div className="flex items-center gap-3"><BadgeCheck className="text-emerald-600" /><div><b className="text-emerald-900">护照 v{published.version} 已发布</b><p className="mt-1 text-sm text-emerald-700">完整度 {published.completeness_score}% · 内容哈希 {published.content_hash.slice(0, 16)}… · 确定性重放通过</p></div></div></div><button disabled={busy} onClick={onFreeze} className="zc-button-primary"><Archive size={17} /> 冻结当前事实，创建 v{published.version + 1} 草稿</button><p className="text-xs font-medium text-slate-500">旧版本保持不可变；下一版必须重新通过门禁与方法学复核。</p></div>;
-  if (!latestDraft) return <button disabled={busy} onClick={onFreeze} className="zc-button-primary"><Archive size={17} /> 冻结当前事实为草稿</button>;
+  if (published && !latestDraft) return <div className="space-y-4"><div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5"><div className="flex items-center gap-3"><BadgeCheck className="text-emerald-600" /><div><b className="text-emerald-900">护照 v{published.version} 已发布</b><p className="mt-1 text-sm text-emerald-700">完整度 {published.completeness_score}% · 内容哈希 {published.content_hash.slice(0, 16)}… · 确定性重放通过</p></div></div></div><button disabled={busy} onClick={onFreeze} className="zc-button-primary"><Archive size={17} /> A-04 创建 v{published.version + 1} 草稿</button><p className="text-xs font-medium text-slate-500">旧版本保持不可变；下一版必须重新通过门禁与人工复核。</p></div>;
+  if (!latestDraft) return <button disabled={busy} onClick={onFreeze} className="zc-button-primary"><Archive size={17} /> A-04 编制并冻结护照草稿</button>;
   const onlyReviewMissing = latestDraft.assessment.missing_keys.length === 1 && latestDraft.assessment.missing_keys[0] === "methodology_review";
-  return <div className="space-y-4"><div className="rounded-2xl border border-slate-100 bg-slate-50 p-4"><div className="flex items-center justify-between"><div><b className="text-slate-900">草稿 v{latestDraft.version}</b><p className="mt-1 text-sm text-slate-500">完整度 {latestDraft.completeness_score}% · 重放 {latestDraft.replay.match ? "通过" : "失败"}</p></div><span className={`zc-pill ${latestDraft.replay.match ? "zc-pill-green" : "zc-pill-red"}`}>{latestDraft.replay.match ? "可重放" : "阻断"}</span></div></div>{!onlyReviewMissing ? <Callout icon={CircleAlert} title="仍有正式数据缺口" text={`缺少：${latestDraft.assessment.checks.filter((item) => !item.passed && item.key !== "methodology_review").map((item) => item.label).join("、") || "请重新冻结最新事实"}`} action="重新冻结" onClick={onFreeze} /> : !draftReview ? <div className="space-y-3"><button disabled={busy} onClick={() => setReviewOpen((value) => !value)} className="zc-button-primary"><ShieldCheck size={17} /> {reviewOpen ? "收起复核表" : "填写方法学复核"}</button>{reviewOpen && <div className="space-y-3 rounded-2xl border border-blue-100 bg-blue-50/40 p-4"><label><span className="mb-2 block text-xs font-bold text-slate-500">复核结论</span><select className="zc-input w-full" value={verdict} onChange={(event) => setVerdict(event.target.value)}><option value="pass">通过</option><option value="pass_with_actions">有条件通过</option><option value="fail">不通过</option></select></label><label><span className="mb-2 block text-xs font-bold text-slate-500">复核摘要（必须由复核人真实填写）</span><textarea className="zc-input min-h-24 w-full" value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="说明边界、数据、证据、规则和重放检查结果。" /></label><label><span className="mb-2 block text-xs font-bold text-slate-500">发现项（每行一项，可选）</span><textarea className="zc-input min-h-20 w-full" value={findings} onChange={(event) => setFindings(event.target.value)} placeholder="例如：需要在正式核查前补充仪表校准记录" /></label><button disabled={busy || !summary.trim()} onClick={() => onReview(latestDraft, { verdict, summary: summary.trim(), findings: findings.split("\n").map((item) => item.trim()).filter(Boolean).map((message) => ({ severity: "note", message })) })} className="zc-button-primary"><ShieldCheck size={17} /> 提交复核记录</button></div>}</div> : draftReview && <button disabled={busy} onClick={() => onPublish(latestDraft, draftReview.id)} className="zc-button-primary"><Send size={17} /> 发布不可变护照版本</button>}<p className="text-xs font-medium text-slate-500">发布门禁来自 {detail.assessment.checks.length} 项确定性检查；方法学复核不等于法定核查。</p></div>;
+  return <div className="space-y-4"><div className="rounded-2xl border border-slate-100 bg-slate-50 p-4"><div className="flex items-center justify-between"><div><b className="text-slate-900">草稿 v{latestDraft.version}</b><p className="mt-1 text-sm text-slate-500">完整度 {latestDraft.completeness_score}% · 重放 {latestDraft.replay.match ? "通过" : "失败"}</p></div><span className={`zc-pill ${latestDraft.replay.match ? "zc-pill-green" : "zc-pill-red"}`}>{latestDraft.replay.match ? "可重放" : "阻断"}</span></div></div>{!onlyReviewMissing ? <Callout icon={CircleAlert} title="仍有正式数据缺口" text={`缺少：${latestDraft.assessment.checks.filter((item) => !item.passed && item.key !== "methodology_review").map((item) => item.label).join("、") || "请重新冻结最新事实"}`} action="A-04 重新编制" onClick={onFreeze} /> : !draftReview ? <div className="space-y-3"><button disabled={busy} onClick={() => setReviewOpen((value) => !value)} className="zc-button-primary"><ShieldCheck size={17} /> {reviewOpen ? "收起复核表" : "H-02 填写方法学复核"}</button>{reviewOpen && <div className="space-y-3 rounded-2xl border border-blue-100 bg-blue-50/40 p-4"><label><span className="mb-2 block text-xs font-bold text-slate-500">复核结论</span><select className="zc-input w-full" value={verdict} onChange={(event) => setVerdict(event.target.value)}><option value="pass">通过</option><option value="pass_with_actions">有条件通过</option><option value="fail">不通过</option></select></label><label><span className="mb-2 block text-xs font-bold text-slate-500">复核摘要（必须由复核人真实填写）</span><textarea className="zc-input min-h-24 w-full" value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="说明边界、数据、证据、规则和重放检查结果。" /></label><label><span className="mb-2 block text-xs font-bold text-slate-500">发现项（每行一项，可选）</span><textarea className="zc-input min-h-20 w-full" value={findings} onChange={(event) => setFindings(event.target.value)} placeholder="例如：需要在正式核查前补充仪表校准记录" /></label><button disabled={busy || !summary.trim()} onClick={() => onReview(latestDraft, { verdict, summary: summary.trim(), findings: findings.split("\n").map((item) => item.trim()).filter(Boolean).map((message) => ({ severity: "note", message })) })} className="zc-button-primary"><ShieldCheck size={17} /> H-02 提交方法学复核</button></div>}</div> : draftReview && <button disabled={busy} onClick={() => onPublish(latestDraft, draftReview.id)} className="zc-button-primary"><Send size={17} /> H-03 授权发布不可变版本</button>}<p className="text-xs font-medium text-slate-500">发布门禁来自 {detail.assessment.checks.length} 项确定性检查；H-02 内部方法复核不等于法定核查，H-03 只负责最终授权发布。</p></div>;
 }
 
 function ShareForm({ busy, onSubmit }: { busy: boolean; onSubmit: (payload: Record<string, unknown>) => void }) {
@@ -538,9 +754,10 @@ function Guardrail({ text }: { text: string }) { return <div className="flex gap
 
 function Callout({ icon: Icon, title, text, action, onClick }: { icon: typeof FilePlus2; title: string; text: string; action?: string; onClick?: () => void }) { return <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 md:flex-row md:items-center"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm"><Icon size={20} /></span><span className="min-w-0 flex-1"><b className="block text-sm text-slate-900">{title}</b><small className="mt-1 block leading-5 text-slate-500">{text}</small></span>{action && <button onClick={onClick} className="zc-button-soft">{action}<ChevronRight size={15} /></button>}</div>; }
 
-function CreatePassportModal({ busy, onClose, onSubmit }: { busy: boolean; onClose: () => void; onSubmit: (payload: Record<string, unknown>) => void }) {
-  const [form, setForm] = useState({ installation_name: "热轧卷板生产装置", operator_name: "华盛钢铁有限公司", country_code: "CN", unlocode: "CNTGS", process_name: "高炉—转炉—热轧主流程", aggregate_goods_category: "iron_steel", production_route: "bf_bof", product_name: "热轧卷板", cn_code: "72085100" });
-  return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm"><div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8"><div className="flex items-start justify-between"><div><div className="mb-2 flex items-center gap-2 text-sm font-bold text-blue-600"><Fingerprint size={17} /> 创建稳定装置账户</div><h2 className="text-2xl font-black text-slate-950">先建立最小可信身份</h2><p className="mt-2 text-sm text-slate-500">后续数据更新会新增事实版本，不会覆盖这份历史。</p></div><button onClick={onClose} className="zc-button">关闭</button></div><div className="mt-6 grid gap-4 md:grid-cols-2"><Field label="装置名称" value={form.installation_name} onChange={(value) => setForm({ ...form, installation_name: value })} /><Field label="经营者名称" value={form.operator_name} onChange={(value) => setForm({ ...form, operator_name: value })} /><Field label="国家代码" value={form.country_code} onChange={(value) => setForm({ ...form, country_code: value.toUpperCase() })} /><Field label="UN/LOCODE（可选）" value={form.unlocode} onChange={(value) => setForm({ ...form, unlocode: value.toUpperCase() })} /><Field label="生产工序" value={form.process_name} onChange={(value) => setForm({ ...form, process_name: value })} /><Field label="生产路线" value={form.production_route} onChange={(value) => setForm({ ...form, production_route: value })} /><Field label="产品名称" value={form.product_name} onChange={(value) => setForm({ ...form, product_name: value })} /><Field label="八位 CN 编码" value={form.cn_code} onChange={(value) => setForm({ ...form, cn_code: value.replace(/\D/g, "").slice(0, 8) })} /></div><div className="mt-6 flex justify-end"><button disabled={busy || form.cn_code.length !== 8} onClick={() => onSubmit({ ...form, unlocode: form.unlocode || null, request_key: crypto.randomUUID().replaceAll("-", "") })} className="zc-button-primary px-6 py-3"><Plus size={17} /> 创建护照账户</button></div></div></div>;
+function CreatePassportModal({ busy, initial, onClose, onSubmit }: { busy: boolean; initial?: Partial<typeof DEFAULT_PASSPORT_FORM>; onClose: () => void; onSubmit: (payload: Record<string, unknown>) => void }) {
+  const [form, setForm] = useState({ ...DEFAULT_PASSPORT_FORM, ...initial });
+  const complete = [form.installation_name, form.operator_name, form.country_code, form.process_name, form.aggregate_goods_category, form.production_route, form.product_name].every((value) => value.trim().length > 0) && form.cn_code.length === 8;
+  return <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm"><div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8"><div className="flex items-start justify-between"><div><div className="mb-2 flex items-center gap-2 text-sm font-bold text-blue-600"><Fingerprint size={17} /> 创建稳定装置账户</div><h2 className="text-2xl font-black text-slate-950">补齐电费单里没有的装置与产品信息</h2><p className="mt-2 text-sm leading-6 text-slate-500">系统只预填原文件能证明的工厂信息；工序、产品和 CN 编码必须由人确认，不能让 AI 猜。</p></div><button onClick={onClose} className="zc-button">关闭</button></div><div className="mt-6 grid gap-4 md:grid-cols-2"><Field label="装置名称" value={form.installation_name} onChange={(value) => setForm({ ...form, installation_name: value })} /><Field label="经营者名称" value={form.operator_name} onChange={(value) => setForm({ ...form, operator_name: value })} /><Field label="国家代码" value={form.country_code} onChange={(value) => setForm({ ...form, country_code: value.toUpperCase() })} /><Field label="UN/LOCODE（可选）" value={form.unlocode} onChange={(value) => setForm({ ...form, unlocode: value.toUpperCase() })} /><Field label="生产工序（人工确认）" value={form.process_name} onChange={(value) => setForm({ ...form, process_name: value })} /><Field label="产品大类（例如 iron_steel）" value={form.aggregate_goods_category} onChange={(value) => setForm({ ...form, aggregate_goods_category: value })} /><Field label="生产路线（人工确认）" value={form.production_route} onChange={(value) => setForm({ ...form, production_route: value })} /><Field label="产品名称（人工确认）" value={form.product_name} onChange={(value) => setForm({ ...form, product_name: value })} /><Field label="八位 CN 编码（人工确认）" value={form.cn_code} onChange={(value) => setForm({ ...form, cn_code: value.replace(/\D/g, "").slice(0, 8) })} /></div><div className="mt-6 flex justify-end"><button disabled={busy || !complete} onClick={() => onSubmit({ ...form, unlocode: form.unlocode || null, request_key: crypto.randomUUID().replaceAll("-", "") })} className="zc-button-primary px-6 py-3"><Plus size={17} /> 创建护照账户</button></div></div></div>;
 }
 
 function EmptyPassport({ onCreate }: { onCreate: () => void }) { return <div className="zc-card-pad flex min-h-[520px] flex-col items-center justify-center text-center"><span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-blue-50 text-blue-600"><Fingerprint size={36} /></span><h2 className="mt-5 text-2xl font-black text-slate-950">这里还没有装置护照</h2><p className="mt-3 max-w-lg text-sm leading-6 text-slate-500">先建立一个稳定的生产装置账户，再把现有的数据收集、排放计算、证据和方法学能力挂到同一条可重放主线上。</p><button onClick={onCreate} className="zc-button-primary mt-6"><Plus size={17} /> 建立第一份护照</button></div>; }

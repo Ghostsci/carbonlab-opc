@@ -1,0 +1,13 @@
+{
+  "skill_id": "carbon-passport-compilation",
+  "role_id": "A-04",
+  "display_name": "碳护照编制",
+  "version": "1.0.0",
+  "category": "passport_compilation",
+  "execution_mode": "governed_projection",
+  "input_schema": "input.schema.json",
+  "output_schema": "output.schema.json",
+  "allowed_tools": ["formal_ledger_reader", "passport_replay", "hash_verifier", "quality_assessment"],
+  "human_handoff": ["missing_formal_record", "version_conflict", "ready_for_authorized_release"],
+  "stores_raw_chain_of_thought": false
+}

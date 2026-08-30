@@ -1,0 +1,13 @@
+{
+  "skill_id": "carbon-document-intake",
+  "role_id": "A-01",
+  "display_name": "碳数据收件",
+  "version": "1.0.0",
+  "category": "document_intake",
+  "execution_mode": "controlled_service",
+  "input_schema": "input.schema.json",
+  "output_schema": "output.schema.json",
+  "allowed_tools": ["file_identity", "mime_detection", "sha256", "duplicate_lookup"],
+  "human_handoff": ["unsupported_file", "ownership_unknown", "content_corrupted"],
+  "stores_raw_chain_of_thought": false
+}

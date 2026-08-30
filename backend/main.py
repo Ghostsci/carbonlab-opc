@@ -4,22 +4,17 @@ from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from backend.api.ai import router as ai_router
+from backend.api.agent_ops import router as agent_ops_router
 from backend.api.auth import router as auth_router
 from backend.api.health import router as health_router
+from backend.api.knowledge import router as knowledge_router
 from backend.api.passports import router as passports_router
 from backend.api.upload import router as upload_router
 from backend.auth.jwt import decode_token
+from backend.auth.public_paths import is_public_path
 from backend.config import get_cors_allowed_origins, settings
 from backend.middleware.tenant import tenant_middleware
 
-
-PUBLIC_PREFIXES = {
-    "/api/health",
-    "/api/auth",
-    "/docs",
-    "/openapi.json",
-    "/redoc",
-}
 
 app = FastAPI(
     title="CarbonLab OPC",
@@ -58,7 +53,7 @@ app.middleware("http")(tenant_middleware)
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     path = request.url.path
-    if request.method == "OPTIONS" or any(path.startswith(p) for p in PUBLIC_PREFIXES):
+    if request.method == "OPTIONS" or is_public_path(path):
         return await call_next(request)
 
     auth_header = request.headers.get("Authorization", "")
@@ -79,4 +74,6 @@ app.include_router(health_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(upload_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
+app.include_router(agent_ops_router, prefix="/api")
+app.include_router(knowledge_router, prefix="/api")
 app.include_router(passports_router, prefix="/api")

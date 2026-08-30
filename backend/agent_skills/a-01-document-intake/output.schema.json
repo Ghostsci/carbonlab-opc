@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["file_id", "content_hash", "document_type", "status", "next_role_id"],
+  "properties": {
+    "file_id": {"type": "string", "format": "uuid"},
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "document_type": {"type": "string"},
+    "status": {"enum": ["completed", "attention", "blocked"]},
+    "reused": {"type": "boolean"},
+    "findings": {"type": "array", "items": {"type": "string"}},
+    "next_role_id": {"const": "A-02"}
+  },
+  "additionalProperties": false
+}

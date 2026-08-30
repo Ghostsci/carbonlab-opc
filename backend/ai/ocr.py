@@ -50,7 +50,11 @@ class OCRService:
     """
 
     MAX_FILE_BYTES = 10 * 1024 * 1024
-    MAX_EXTRACTED_CHARS = 100_000
+    # Text-layer PDFs and structured workbooks have different density and
+    # memory profiles. Keep the PDF boundary conservative while allowing a
+    # governed 1,000-row business workbook without removing XLSX safeguards.
+    MAX_PDF_EXTRACTED_CHARS = 100_000
+    MAX_XLSX_EXTRACTED_CHARS = 250_000
     MAX_PDF_PAGES = 50
     MAX_XLSX_SHEETS = 20
     MAX_XLSX_ROWS_PER_SHEET = 5_000
@@ -124,6 +128,16 @@ class OCRService:
 
         try:
             fields = extract_fields(text, doc_type)
+        except ValueError as exc:
+            return OCRResult(
+                document_type=doc_type,
+                fields={},
+                confidence=0,
+                raw_text=text,
+                errors=[str(exc)],
+                read_status="abstain",
+                reader=reader,
+            )
         except Exception:
             return OCRResult(
                 document_type=doc_type,
@@ -246,7 +260,7 @@ class OCRService:
             for page in reader.pages:
                 page_text = page.extract_text() or ""
                 extracted_chars += len(page_text) + 1
-                if extracted_chars > self.MAX_EXTRACTED_CHARS:
+                if extracted_chars > self.MAX_PDF_EXTRACTED_CHARS:
                     raise DocumentReadError("PDF extracted text exceeds the processing limit.")
                 page_texts.append(page_text)
         except (DocumentReadError, DocumentReaderUnavailable):
@@ -318,7 +332,7 @@ class OCRService:
                     line = self._csv_line(cells)
                     sheet_lines.append(line)
                     extracted_chars += len(line) + 1
-                    if extracted_chars > self.MAX_EXTRACTED_CHARS:
+                    if extracted_chars > self.MAX_XLSX_EXTRACTED_CHARS:
                         raise DocumentReadError(
                             "XLSX extracted text exceeds the processing limit."
                         )
@@ -329,7 +343,7 @@ class OCRService:
                     lines.append(heading)
                     lines.extend(sheet_lines)
                     extracted_chars += len(heading) + 1
-                    if extracted_chars > self.MAX_EXTRACTED_CHARS:
+                    if extracted_chars > self.MAX_XLSX_EXTRACTED_CHARS:
                         raise DocumentReadError(
                             "XLSX extracted text exceeds the processing limit."
                         )

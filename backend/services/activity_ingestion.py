@@ -113,18 +113,27 @@ def persist_confirmed_activity(
         except (TypeError, ValueError) as exc:
             raise ValueError("trusted_factor_id 格式无效") from exc
 
-    emission_result = _upsert_emission_result(
-        db,
-        source=source,
-        activity=activity,
-        activity_record=activity_record,
-        period_start=period_start,
-        period_end=period_end,
-        quantity=quantity,
-        unit=unit,
-        tenant_id=user.tenant_id,
-        confirmed_by=str(user.id),
-        trusted_factor_id=factor_uuid,
+    # H-01 confirms enterprise facts; it must not silently choose a
+    # methodology input.  A result is created here only for controlled callers
+    # (for example deterministic fixtures) that pass an explicit trusted factor.
+    # Interactive users complete that separate H-02 gate through
+    # ``confirm_activity_factor`` below.
+    emission_result = (
+        _upsert_emission_result(
+            db,
+            source=source,
+            activity=activity,
+            activity_record=activity_record,
+            period_start=period_start,
+            period_end=period_end,
+            quantity=quantity,
+            unit=unit,
+            tenant_id=user.tenant_id,
+            confirmed_by=str(user.id),
+            trusted_factor_id=factor_uuid,
+        )
+        if factor_uuid is not None
+        else None
     )
     db.flush()
 
@@ -134,11 +143,424 @@ def persist_confirmed_activity(
         "emission_source_id": str(source.id),
         "emission_source_name": source.name,
         "activity_data_id": str(activity.id),
+        "document_id": str(activity.document_id) if activity.document_id else None,
+        "activity_quantity": _decimal_text(activity.quantity),
+        "activity_unit": activity.unit,
         "period_start": period_start.isoformat(),
         "period_end": period_end.isoformat(),
         "calculation_status": "calculated" if emission_result else "pending_factor",
         "emission_result": _result_payload(emission_result) if emission_result else None,
+        "suggested_passport_account_id": _suggested_passport_account_id(
+            db,
+            tenant_id=user.tenant_id,
+            enterprise_id=user.enterprise_id,
+            facility_name=site.name,
+        ),
     }
+
+
+def get_document_formal_write(
+    db: Session,
+    *,
+    user: User,
+    document_id: uuid.UUID,
+) -> dict[str, Any] | None:
+    """Reconstruct H-01/H-02 state after a browser reload.
+
+    The frontend must never rely on an in-memory confirmation response to find
+    the formal ledger row.  This query is tenant- and enterprise-scoped and
+    returns only the latest non-superseded activity for the owned document.
+    """
+    tenant_id, enterprise_id = _user_scope(user)
+    document = (
+        db.query(DocumentStore)
+        .filter(
+            DocumentStore.id == document_id,
+            DocumentStore.tenant_id == tenant_id,
+            DocumentStore.enterprise_id == enterprise_id,
+        )
+        .first()
+    )
+    if document is None:
+        raise LookupError("源文件不存在或无权访问")
+    row = (
+        db.query(ActivityData, EmissionSource, Site)
+        .join(EmissionSource, EmissionSource.id == ActivityData.emission_source_id)
+        .join(Site, Site.id == EmissionSource.site_id)
+        .filter(
+            ActivityData.tenant_id == tenant_id,
+            ActivityData.document_id == document_id,
+            ActivityData.superseded_by_id.is_(None),
+            EmissionSource.tenant_id == tenant_id,
+            Site.tenant_id == tenant_id,
+            Site.enterprise_id == enterprise_id,
+        )
+        .order_by(ActivityData.confirmed_at.desc(), ActivityData.version.desc())
+        .first()
+    )
+    if row is None:
+        return None
+    activity, source, site = row
+    result = _latest_activity_result(db, tenant_id=tenant_id, activity_id=activity.id)
+    return _formal_write_payload(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        site=site,
+        source=source,
+        activity=activity,
+        result=result,
+    )
+
+
+def list_activity_factor_candidates(
+    db: Session,
+    *,
+    user: User,
+    activity_id: uuid.UUID,
+) -> dict[str, Any]:
+    """Return only formally eligible factors for one confirmed activity."""
+    tenant_id, enterprise_id = _user_scope(user)
+    activity, source, site = _load_activity_context(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        activity_id=activity_id,
+    )
+    result = _latest_activity_result(db, tenant_id=tenant_id, activity_id=activity.id)
+    factors = (
+        db.query(EmissionFactor)
+        .filter(
+            EmissionFactor.category == "electricity_grid",
+            EmissionFactor.year == activity.period_start.year,
+            EmissionFactor.superseded_by.is_(None),
+            or_(
+                EmissionFactor.tenant_id.is_(None),
+                EmissionFactor.tenant_id == tenant_id,
+            ),
+            or_(
+                EmissionFactor.region == site.grid_region,
+                EmissionFactor.region == "全国",
+            ),
+        )
+        .order_by(
+            (EmissionFactor.region == site.grid_region).desc(),
+            EmissionFactor.is_default.desc(),
+            EmissionFactor.version_year.desc(),
+            EmissionFactor.published_date.desc(),
+            EmissionFactor.created_at.desc(),
+        )
+        .all()
+    )
+    candidates: list[dict[str, Any]] = []
+    for factor in factors:
+        try:
+            preview = _calculate_emission_quantity(
+                quantity=activity.quantity,
+                unit=activity.unit,
+                factor=factor,
+            )
+        except ValueError:
+            continue
+        candidates.append(
+            {
+                **_factor_payload(factor),
+                "factor_snapshot_sha256": _factor_snapshot_sha256(factor),
+                "tenant_scope": "platform" if factor.tenant_id is None else "tenant",
+                "region_match": "exact" if factor.region == site.grid_region else "national",
+                "year_match": True,
+                "preview_emissions": _decimal_text(preview.value),
+                "preview_unit": preview.unit,
+            }
+        )
+    return {
+        "activity": {
+            "activity_data_id": str(activity.id),
+            "quantity": _decimal_text(activity.quantity),
+            "unit": activity.unit,
+            "period_start": activity.period_start.isoformat(),
+            "period_end": activity.period_end.isoformat(),
+            "facility": site.name,
+            "grid_region": site.grid_region,
+        },
+        "calculation_status": "calculated" if result else "pending_factor",
+        "emission_result": _result_payload(result) if result else None,
+        "factor_candidates": candidates,
+        "human_gate": "H-02 活动排放因子确认",
+        "calculation_engine": "R-01 确定性活动排放计算",
+    }
+
+
+def confirm_activity_factor(
+    db: Session,
+    *,
+    user: User,
+    activity_id: uuid.UUID,
+    factor_id: uuid.UUID,
+    factor_snapshot_sha256: str,
+    selection_note: str,
+) -> dict[str, Any]:
+    """Bind one human-selected factor and create an auditable result."""
+    normalized_selection_note = selection_note.strip()
+    if len(normalized_selection_note) < 12:
+        raise ValueError("排放因子人工选择理由至少需要 12 个有效字符")
+    tenant_id, enterprise_id = _user_scope(user)
+    activity, source, site = _load_activity_context(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        activity_id=activity_id,
+    )
+    factor = (
+        db.query(EmissionFactor)
+        .filter(
+            EmissionFactor.id == factor_id,
+            or_(
+                EmissionFactor.tenant_id.is_(None),
+                EmissionFactor.tenant_id == tenant_id,
+            ),
+        )
+        .first()
+    )
+    if factor is None:
+        raise ValueError("指定的排放因子不存在或当前租户不可见")
+    _validate_factor_for_activity(factor=factor, activity=activity, site=site)
+    current_snapshot_sha256 = _factor_snapshot_sha256(factor)
+    if factor_snapshot_sha256 != current_snapshot_sha256:
+        raise ValueError("排放因子内容已变化，请刷新候选后重新确认")
+
+    document = db.get(DocumentStore, activity.document_id) if activity.document_id else None
+    activity_record = {
+        "file_id": str(document.id) if document else None,
+        "filename": document.filename if document else None,
+        "document_content_hash": document.content_hash if document else None,
+        "value_origin": "human_confirmed",
+    }
+    result = _upsert_emission_result(
+        db,
+        source=source,
+        activity=activity,
+        activity_record=activity_record,
+        period_start=activity.period_start,
+        period_end=activity.period_end,
+        quantity=activity.quantity,
+        unit=activity.unit,
+        tenant_id=tenant_id,
+        confirmed_by=str(user.id),
+        trusted_factor_id=factor.id,
+        factor_selection_note=normalized_selection_note,
+        factor_snapshot_sha256=current_snapshot_sha256,
+    )
+    if result is None:
+        raise ValueError("所选因子未能生成正式排放结果")
+    return _formal_write_payload(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        site=site,
+        source=source,
+        activity=activity,
+        result=result,
+    )
+
+
+def _user_scope(user: User) -> tuple[uuid.UUID, uuid.UUID]:
+    if user.tenant_id is None or user.enterprise_id is None:
+        raise ValueError("当前用户未绑定租户或企业")
+    return user.tenant_id, user.enterprise_id
+
+
+def _load_activity_context(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    enterprise_id: uuid.UUID,
+    activity_id: uuid.UUID,
+) -> tuple[ActivityData, EmissionSource, Site]:
+    row = (
+        db.query(ActivityData, EmissionSource, Site)
+        .join(EmissionSource, EmissionSource.id == ActivityData.emission_source_id)
+        .join(Site, Site.id == EmissionSource.site_id)
+        .filter(
+            ActivityData.id == activity_id,
+            ActivityData.tenant_id == tenant_id,
+            ActivityData.superseded_by_id.is_(None),
+            EmissionSource.tenant_id == tenant_id,
+            Site.tenant_id == tenant_id,
+            Site.enterprise_id == enterprise_id,
+        )
+        .first()
+    )
+    if row is None:
+        raise LookupError("正式活动数据不存在或无权访问")
+    return row[0], row[1], row[2]
+
+
+def _latest_activity_result(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    activity_id: uuid.UUID,
+) -> EmissionResult | None:
+    return (
+        db.query(EmissionResult)
+        .filter(
+            EmissionResult.tenant_id == tenant_id,
+            EmissionResult.activity_data_id == activity_id,
+            EmissionResult.superseded_by_id.is_(None),
+        )
+        .order_by(EmissionResult.version.desc(), EmissionResult.confirmed_at.desc())
+        .first()
+    )
+
+
+def _formal_write_payload(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    enterprise_id: uuid.UUID,
+    site: Site,
+    source: EmissionSource,
+    activity: ActivityData,
+    result: EmissionResult | None,
+) -> dict[str, Any]:
+    return {
+        "site_id": str(site.id),
+        "site_name": site.name,
+        "emission_source_id": str(source.id),
+        "emission_source_name": source.name,
+        "activity_data_id": str(activity.id),
+        "document_id": str(activity.document_id) if activity.document_id else None,
+        "activity_quantity": _decimal_text(activity.quantity),
+        "activity_unit": activity.unit,
+        "period_start": activity.period_start.isoformat(),
+        "period_end": activity.period_end.isoformat(),
+        "calculation_status": "calculated" if result else "pending_factor",
+        "emission_result": _result_payload(result) if result else None,
+        "suggested_passport_account_id": _suggested_passport_account_id(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=enterprise_id,
+            facility_name=site.name,
+        ),
+    }
+
+
+def _suggested_passport_account_id(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    enterprise_id: uuid.UUID,
+    facility_name: str,
+) -> str | None:
+    # Local imports avoid coupling the lower-level activity kernel to passport
+    # module import order while still providing a deterministic UI handoff.
+    from backend.models.cbam_ledger import Installation
+    from backend.models.installation_passport import (
+        InstallationAccount,
+        InstallationAccountMember,
+    )
+
+    account_id = (
+        db.query(InstallationAccount.id)
+        .join(
+            InstallationAccountMember,
+            InstallationAccountMember.account_id == InstallationAccount.id,
+        )
+        .join(
+            Installation,
+            Installation.id == InstallationAccountMember.installation_id,
+        )
+        .filter(
+            InstallationAccount.tenant_id == tenant_id,
+            InstallationAccount.enterprise_id == enterprise_id,
+            InstallationAccountMember.tenant_id == tenant_id,
+            Installation.tenant_id == tenant_id,
+            Installation.name == facility_name,
+        )
+        .order_by(InstallationAccount.created_at.desc())
+        .scalar()
+    )
+    return str(account_id) if account_id else None
+
+
+def _factor_payload(factor: EmissionFactor) -> dict[str, Any]:
+    return {
+        "factor_id": str(factor.id),
+        "name": factor.name,
+        "code": factor.code,
+        "category": factor.category,
+        "region": factor.region,
+        "year": factor.year,
+        "version_year": factor.version_year,
+        "published_date": factor.published_date.isoformat() if factor.published_date else None,
+        "is_default": bool(factor.is_default),
+        "value": format(factor.value, "f"),
+        "unit": factor.unit,
+        "source": factor.source,
+        "source_url": factor.source_url,
+        "gwp": factor.gwp,
+        "uncertainty_pct": (
+            str(factor.uncertainty) if factor.uncertainty is not None else None
+        ),
+    }
+
+
+def _decimal_text(value: Decimal) -> str:
+    """Serialize a governed decimal without exponent or cosmetic zero padding."""
+    return format(ledger_decimal(value).normalize(), "f")
+
+
+def _factor_snapshot_sha256(factor: EmissionFactor) -> str:
+    return content_hash(
+        {
+            **_factor_payload(factor),
+            "tenant_id": factor.tenant_id,
+            "superseded_by": factor.superseded_by,
+        }
+    )
+
+
+def _validate_factor_for_activity(
+    *,
+    factor: EmissionFactor,
+    activity: ActivityData,
+    site: Site,
+) -> None:
+    if factor.superseded_by is not None:
+        raise ValueError("指定的排放因子已被新版本替代")
+    if factor.category != "electricity_grid":
+        raise ValueError("指定的排放因子不是电网排放因子")
+    if factor.year != activity.period_start.year:
+        raise ValueError("指定排放因子的适用年份与活动期间不一致")
+    if factor.region not in {site.grid_region, "全国"}:
+        raise ValueError("指定排放因子的区域与活动设施不一致")
+    _calculate_emission_quantity(
+        quantity=activity.quantity,
+        unit=activity.unit,
+        factor=factor,
+    )
+
+
+def _calculate_emission_quantity(
+    *,
+    quantity: Decimal,
+    unit: str,
+    factor: EmissionFactor,
+):
+    try:
+        activity_quantity = Quantity.of(quantity, unit)
+        factor_quantity = Quantity.of(factor.value, factor.unit)
+    except QuantityError as exc:
+        raise ValueError(f"活动数据与排放因子量纲不兼容: {exc}") from exc
+    target_unit = "tCO2e" if "CO2e" in factor.unit else "tCO2"
+    try:
+        emission_quantity = (activity_quantity * factor_quantity).convert_to(target_unit)
+    except QuantityError as exc:
+        raise ValueError(f"活动数据与排放因子量纲不兼容: {exc}") from exc
+    if emission_quantity.unit not in {"tCO2", "tCO2e"}:
+        raise ValueError("排放因子计算结果不是受支持的排放单位")
+    return emission_quantity
 
 
 def _as_decimal(value: Any) -> Decimal | None:
@@ -233,13 +655,11 @@ def _get_or_create_site(
         .filter(
             Site.enterprise_id == enterprise.id,
             Site.name == facility,
-            or_(Site.tenant_id == user.tenant_id, Site.tenant_id.is_(None)),
+            Site.tenant_id == user.tenant_id,
         )
         .first()
     )
     if site:
-        if site.tenant_id is None:
-            site.tenant_id = user.tenant_id
         return site
 
     site = Site(
@@ -256,10 +676,23 @@ def _get_or_create_site(
     return site
 
 
-def _get_or_create_source(db: Session, *, site: Site, scope: str, category: str) -> EmissionSource:
+def _get_or_create_source(
+    db: Session,
+    *,
+    site: Site,
+    scope: str,
+    category: str,
+) -> EmissionSource:
+    if not site.tenant_id:
+        raise ValueError("排放设施缺少租户归属，禁止创建正式排放源")
     source = (
         db.query(EmissionSource)
-        .filter(EmissionSource.site_id == site.id, EmissionSource.scope == scope, EmissionSource.category == category)
+        .filter(
+            EmissionSource.site_id == site.id,
+            EmissionSource.tenant_id == site.tenant_id,
+            EmissionSource.scope == scope,
+            EmissionSource.category == category,
+        )
         .first()
     )
     if source:
@@ -267,6 +700,7 @@ def _get_or_create_source(db: Session, *, site: Site, scope: str, category: str)
 
     source = EmissionSource(
         site_id=site.id,
+        tenant_id=site.tenant_id,
         name=f"{site.name} 外购电力" if category == "purchased_electricity" else f"{site.name} {category}",
         scope=scope,
         category=category,
@@ -445,6 +879,8 @@ def _upsert_emission_result(
     tenant_id: uuid.UUID,
     confirmed_by: str,
     trusted_factor_id: uuid.UUID | None,
+    factor_selection_note: str | None = None,
+    factor_snapshot_sha256: str | None = None,
 ) -> EmissionResult | None:
     if source.category != "purchased_electricity":
         return None
@@ -453,23 +889,17 @@ def _upsert_emission_result(
         db,
         source=source,
         period_start=period_start,
+        tenant_id=tenant_id,
         trusted_factor_id=trusted_factor_id,
     )
     if factor is None:
         return None
 
-    try:
-        activity_quantity = Quantity.of(quantity, unit)
-        factor_quantity = Quantity.of(factor.value, factor.unit)
-    except QuantityError as exc:
-        raise ValueError(f"活动数据与排放因子量纲不兼容: {exc}") from exc
-    target_unit = "tCO2e" if "CO2e" in factor.unit else "tCO2"
-    try:
-        emission_quantity = (activity_quantity * factor_quantity).convert_to(target_unit)
-    except QuantityError as exc:
-        raise ValueError(f"活动数据与排放因子量纲不兼容: {exc}") from exc
-    if emission_quantity.unit not in {"tCO2", "tCO2e"}:
-        return None
+    emission_quantity = _calculate_emission_quantity(
+        quantity=quantity,
+        unit=unit,
+        factor=factor,
+    )
 
     result_value = ledger_decimal(emission_quantity.value)
     uncertainty = factor.uncertainty
@@ -499,6 +929,14 @@ def _upsert_emission_result(
             "source": factor.source,
             "year": factor.year,
             "region": factor.region,
+        },
+        "factor_confirmation": {
+            "gate": "H-02",
+            "actor_user_id": confirmed_by,
+            "selection_note": factor_selection_note,
+            "factor_snapshot_sha256": (
+                factor_snapshot_sha256 or _factor_snapshot_sha256(factor)
+            ),
         },
         "source_file_id": activity_record.get("file_id"),
         "filename": activity_record.get("filename"),
@@ -538,7 +976,15 @@ def _upsert_emission_result(
             .order_by(EmissionResult.version.desc())
             .first()
         )
-        if existing and existing.content_hash == record_hash:
+        # A matching historical row may already have been superseded by a
+        # later source/period calculation.  Returning that stale row would
+        # hand the UI an ID that is intentionally excluded from current views.
+        # Re-confirmation must therefore append a fresh current version.
+        if (
+            existing
+            and existing.content_hash == record_hash
+            and existing.superseded_by_id is None
+        ):
             return existing
 
         previous = (
@@ -597,7 +1043,7 @@ def _upsert_emission_result(
             )
             if winner is None:
                 raise exc
-            if winner.content_hash == record_hash:
+            if winner.content_hash == record_hash and winner.superseded_by_id is None:
                 return winner
             continue
         if previous:
@@ -611,13 +1057,26 @@ def _find_electricity_factor(
     *,
     source: EmissionSource,
     period_start: datetime,
+    tenant_id: uuid.UUID,
     trusted_factor_id: uuid.UUID | None = None,
 ) -> EmissionFactor | None:
     region = source.site.grid_region if source.site else DEFAULT_GRID_REGION
     if trusted_factor_id is not None:
-        factor = db.get(EmissionFactor, trusted_factor_id)
+        factor = (
+            db.query(EmissionFactor)
+            .filter(
+                EmissionFactor.id == trusted_factor_id,
+                or_(
+                    EmissionFactor.tenant_id.is_(None),
+                    EmissionFactor.tenant_id == tenant_id,
+                ),
+            )
+            .first()
+        )
         if factor is None:
-            raise ValueError("指定的排放因子不存在")
+            raise ValueError("指定的排放因子不存在或当前租户不可见")
+        if factor.superseded_by is not None:
+            raise ValueError("指定的排放因子已被新版本替代")
         if factor.category != "electricity_grid":
             raise ValueError("指定的排放因子不是电网排放因子")
         if factor.year != period_start.year:
@@ -633,6 +1092,11 @@ def _find_electricity_factor(
             EmissionFactor.region == region,
             EmissionFactor.year == period_start.year,
             EmissionFactor.is_default.is_(True),
+            EmissionFactor.superseded_by.is_(None),
+            or_(
+                EmissionFactor.tenant_id.is_(None),
+                EmissionFactor.tenant_id == tenant_id,
+            ),
         )
         .order_by(EmissionFactor.created_at.desc())
         .first()
@@ -644,12 +1108,20 @@ def _find_electricity_factor(
         db.query(EmissionFactor)
         .filter(
             EmissionFactor.category == "electricity_grid",
+            EmissionFactor.year == period_start.year,
             EmissionFactor.is_default.is_(True),
-            or_(EmissionFactor.region == region, EmissionFactor.region == "全国"),
+            EmissionFactor.superseded_by.is_(None),
+            or_(
+                EmissionFactor.region == region,
+                EmissionFactor.region == "全国",
+            ),
+            or_(
+                EmissionFactor.tenant_id.is_(None),
+                EmissionFactor.tenant_id == tenant_id,
+            ),
         )
         .order_by(
-            (EmissionFactor.year == period_start.year).desc(),
-            EmissionFactor.year.desc(),
+            (EmissionFactor.region == region).desc(),
             EmissionFactor.created_at.desc(),
         )
         .first()
@@ -660,6 +1132,7 @@ def _result_payload(result: EmissionResult) -> dict[str, Any]:
     return {
         "emission_result_id": str(result.id),
         "co2_tonnes": float(result.co2_tonnes),
+        "co2_tonnes_exact": _decimal_text(result.co2_tonnes),
         "unit": result.unit,
         "factor_id": str(result.factor_id) if result.factor_id else None,
         "uncertainty_pct": result.uncertainty_pct,

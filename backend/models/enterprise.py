@@ -1,7 +1,7 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -17,6 +17,9 @@ if TYPE_CHECKING:
 
 class Enterprise(Base, UUIDMixin, TimestampMixin):
     __tablename__ = "enterprises"
+    __table_args__ = (
+        UniqueConstraint("id", "tenant_id", name="uq_enterprises_id_tenant"),
+    )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     unified_social_credit_code: Mapped[str] = mapped_column(

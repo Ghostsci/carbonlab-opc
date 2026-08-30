@@ -5,7 +5,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const Login = lazy(() => import("./pages/Login"));
 const Upload = lazy(() => import("./pages/Upload"));
+const CalculationWorkbench = lazy(() => import("./pages/CalculationWorkbench"));
 const InstallationPassports = lazy(() => import("./pages/InstallationPassports"));
+const AgentOps = lazy(() => import("./pages/AgentOps"));
 
 export default function App() {
   return (
@@ -21,7 +23,9 @@ export default function App() {
         >
           <Route index element={<Navigate to="/upload" replace />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/calculations" element={<CalculationWorkbench />} />
           <Route path="/passports" element={<InstallationPassports />} />
+          <Route path="/agent-ops" element={<AgentOps />} />
         </Route>
         <Route path="*" element={<Navigate to="/upload" replace />} />
       </Routes>

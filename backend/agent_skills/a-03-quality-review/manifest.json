@@ -1,0 +1,13 @@
+{
+  "skill_id": "carbon-evidence-quality-review",
+  "role_id": "A-03",
+  "display_name": "碳数据质检",
+  "version": "1.0.0",
+  "category": "evidence_quality_review",
+  "execution_mode": "deterministic_gate_with_retrieval",
+  "input_schema": "input.schema.json",
+  "output_schema": "output.schema.json",
+  "allowed_tools": ["candidate_signature_verify", "tenant_evidence_rag", "ontology_validator", "unit_validator", "quality_rules"],
+  "human_handoff": ["quality_warning", "quality_failure", "methodology_required"],
+  "stores_raw_chain_of_thought": false
+}

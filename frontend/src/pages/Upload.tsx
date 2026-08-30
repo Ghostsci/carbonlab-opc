@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   Bot,
   CheckCircle2,
+  ClipboardCheck,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -13,10 +14,20 @@ import {
   Loader2,
   PencilLine,
   RefreshCw,
+  ShieldCheck,
   UploadCloud,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AgentRunDrawer } from "../components/AgentRunDetail";
+import ProductJourney from "../components/ProductJourney";
 import { useAuth } from "../contexts/AuthContext";
+import {
+  agentStatusLabel,
+  agentStatusTone,
+  fetchAgentRuns,
+  type AgentRun,
+} from "../utils/agentOps";
+import { type WorkforceDocumentSnapshot } from "../utils/workforce";
 
 type InboxStatus = "待确认" | "已完成" | "异常" | "识别中";
 type FieldStatus = "已识别" | "待确认" | "人工修正" | "异常";
@@ -46,6 +57,7 @@ type ApiUploadFile = {
   tables?: unknown[] | null;
   errors?: unknown[] | null;
   ocr_status?: string | null;
+  workforce?: WorkforceDocumentSnapshot | null;
 };
 
 type InboxFile = {
@@ -65,6 +77,7 @@ type InboxFile = {
   tables: unknown[];
   errors: string[];
   ocrStatus: string;
+  workforce: WorkforceDocumentSnapshot;
 };
 
 type UnderstandResponse = {
@@ -72,6 +85,33 @@ type UnderstandResponse = {
   fields: Record<string, unknown>;
   confidence: number;
   summary: string;
+};
+
+type FormalEmissionResult = {
+  emission_result_id: string;
+  co2_tonnes: number;
+  co2_tonnes_exact?: string;
+  unit: string;
+  factor_id?: string | null;
+  uncertainty_pct?: number | null;
+  confidence_95_low?: number | null;
+  confidence_95_high?: number | null;
+};
+
+type FormalWrite = {
+  site_id?: string;
+  site_name?: string;
+  activity_data_id: string;
+  document_id?: string | null;
+  activity_quantity?: string;
+  activity_unit?: string;
+  period_start?: string;
+  period_end?: string;
+  emission_source_id: string;
+  emission_source_name: string;
+  calculation_status: "calculated" | "pending_factor";
+  emission_result?: FormalEmissionResult | null;
+  suggested_passport_account_id?: string | null;
 };
 
 type ConfirmResponse = {
@@ -91,17 +131,50 @@ type ConfirmResponse = {
     fields_sha256: string;
     subject_sha256: string;
   };
-  formal_write?: {
+  formal_write?: FormalWrite;
+};
+
+type FactorCandidate = {
+  factor_id: string;
+  factor_snapshot_sha256: string;
+  name: string;
+  code: string;
+  region?: string | null;
+  year: number;
+  version_year?: number | null;
+  published_date?: string | null;
+  value: string;
+  unit: string;
+  source: string;
+  source_url?: string | null;
+  uncertainty_pct?: string | null;
+  tenant_scope: "platform" | "tenant";
+  region_match: "exact" | "national";
+  preview_emissions: string;
+  preview_unit: string;
+};
+
+type FactorCandidateResponse = {
+  activity: {
     activity_data_id: string;
-    emission_source_id: string;
-    emission_source_name: string;
-    calculation_status: "calculated" | "pending_factor";
-    emission_result?: {
-      emission_result_id: string;
-      co2_tonnes: number;
-      factor_id?: string | null;
-    } | null;
+    quantity: string;
+    unit: string;
+    period_start: string;
+    period_end: string;
+    facility: string;
+    grid_region: string;
   };
+  calculation_status: "calculated" | "pending_factor";
+  emission_result?: FormalEmissionResult | null;
+  factor_candidates: FactorCandidate[];
+  human_gate: string;
+  calculation_engine: string;
+};
+
+type FactorConfirmationResponse = {
+  status: "calculated";
+  message: string;
+  formal_write: FormalWrite;
 };
 
 type CandidateSnapshotResponse = {
@@ -112,7 +185,48 @@ type CandidateSnapshotResponse = {
   expires_at: string;
 };
 
+type QualityFinding = {
+  check_key: string;
+  label: string;
+  result: "pass" | "warning" | "fail";
+  message: string;
+  evidence_ref?: string | null;
+};
+
+type QualityReviewResponse = {
+  quality_review_id: string;
+  quality_review_token: string;
+  quality_result_sha256: string;
+  quality_status: "pass" | "pass_with_warnings" | "fail";
+  score: number;
+  summary: string;
+  counts: { passed: number; warnings: number; failed: number };
+  findings: QualityFinding[];
+  retrievals?: Record<string, {
+    retrieval_run_id: string;
+    ontology_version: string;
+    embedding_model: string;
+    hits: Array<{
+      title: string;
+      excerpt: string;
+      field_keys: string[];
+      content_hash: string;
+      fused_score: string;
+    }>;
+  }>;
+  expires_at: string;
+  next_gate: string;
+};
+
+type ReviewBundle = {
+  fileId: string;
+  candidate: CandidateSnapshotResponse;
+  review: QualityReviewResponse;
+};
+
 type Notice = { tone: NoticeTone; text: string };
+
+const DEFAULT_FACTOR_SELECTION_NOTE = "已核对因子年份、区域、来源及单位，确认用于本期活动排放计算。";
 
 const fieldLabels: Record<string, string> = {
   billing_month: "账单月份",
@@ -157,6 +271,7 @@ function parseUploadFile(value: unknown, index?: number): ApiUploadFile {
     tables: Array.isArray(value.tables) ? value.tables : [],
     errors: Array.isArray(value.errors) ? value.errors : [],
     ocr_status: typeof value.ocr_status === "string" ? value.ocr_status : undefined,
+    workforce: isRecord(value.workforce) ? value.workforce as WorkforceDocumentSnapshot : {},
   };
 }
 
@@ -245,7 +360,7 @@ function fileColor(filename: string, mimeType: string): InboxFile["color"] {
 
 function statusFromOcr(ocrStatus: string, errors: string[]): InboxStatus {
   const status = ocrStatus.toLowerCase();
-  if (status === "failed" || status === "error" || errors.length > 0) return "异常";
+  if (["failed", "error", "quality_failed"].includes(status) || errors.length > 0) return "异常";
   if (["pending", "processing", "recognizing", "识别中"].includes(status)) return "识别中";
   if (["confirmed", "written", "completed_write"].includes(status)) return "已完成";
   return "待确认";
@@ -278,6 +393,7 @@ function toInboxFile(
     tables: file.tables || [],
     errors,
     ocrStatus,
+    workforce: file.workforce || {},
   };
 }
 
@@ -291,6 +407,13 @@ function fieldsToObject(fields: RecognizedField[]): Record<string, string> {
 function fieldValue(fields: RecognizedField[], keys: string[]): string {
   const normalizedKeys = new Set(keys.map((key) => key.toLowerCase()));
   return fields.find((field) => normalizedKeys.has(field.key.toLowerCase()))?.value.trim() || "";
+}
+
+function exactEmissionText(result: FormalEmissionResult): string {
+  const raw = result.co2_tonnes_exact || String(result.co2_tonnes);
+  const [integer, fraction] = raw.split(".");
+  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return fraction ? `${grouped}.${fraction}` : grouped;
 }
 
 function missingElectricityFields(file: InboxFile | undefined): string[] {
@@ -323,6 +446,9 @@ function ocrStatusLabel(status: string): string {
   if (normalized === "pending") return "等待识别";
   if (normalized === "processing") return "正在识别";
   if (normalized === "completed") return "识别完成，等待确认";
+  if (normalized === "candidate_ready") return "A-02 候选已锁定，等待质检";
+  if (normalized === "quality_reviewed") return "A-03 质检完成，等待人工确认";
+  if (normalized === "quality_failed") return "A-03 质检发现阻断项";
   if (normalized === "confirmed") return "已人工确认并写入正式账本";
   if (normalized === "failed") return "识别失败";
   return status || "未知";
@@ -336,11 +462,25 @@ export default function Upload() {
   const [activeFilter, setActiveFilter] = useState<InboxFilter>("all");
   const [listState, setListState] = useState<ListState>("loading");
   const [listError, setListError] = useState<string | null>(null);
-  const [operation, setOperation] = useState<"upload" | "understand" | "confirm" | null>(null);
+  const [operation, setOperation] = useState<"upload" | "understand" | "quality" | "confirm" | "factor" | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [confirmResult, setConfirmResult] = useState<{ fileId: string; data: ConfirmResponse } | null>(null);
+  const [reviewBundle, setReviewBundle] = useState<ReviewBundle | null>(null);
+  const [durableFormalWrite, setDurableFormalWrite] = useState<{
+    fileId: string;
+    data: FormalWrite | null;
+  } | null>(null);
+  const [formalWriteLoading, setFormalWriteLoading] = useState(false);
+  const [factorBundle, setFactorBundle] = useState<FactorCandidateResponse | null>(null);
+  const [factorLoading, setFactorLoading] = useState(false);
+  const [factorError, setFactorError] = useState<string | null>(null);
+  const [selectedFactorId, setSelectedFactorId] = useState("");
+  const [factorSelectionNote, setFactorSelectionNote] = useState(DEFAULT_FACTOR_SELECTION_NOTE);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  const [agentRuns, setAgentRuns] = useState<AgentRun[]>([]);
+  const [agentRunsError, setAgentRunsError] = useState<string | null>(null);
+  const [selectedAgentRunId, setSelectedAgentRunId] = useState<string | null>(null);
 
   const loadFiles = useCallback(async (signal?: AbortSignal) => {
     setListState("loading");
@@ -380,6 +520,13 @@ export default function Upload() {
   const selected = visibleFiles.find((file) => file.id === selectedId) || visibleFiles[0];
   const selectedIndex = selected ? visibleFiles.findIndex((file) => file.id === selected.id) : -1;
   const selectedConfirm = selected && confirmResult?.fileId === selected.id ? confirmResult.data : null;
+  const selectedReview = selected && reviewBundle?.fileId === selected.id ? reviewBundle : null;
+  const selectedFormalWrite = selectedConfirm?.formal_write || (
+    selected && durableFormalWrite?.fileId === selected.id ? durableFormalWrite.data : null
+  );
+  const selectedFactor = factorBundle && factorBundle.activity.activity_data_id === selectedFormalWrite?.activity_data_id
+    ? factorBundle.factor_candidates.find((factor) => factor.factor_id === selectedFactorId) || null
+    : null;
   const selectedMissingFields = missingElectricityFields(selected);
   const writeSupported = selected?.documentType === "electricity_bill";
   const counts = {
@@ -388,6 +535,110 @@ export default function Upload() {
     done: inboxFiles.filter((file) => file.status === "已完成").length,
     abnormal: inboxFiles.filter((file) => file.status === "异常").length,
   };
+  const latestAgentRun = (agentId: string) => agentRuns.find((run) => run.agent_id === agentId) || null;
+
+  useEffect(() => {
+    const fileId = selected?.id;
+    if (!fileId || authLoading || !isAuthenticated) {
+      setAgentRuns([]);
+      setAgentRunsError(null);
+      return;
+    }
+    const controller = new AbortController();
+    const loadRuns = async () => {
+      try {
+        const nextRuns = await fetchAgentRuns(getHeaders, { sourceFileId: fileId, limit: 100 }, controller.signal);
+        setAgentRuns(nextRuns);
+        setAgentRunsError(null);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setAgentRunsError(error instanceof Error ? error.message : "读取岗位执行记录失败");
+      }
+    };
+    void loadRuns();
+    const timer = window.setInterval(() => void loadRuns(), 5000);
+    return () => {
+      controller.abort();
+      window.clearInterval(timer);
+    };
+  }, [authLoading, getHeaders, isAuthenticated, selected?.id]);
+
+  useEffect(() => {
+    const fileId = selected?.id;
+    if (!fileId || authLoading || !isAuthenticated) {
+      setDurableFormalWrite(null);
+      setFormalWriteLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setFormalWriteLoading(true);
+    setFactorBundle(null);
+    setFactorError(null);
+    setSelectedFactorId("");
+    void fetch(`/api/upload/${fileId}/formal-write`, {
+      headers: getHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await responseError(response, "读取正式活动状态失败"));
+        const payload = await response.json() as { formal_write: FormalWrite | null };
+        setDurableFormalWrite({ fileId, data: payload.formal_write });
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setDurableFormalWrite({ fileId, data: null });
+        setNotice({ tone: "error", text: error instanceof Error ? error.message : "读取正式活动状态失败" });
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setFormalWriteLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [authLoading, getHeaders, isAuthenticated, selected?.id]);
+
+  useEffect(() => {
+    const activityId = selectedFormalWrite?.calculation_status === "pending_factor"
+      ? selectedFormalWrite.activity_data_id
+      : null;
+    if (!activityId || authLoading || !isAuthenticated) {
+      setFactorBundle(null);
+      setFactorLoading(false);
+      setFactorError(null);
+      setSelectedFactorId("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setFactorLoading(true);
+    setFactorError(null);
+    void fetch(`/api/upload/formal-activities/${activityId}/factor-candidates`, {
+      headers: getHeaders(),
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(await responseError(response, "读取排放因子候选失败"));
+        const payload = await response.json() as FactorCandidateResponse;
+        setFactorBundle(payload);
+        setSelectedFactorId((current) => (
+          payload.factor_candidates.some((factor) => factor.factor_id === current)
+            ? current
+            : payload.factor_candidates[0]?.factor_id || ""
+        ));
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setFactorBundle(null);
+        setFactorError(error instanceof Error ? error.message : "读取排放因子候选失败");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setFactorLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [authLoading, getHeaders, isAuthenticated, selectedFormalWrite?.activity_data_id, selectedFormalWrite?.calculation_status]);
 
   useEffect(() => {
     const storageUrl = selected?.storageUrl;
@@ -437,12 +688,14 @@ export default function Upload() {
       current && nextFiles.some((file) => file.id === current) ? current : nextFiles[0]?.id ?? null
     ));
     setConfirmResult(null);
+    setReviewBundle(null);
   };
 
   const handleUpload = async (file: File) => {
     setOperation("upload");
     setNotice({ tone: "info", text: "正在上传文件并调用 OCR 识别..." });
     setConfirmResult(null);
+    setReviewBundle(null);
 
     try {
       const form = new FormData();
@@ -490,6 +743,7 @@ export default function Upload() {
       };
     }));
     setConfirmResult((current) => (current?.fileId === fileId ? null : current));
+    setReviewBundle((current) => (current?.fileId === fileId ? null : current));
   };
 
   const reUnderstand = async () => {
@@ -524,6 +778,7 @@ export default function Upload() {
         ocrStatus: "completed",
       });
       setConfirmResult((current) => (current?.fileId === fileId ? null : current));
+      setReviewBundle((current) => (current?.fileId === fileId ? null : current));
       setNotice({
         tone: "success",
         text: data.summary
@@ -537,13 +792,14 @@ export default function Upload() {
     }
   };
 
-  const confirmWrite = async () => {
+  const runQualityReview = async () => {
     if (!selected) return;
     const fileId = selected.id;
     const editedFields = fieldsToObject(selected.fields);
-    setOperation("confirm");
-    setNotice({ tone: "info", text: "正在锁定本次人工确认内容，然后写入正式活动账本..." });
+    setOperation("quality");
+    setNotice({ tone: "info", text: "A-02 正在锁定候选，A-03 随后独立检查证据、单位与异常..." });
     setConfirmResult(null);
+    setReviewBundle(null);
 
     try {
       const candidateResponse = await fetch(`/api/upload/${selected.id}/candidate`, {
@@ -557,12 +813,48 @@ export default function Upload() {
       }
       const candidate = await candidateResponse.json() as CandidateSnapshotResponse;
 
-      const response = await fetch("/api/upload/confirm-activity", {
+      const qualityResponse = await fetch(`/api/upload/${selected.id}/quality-review`, {
         method: "POST",
         headers: { ...getHeaders(), "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           candidate_token: candidate.candidate_token,
+          fields: editedFields,
+        }),
+      });
+      if (!qualityResponse.ok) {
+        throw new Error(await responseError(qualityResponse, "A-03 证据质检失败"));
+      }
+      const review = await qualityResponse.json() as QualityReviewResponse;
+      setReviewBundle({ fileId, candidate, review });
+      setNotice({
+        tone: review.quality_status === "fail" ? "error" : review.quality_status === "pass_with_warnings" ? "warning" : "success",
+        text: `A-03 质检${review.quality_status === "fail" ? "未通过" : "完成"}：${review.summary}`,
+      });
+    } catch (error) {
+      setNotice({ tone: "error", text: error instanceof Error ? error.message : "A-03 质检失败" });
+    } finally {
+      setOperation(null);
+    }
+  };
+
+  const confirmWrite = async () => {
+    if (!selected || !selectedReview) return;
+    const fileId = selected.id;
+    const editedFields = fieldsToObject(selected.fields);
+    setOperation("confirm");
+    setNotice({ tone: "info", text: "H-01 正在提交人工确认；系统会再次核对候选与 A-03 质检签名..." });
+    setConfirmResult(null);
+
+    try {
+
+      const response = await fetch("/api/upload/confirm-activity", {
+        method: "POST",
+        headers: { ...getHeaders(), "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          candidate_token: selectedReview.candidate.candidate_token,
+          quality_review_token: selectedReview.review.quality_review_token,
           file_id: selected.id,
           document_content_hash: selected.contentHash,
           filename: selected.name,
@@ -578,6 +870,8 @@ export default function Upload() {
 
       const data = await response.json() as ConfirmResponse;
       setConfirmResult({ fileId, data });
+      setDurableFormalWrite({ fileId, data: data.formal_write || null });
+      setFactorSelectionNote(DEFAULT_FACTOR_SELECTION_NOTE);
       updateFile(fileId, {
         status: "已完成",
         ocrStatus: "confirmed",
@@ -590,10 +884,55 @@ export default function Upload() {
       setSelectedId(fileId);
       setNotice({
         tone: "success",
-        text: `${data.message} 已锁定本次确认内容，记录 ID：${data.activity_record.record_id}`,
+        text: `${data.message} A-03 质检与 H-01 确认均已留痕，ActivityData ID：${data.formal_write?.activity_data_id || data.activity_record.record_id}`,
       });
     } catch (error) {
       setNotice({ tone: "error", text: error instanceof Error ? error.message : "写入失败" });
+    } finally {
+      setOperation(null);
+    }
+  };
+
+  const confirmFactor = async () => {
+    if (!selected || !selectedFormalWrite || !selectedFactor) return;
+    const fileId = selected.id;
+    setOperation("factor");
+    setNotice({
+      tone: "info",
+      text: "H-02 正在提交人工选择；R-01 将用确定性单位内核计算，不调用大模型做算术。",
+    });
+
+    try {
+      const response = await fetch(
+        `/api/upload/formal-activities/${selectedFormalWrite.activity_data_id}/confirm-factor`,
+        {
+          method: "POST",
+          headers: { ...getHeaders(), "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            factor_id: selectedFactor.factor_id,
+            factor_snapshot_sha256: selectedFactor.factor_snapshot_sha256,
+            selection_note: factorSelectionNote.trim(),
+          }),
+        },
+      );
+      if (!response.ok) throw new Error(await responseError(response, "排放因子确认失败"));
+      const data = await response.json() as FactorConfirmationResponse;
+      setDurableFormalWrite({ fileId, data: data.formal_write });
+      setConfirmResult((current) => (
+        current?.fileId === fileId
+          ? { fileId, data: { ...current.data, formal_write: data.formal_write } }
+          : current
+      ));
+      setFactorBundle(null);
+      setFactorError(null);
+      setSelectedFactorId("");
+      setNotice({
+        tone: "success",
+        text: `${data.message} 结果：${data.formal_write.emission_result ? exactEmissionText(data.formal_write.emission_result) : "-"} ${data.formal_write.emission_result?.unit || "tCO₂e"}。`,
+      });
+    } catch (error) {
+      setNotice({ tone: "error", text: error instanceof Error ? error.message : "排放因子确认失败" });
     } finally {
       setOperation(null);
     }
@@ -605,11 +944,25 @@ export default function Upload() {
     if (next) {
       setSelectedId(next.id);
       setConfirmResult(null);
+      setReviewBundle(null);
     }
   };
 
   const pendingFieldCount = selected?.fields.filter((field) => field.status === "待确认").length || 0;
   const manuallyEditedCount = selected?.fields.filter((field) => field.status === "人工修正").length || 0;
+  const canRunQuality = Boolean(
+    selected
+    && writeSupported
+    && selectedMissingFields.length === 0
+    && selected.fields.length > 0
+    && selected.status !== "已完成"
+    && selected.status !== "识别中"
+    && operation === null,
+  );
+  const qualityAccepted = Boolean(
+    selectedReview
+    && ["pass", "pass_with_warnings"].includes(selectedReview.review.quality_status),
+  );
   const canConfirm = Boolean(
     selected
     && writeSupported
@@ -618,19 +971,55 @@ export default function Upload() {
     && selected.status !== "已完成"
     && selected.status !== "识别中"
     && operation === null
-    && !selectedConfirm,
+    && !selectedConfirm
+    && qualityAccepted,
   );
-
+  const canConfirmFactor = Boolean(
+    selectedFormalWrite?.calculation_status === "pending_factor"
+    && selectedFactor
+    && factorSelectionNote.trim().length >= 12
+    && operation === null,
+  );
+  const passportSearch = new URLSearchParams();
+  if (selectedFormalWrite?.suggested_passport_account_id) {
+    passportSearch.set("account_id", selectedFormalWrite.suggested_passport_account_id);
+  }
+  if (selectedFormalWrite?.emission_result?.emission_result_id) {
+    passportSearch.set("emission_result_id", selectedFormalWrite.emission_result.emission_result_id);
+  }
+  if (selected?.id) passportSearch.set("source_file_id", selected.id);
+  const passportTarget = passportSearch.size > 0 ? `/passports?${passportSearch.toString()}` : "/passports";
   return (
     <div className="mx-auto max-w-[1540px] space-y-6 pt-1">
-      <header className="pr-0 lg:pr-80">
-        <h1 className="text-3xl font-black text-slate-950">数据收件箱 / 文件识别与字段确认</h1>
-        <p className="mt-2 text-sm font-semibold text-slate-500">
-          读取当前登录租户的文件，核验关键信息并写入正式活动数据
-        </p>
+      <header className="flex flex-col gap-5 pr-0 lg:pr-80 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <div className="mb-3 text-sm font-bold text-blue-600">受控数据收件与事实确认</div>
+          <h1 className="text-3xl font-black text-slate-950">数字员工工作台</h1>
+          <p className="mt-2 text-sm font-semibold text-slate-500">把原始文件变成带证据、经 A-03 质检、由 H-01 确认的正式活动数据。</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className="zc-button-primary" onClick={() => inputRef.current?.click()} disabled={operation === "upload"}>
+            <UploadCloud size={17} /> 上传文件
+          </button>
+          <Link to="/passports" className="zc-button"><ShieldCheck size={17} /> 查看工厂碳数据护照</Link>
+        </div>
       </header>
 
       {notice && <NoticeBanner notice={notice} onClose={() => setNotice(null)} />}
+
+      <ProductJourney
+        active="data"
+        states={{
+          data: selectedFormalWrite || selectedConfirm || selected?.status === "已完成" ? "completed" : selectedReview?.review.quality_status === "fail" ? "warning" : "active",
+          calculation: selectedFormalWrite?.calculation_status === "calculated"
+            ? "completed"
+            : selectedFormalWrite?.calculation_status === "pending_factor"
+              ? "active"
+              : "pending",
+          passport: selectedFormalWrite?.emission_result ? "active" : "pending",
+        }}
+        note="AI 提议，H-01 确认企业事实，H-02 确认方法学因子，R-01 只做确定性计算。"
+      />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[280px_1fr_340px_330px]">
         <aside className="zc-card-pad">
@@ -687,6 +1076,7 @@ export default function Upload() {
                     onClick={() => {
                       setSelectedId(file.id);
                       setConfirmResult(null);
+                      setReviewBundle(null);
                     }}
                   />
                 ))}
@@ -735,6 +1125,20 @@ export default function Upload() {
             className="mt-3 flex w-full items-center justify-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-800"
           >
             <Download size={14} /> 下载合成演示账单
+          </a>
+          <a
+            href="/demo/carbonlab-competition-batch-v1.zip"
+            download
+            className="mt-2 flex w-full items-center justify-center gap-2 text-xs font-bold text-slate-600 hover:text-blue-800"
+          >
+            <Download size={14} /> 下载批量测试数据（12张账单）
+          </a>
+          <a
+            href="/demo/carbonlab-competition-50-row-workbooks-v2.zip"
+            download
+            className="mt-2 flex w-full items-center justify-center gap-2 text-xs font-black text-emerald-700 hover:text-emerald-900"
+          >
+            <Download size={14} /> 下载50行明细版（12个Excel）
           </a>
         </aside>
 
@@ -841,7 +1245,7 @@ export default function Upload() {
                   <Field
                     key={field.key}
                     data={field}
-                    disabled={operation !== null}
+                    disabled={operation !== null || Boolean(selectedFormalWrite)}
                     onChange={(value) => handleFieldChange(selected.id, field.key, value)}
                   />
                 ))}
@@ -855,60 +1259,99 @@ export default function Upload() {
                 </div>
               )}
 
+              {selectedReview && <QualityReviewCard review={selectedReview.review} />}
+
               <div className="mt-5 rounded-2xl bg-blue-50 p-4">
                 <span className="font-bold text-slate-900">写入目标</span>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
                   当前租户正式活动账本，随后在护照中归集
                 </p>
-                {selectedConfirm && (
+                {formalWriteLoading && !selectedFormalWrite && (
+                  <div className="mt-3 flex items-center gap-2 text-xs font-bold text-blue-700">
+                    <Loader2 size={14} className="animate-spin" /> 正在核对正式账本状态…
+                  </div>
+                )}
+                {selectedFormalWrite && (
                   <div className="mt-3 space-y-1 text-xs font-bold text-emerald-700">
                     <p>
                       已入库 ActivityData
-                      {selectedConfirm.activity_record.quantity !== null
-                        && selectedConfirm.activity_record.quantity !== undefined
-                        ? ` · ${selectedConfirm.activity_record.quantity.toLocaleString()} ${selectedConfirm.activity_record.unit || ""}`
+                      {selectedFormalWrite.activity_quantity
+                        ? ` · ${selectedFormalWrite.activity_quantity} ${selectedFormalWrite.activity_unit || ""}`
                         : ""}
                     </p>
-                    <p>排放源：{selectedConfirm.formal_write?.emission_source_name || selectedConfirm.step_key}</p>
-                    <p title={selectedConfirm.confirmation.subject_sha256}>
-                      确认指纹：{selectedConfirm.confirmation.subject_sha256.slice(0, 16)}…
-                    </p>
-                    {selectedConfirm.formal_write?.emission_result ? (
+                    <p>排放源：{selectedFormalWrite.emission_source_name}</p>
+                    {selectedConfirm?.confirmation.subject_sha256 && (
+                      <p title={selectedConfirm.confirmation.subject_sha256}>
+                        确认指纹：{selectedConfirm.confirmation.subject_sha256.slice(0, 16)}…
+                      </p>
+                    )}
+                    {selectedFormalWrite.emission_result ? (
                       <p>
-                        已计算 · {selectedConfirm.formal_write.emission_result.co2_tonnes.toLocaleString()} tCO₂e
+                        R-01 已计算 · {exactEmissionText(selectedFormalWrite.emission_result)} {selectedFormalWrite.emission_result.unit}
                       </p>
                     ) : (
-                      <p className="text-amber-700">待匹配排放因子后计算结果</p>
+                      <p className="text-amber-700">H-01 已完成 · 等待 H-02 人工确认排放因子</p>
                     )}
                   </div>
                 )}
               </div>
 
+              {selectedFormalWrite?.calculation_status === "pending_factor" && (
+                <FactorConfirmationCard
+                  bundle={factorBundle?.activity.activity_data_id === selectedFormalWrite.activity_data_id ? factorBundle : null}
+                  loading={factorLoading}
+                  error={factorError}
+                  selectedFactorId={selectedFactorId}
+                  selectionNote={factorSelectionNote}
+                  disabled={operation !== null}
+                  canConfirm={canConfirmFactor}
+                  confirming={operation === "factor"}
+                  onSelect={setSelectedFactorId}
+                  onNoteChange={setFactorSelectionNote}
+                  onConfirm={() => void confirmFactor()}
+                />
+              )}
+
               <button
                 type="button"
-                onClick={() => void confirmWrite()}
-                disabled={!canConfirm}
-                className="mt-5 w-full zc-button-primary py-3 disabled:cursor-not-allowed disabled:opacity-60"
+                onClick={() => void runQualityReview()}
+                disabled={!canRunQuality}
+                className="mt-5 w-full zc-button-soft py-3 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {operation === "confirm"
-                  ? "写入中..."
+                <ClipboardCheck size={17} />
+                {operation === "quality"
+                  ? "A-03 正在独立质检..."
                   : !writeSupported
                     ? "该文档请在护照中登记"
                     : selectedMissingFields.length > 0
                       ? `请补齐：${selectedMissingFields.join("、")}`
-                  : selectedConfirm || selected.status === "已完成"
-                    ? "已确认并写入活动数据"
-                    : "锁定候选并确认写入"}
+                      : selectedReview
+                        ? "重新运行 A-03 证据质检"
+                        : "A-03 运行证据质检"}
               </button>
 
-              {(selectedConfirm || selected.status === "已完成" || !writeSupported) && (
+              <button
+                type="button"
+                onClick={() => void confirmWrite()}
+                disabled={!canConfirm}
+                className="mt-3 w-full zc-button-primary py-3 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <ShieldCheck size={17} />
+                {operation === "confirm"
+                  ? "H-01 正在确认并写入..."
+                  : selectedFormalWrite || selectedConfirm || selected.status === "已完成"
+                    ? "H-01 已确认并写入活动数据"
+                    : !qualityAccepted
+                      ? "须先通过 A-03 质检"
+                      : "H-01 人工确认并写入正式账本"}
+              </button>
+
+              {(selectedFormalWrite?.emission_result || !writeSupported) && (
                 <Link
-                  to={selectedConfirm?.formal_write?.emission_result?.emission_result_id
-                    ? `/passports?emission_result_id=${encodeURIComponent(selectedConfirm.formal_write.emission_result.emission_result_id)}&source_file_id=${encodeURIComponent(selected.id)}`
-                    : "/passports"}
+                  to={passportTarget}
                   className="mt-3 flex w-full items-center justify-center gap-2 zc-button-soft py-3"
                 >
-                  进入护照归集
+                  {selectedFormalWrite?.emission_result ? "查看本笔碳护照草稿" : "进入装置护照登记"}
                   <ChevronRight size={16} />
                 </Link>
               )}
@@ -922,7 +1365,7 @@ export default function Upload() {
                 {operation === "understand" ? "识别中..." : "重新识别"}
               </button>
               <p className="mt-3 text-xs leading-5 text-slate-400">
-                确认时会提交当前编辑值；活动数据写入租户账本后，再由护照完成装置与产品归集。
+                A-03 只检查证据与约束；H-01 对企业事实负责；H-02 对方法学因子负责；R-01 只执行可复算的确定性计算。这里生成的是可追溯档案草稿，不是政府证件或出口申报文书。
               </p>
             </>
           )}
@@ -930,8 +1373,13 @@ export default function Upload() {
 
         <aside className="zc-card-pad">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-black">AI 助理</h2>
+            <div>
+              <h2 className="text-lg font-black">本单执行记录</h2>
+              <p className="mt-1 text-xs text-slate-400">点击岗位查看真实 Run 与结构化执行过程</p>
+            </div>
+            <Link to="/agent-ops" className="text-xs font-bold text-blue-600 hover:text-blue-700">全部任务</Link>
           </div>
+          {agentRunsError && <p className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-600">{agentRunsError}</p>}
           {!selected ? (
             <PanelEmpty
               loading={listState === "loading"}
@@ -942,13 +1390,24 @@ export default function Upload() {
             <>
               <Info
                 icon={<Bot size={18} />}
-                title="识别说明"
+                title="A-01 碳数据收件员"
+                lines={[
+                  "已登记文件身份、租户归属与内容哈希",
+                  `文件类型：${selected.documentType}`,
+                ]}
+                run={latestAgentRun("A-01")}
+                onOpenRun={setSelectedAgentRunId}
+              />
+              <Info
+                icon={<Bot size={18} />}
+                title="A-02 碳证据提取员"
                 lines={[
                   `已返回 ${selected.fields.length} 个可编辑字段`,
                   `${pendingFieldCount} 个字段待人工确认`,
                   `${manuallyEditedCount} 个字段已人工修正`,
-                  `文档类型：${selected.documentType}`,
                 ]}
+                run={latestAgentRun("A-02")}
+                onOpenRun={setSelectedAgentRunId}
               />
               {selected.errors.length > 0 ? (
                 <Info
@@ -959,28 +1418,204 @@ export default function Upload() {
               ) : (
                 <Info
                   icon={<CheckCircle2 size={18} />}
-                  title="处理状态"
+                  title="A-03 碳数据质检员"
                   lines={[
-                    `OCR 状态：${ocrStatusLabel(selected.ocrStatus)}`,
-                    `识别字段覆盖度：${Math.round(selected.confidence)}%`,
+                    selectedReview
+                      ? `质检状态：${selectedReview.review.quality_status} · ${selectedReview.review.score} 分`
+                      : "尚未运行独立证据质检",
+                    selectedReview
+                      ? `通过 ${selectedReview.review.counts.passed} / 提示 ${selectedReview.review.counts.warnings} / 阻断 ${selectedReview.review.counts.failed}`
+                      : `OCR 状态：${ocrStatusLabel(selected.ocrStatus)}`,
                   ]}
+                  run={latestAgentRun("A-03")}
+                  onOpenRun={setSelectedAgentRunId}
                 />
               )}
               <Info
-                icon={<FileText size={18} />}
-                title="操作建议"
+                icon={<ShieldCheck size={18} />}
+                title="H-01 企业数据确认人"
                 lines={[
-                  manuallyEditedCount > 0
-                    ? "人工修正已保留，确认时将提交当前编辑值。"
-                    : "请逐项核对识别字段，必要时直接编辑。",
-                  "确认写入后，可进入护照完成装置、工序与产品归集。",
+                  selectedFormalWrite
+                    ? "企业事实已确认并写入不可静默覆盖的正式活动账本。"
+                    : manuallyEditedCount > 0
+                    ? "人工修正已保留；修改后必须重新质检。"
+                    : "逐项对照原文件，必要时直接编辑。",
+                  selectedFormalWrite
+                    ? `ActivityData：${selectedFormalWrite.activity_data_id.slice(0, 12)}…`
+                    : qualityAccepted
+                      ? "质检门禁已打开，可以承担确认责任。"
+                      : "质检未通过前，系统不会开放正式写入。",
                 ]}
+                run={latestAgentRun("H-01")}
+                onOpenRun={setSelectedAgentRunId}
               />
-              <p className="mt-3 text-xs text-slate-400">AI 识别内容仅供核验，请以原始文件为准</p>
+              {selectedFormalWrite && (
+                <Info
+                  icon={<ShieldCheck size={18} />}
+                  title="H-02 活动排放因子确认人"
+                  lines={[
+                    selectedFormalWrite.calculation_status === "calculated"
+                      ? "已确认适用因子，因子快照与人工理由已写入审计链。"
+                      : "待人工从兼容候选中确认因子；系统不会自动替人选择。",
+                    factorBundle
+                      ? `当前有 ${factorBundle.factor_candidates.length} 条合格候选。`
+                      : selectedFormalWrite.calculation_status === "calculated"
+                        ? `因子 ID：${selectedFormalWrite.emission_result?.factor_id?.slice(0, 12) || "已留痕"}…`
+                        : "正在读取候选。",
+                  ]}
+                  run={latestAgentRun("H-02")}
+                  onOpenRun={setSelectedAgentRunId}
+                />
+              )}
+              {selectedFormalWrite && (
+                <Info
+                  icon={<CheckCircle2 size={18} />}
+                  title="R-01 确定性计算引擎"
+                  lines={[
+                    selectedFormalWrite.emission_result
+                      ? `已生成 ${exactEmissionText(selectedFormalWrite.emission_result)} ${selectedFormalWrite.emission_result.unit}。`
+                      : "等待 H-02 放行后运行。",
+                    "Decimal + Quantity 复算；大模型不参与算术。",
+                  ]}
+                  run={latestAgentRun("R-01")}
+                  onOpenRun={setSelectedAgentRunId}
+                />
+              )}
+              <p className="mt-3 text-xs text-slate-400">AI 提议不等于事实；人工确认与确定性规则共同构成正式结果</p>
             </>
           )}
         </aside>
       </div>
+      <AgentRunDrawer runId={selectedAgentRunId} onClose={() => setSelectedAgentRunId(null)} />
+    </div>
+  );
+}
+
+function FactorConfirmationCard({
+  bundle,
+  loading,
+  error,
+  selectedFactorId,
+  selectionNote,
+  disabled,
+  canConfirm,
+  confirming,
+  onSelect,
+  onNoteChange,
+  onConfirm,
+}: {
+  bundle: FactorCandidateResponse | null;
+  loading: boolean;
+  error: string | null;
+  selectedFactorId: string;
+  selectionNote: string;
+  disabled: boolean;
+  canConfirm: boolean;
+  confirming: boolean;
+  onSelect: (factorId: string) => void;
+  onNoteChange: (note: string) => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-600">
+          <ShieldCheck size={18} />
+        </span>
+        <div>
+          <h3 className="text-sm font-black text-slate-900">H-02 活动排放因子确认</h3>
+          <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+            系统只列出年份、区域和单位兼容的候选；由人确认采用哪一条方法学依据。
+          </p>
+        </div>
+      </div>
+
+      {bundle && (
+        <div className="mt-3 rounded-xl bg-white/80 px-3 py-2 text-xs leading-5 text-slate-600">
+          {bundle.activity.facility} · {bundle.activity.quantity} {bundle.activity.unit}<br />
+          {bundle.activity.period_start.slice(0, 10)}—{bundle.activity.period_end.slice(0, 10)} · {bundle.activity.grid_region}电网
+        </div>
+      )}
+
+      {loading ? (
+        <div className="mt-3 flex items-center gap-2 rounded-xl bg-white/80 px-3 py-4 text-xs font-bold text-blue-700">
+          <Loader2 size={15} className="animate-spin" /> 正在筛选可用因子…
+        </div>
+      ) : error ? (
+        <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-3 text-xs font-bold leading-5 text-red-700">
+          {error}
+        </div>
+      ) : bundle && bundle.factor_candidates.length === 0 ? (
+        <div className="mt-3 rounded-xl border border-amber-200 bg-white px-3 py-3 text-xs font-bold leading-5 text-amber-800">
+          未找到同年份、同区域且量纲兼容的正式因子。系统不会用旧年份或错误单位代算，请先维护因子库。
+        </div>
+      ) : (
+        <div className="mt-3 space-y-2" role="radiogroup" aria-label="选择活动排放因子">
+          {bundle?.factor_candidates.map((factor) => {
+            const active = factor.factor_id === selectedFactorId;
+            return (
+              <button
+                key={factor.factor_id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                disabled={disabled}
+                onClick={() => onSelect(factor.factor_id)}
+                className={`w-full rounded-xl border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60 ${active ? "border-blue-400 bg-blue-50" : "border-slate-200 bg-white hover:border-blue-200"}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-black text-slate-900">{factor.name}</p>
+                    <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                      {factor.year} · {factor.region || "未标区域"} · {factor.value} {factor.unit}
+                    </p>
+                  </div>
+                  <span className={`zc-pill ${factor.tenant_scope === "platform" ? "zc-pill-blue" : "zc-pill-green"}`}>
+                    {factor.tenant_scope === "platform" ? "平台因子" : "企业因子"}
+                  </span>
+                </div>
+                <div className="mt-2 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-[11px]">
+                  <span className="truncate text-slate-500">来源：{factor.source}</span>
+                  <b className="shrink-0 text-blue-700">预览 {factor.preview_emissions} {factor.preview_unit}</b>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {bundle && bundle.factor_candidates.length > 0 && (
+        <>
+          <label className="mt-3 block text-xs font-black text-slate-700" htmlFor="factor-selection-note">
+            人工选择理由
+          </label>
+          <textarea
+            id="factor-selection-note"
+            value={selectionNote}
+            onChange={(event) => onNoteChange(event.currentTarget.value)}
+            disabled={disabled}
+            rows={3}
+            maxLength={1000}
+            className="mt-2 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold leading-5 text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+          />
+          <div className="mt-1 flex justify-between text-[10px] font-semibold text-slate-400">
+            <span>至少 12 字，随结果永久留痕</span>
+            <span>{selectionNote.trim().length} / 1000</span>
+          </div>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={!canConfirm}
+            className="mt-3 w-full zc-button-primary py-3 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {confirming ? <Loader2 size={17} className="animate-spin" /> : <CheckCircle2 size={17} />}
+            {confirming ? "H-02 正在确认并计算…" : "H-02 确认因子并运行 R-01"}
+          </button>
+        </>
+      )}
+      <p className="mt-3 text-[11px] font-semibold leading-5 text-slate-500">
+        R-01 使用 Decimal + Quantity 单位内核，模型不参与数值运算。
+      </p>
     </div>
   );
 }
@@ -999,6 +1634,54 @@ function NoticeBanner({ notice, onClose }: { notice: Notice; onClose: () => void
       <button type="button" onClick={onClose} className="shrink-0 opacity-70 hover:opacity-100" aria-label="关闭提示">
         ×
       </button>
+    </div>
+  );
+}
+
+function QualityReviewCard({ review }: { review: QualityReviewResponse }) {
+  const blocked = review.quality_status === "fail";
+  const warned = review.quality_status === "pass_with_warnings";
+  return (
+    <div className={`mt-5 rounded-2xl border p-4 ${blocked ? "border-red-200 bg-red-50" : warned ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white ${blocked ? "text-red-600" : warned ? "text-amber-600" : "text-emerald-600"}`}>
+            {blocked ? <AlertCircle size={18} /> : <ClipboardCheck size={18} />}
+          </span>
+          <div>
+            <h3 className="text-sm font-black text-slate-900">A-03 独立证据质检</h3>
+            <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">{review.summary}</p>
+          </div>
+        </div>
+        <span className={`zc-pill ${blocked ? "zc-pill-red" : warned ? "zc-pill-amber" : "zc-pill-green"}`}>{review.score} 分</span>
+      </div>
+      <div className="mt-3 max-h-48 space-y-2 overflow-y-auto pr-1">
+        {review.findings.map((finding) => (
+          <div key={finding.check_key} className="flex gap-2 rounded-xl bg-white/75 px-3 py-2 text-xs leading-5">
+            <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${finding.result === "fail" ? "bg-red-500" : finding.result === "warning" ? "bg-amber-500" : "bg-emerald-500"}`} />
+            <span><b className="text-slate-800">{finding.label}：</b><span className="text-slate-600">{finding.message}</span></span>
+          </div>
+        ))}
+      </div>
+      {review.retrievals && Object.keys(review.retrievals).length > 0 && (
+        <div className="mt-3 rounded-xl border border-blue-100 bg-white/80 p-3">
+          <div className="flex items-center gap-2 text-xs font-black text-blue-800">
+            <Bot size={14} /> 本体约束下的字段证据检索
+          </div>
+          <div className="mt-2 space-y-2">
+            {Object.entries(review.retrievals).map(([fieldKey, retrieval]) => (
+              <div key={fieldKey} className="rounded-lg bg-slate-50 px-3 py-2 text-[11px] leading-5 text-slate-600">
+                <div className="flex items-center justify-between gap-3">
+                  <b className="text-slate-800">{fieldLabels[fieldKey] || fieldKey}</b>
+                  <span className="font-mono text-[10px] text-slate-400">Trace {retrieval.retrieval_run_id.slice(0, 8)}</span>
+                </div>
+                <p className="mt-1">{retrieval.hits[0]?.excerpt || "未找到字段专属证据，转人工核对。"}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <p className="mt-3 text-[11px] font-semibold text-slate-500">质检只给出风险清单；通过后仍须 H-01 对事实负责。</p>
     </div>
   );
 }
@@ -1156,16 +1839,35 @@ function Field({
   );
 }
 
-function Info({ icon, title, lines }: { icon: ReactNode; title: string; lines: string[] }) {
-  return (
-    <div className="mb-4 rounded-2xl bg-slate-50 p-4">
+function Info({
+  icon,
+  title,
+  lines,
+  run,
+  onOpenRun,
+}: {
+  icon: ReactNode;
+  title: string;
+  lines: string[];
+  run?: AgentRun | null;
+  onOpenRun?: (runId: string) => void;
+}) {
+  const className = `mb-4 w-full rounded-2xl bg-slate-50 p-4 text-left ${run ? "cursor-pointer border border-transparent transition hover:border-blue-200 hover:bg-blue-50/55 active:scale-[0.99]" : ""}`;
+  const content = (
+    <>
       <div className="mb-2 flex items-center gap-2 font-black text-slate-900">
         <span className="text-blue-600">{icon}</span>
-        {title}
+        <span className="min-w-0 flex-1">{title}</span>
+        {run && <span className={`zc-pill ${agentStatusTone(run.status)}`}>{agentStatusLabel(run.status)}</span>}
       </div>
       {lines.map((line, index) => (
         <p key={`${index}-${line}`} className="mb-1 break-words text-sm leading-6 text-slate-600">{line}</p>
       ))}
-    </div>
+      {run && <p className="mt-2 text-xs font-bold text-blue-600">查看执行过程与 Skill 版本</p>}
+    </>
   );
+  if (run && onOpenRun) {
+    return <button type="button" className={className} onClick={() => onOpenRun(run.run_id)}>{content}</button>;
+  }
+  return <div className={className}>{content}</div>;
 }

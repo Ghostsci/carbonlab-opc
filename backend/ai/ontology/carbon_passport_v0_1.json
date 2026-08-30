@@ -1,0 +1,82 @@
+{
+  "ontology_id": "carbon-passport-ontology",
+  "version": "0.1.0",
+  "status": "candidate",
+  "purpose": "工厂碳数据护照最小语义契约；统一字段、证据、规则与受控工作流，不替代正式账本约束。",
+  "classes": [
+    "Tenant",
+    "Enterprise",
+    "Installation",
+    "ProductionProcess",
+    "Product",
+    "ReportingPeriod",
+    "EvidenceDocument",
+    "EvidenceChunk",
+    "ExtractedFieldCandidate",
+    "ConfirmedFact",
+    "ActivityData",
+    "EmissionFactor",
+    "RuleRecord",
+    "CalculationResult",
+    "MethodologyReview",
+    "PassportVersion",
+    "AgentAction",
+    "HumanDecision"
+  ],
+  "relations": [
+    {"name": "belongsToTenant", "domain": "EvidenceDocument", "range": "Tenant"},
+    {"name": "belongsToEnterprise", "domain": "EvidenceDocument", "range": "Enterprise"},
+    {"name": "producedAt", "domain": "Product", "range": "Installation"},
+    {"name": "appliesToPeriod", "domain": "ActivityData", "range": "ReportingPeriod"},
+    {"name": "extractedFrom", "domain": "ExtractedFieldCandidate", "range": "EvidenceChunk"},
+    {"name": "supportsField", "domain": "EvidenceChunk", "range": "ExtractedFieldCandidate"},
+    {"name": "confirmedBy", "domain": "ConfirmedFact", "range": "HumanDecision"},
+    {"name": "usesFactor", "domain": "CalculationResult", "range": "EmissionFactor"},
+    {"name": "governedByRule", "domain": "CalculationResult", "range": "RuleRecord"},
+    {"name": "derivedFrom", "domain": "CalculationResult", "range": "ConfirmedFact"},
+    {"name": "reviewedBy", "domain": "PassportVersion", "range": "MethodologyReview"},
+    {"name": "supersedes", "domain": "PassportVersion", "range": "PassportVersion"},
+    {"name": "publishedAs", "domain": "CalculationResult", "range": "PassportVersion"}
+  ],
+  "field_mappings": {
+    "electricity_kwh": {
+      "aliases": ["electricity_kwh", "用电量", "activity_quantity", "quantity"],
+      "concepts": ["ActivityData", "EvidenceChunk"],
+      "expected_unit": "kWh"
+    },
+    "period": {
+      "aliases": ["period", "账单月份", "billing_month", "date", "抄表日期"],
+      "concepts": ["ReportingPeriod", "EvidenceChunk"]
+    },
+    "facility": {
+      "aliases": ["facility", "所属工厂", "customer_name"],
+      "concepts": ["Installation", "EvidenceChunk"]
+    },
+    "methodology_ref": {
+      "aliases": ["methodology_ref", "方法学", "规则", "rule_record"],
+      "concepts": ["RuleRecord", "MethodologyReview"]
+    }
+  },
+  "corpora": {
+    "tenant_evidence": {
+      "security_boundary": "tenant_and_enterprise",
+      "allowed_roles": ["A-01", "A-02", "A-03", "H-01", "A-04", "H-03"]
+    },
+    "public_methodology": {
+      "security_boundary": "tenant_rule_registry",
+      "allowed_roles": ["H-02", "A-04", "H-03"]
+    },
+    "internal_sop": {
+      "security_boundary": "tenant_internal",
+      "allowed_roles": ["A-01", "A-02", "A-03", "H-01", "H-02", "A-04", "H-03"]
+    }
+  },
+  "invariants": [
+    "RAG retrieval is candidate evidence, never a formal fact.",
+    "Only human-confirmed structured values may enter the formal ledger.",
+    "R-01 must never calculate from retrieved free text.",
+    "Every retrieval must be tenant-scoped before ranking.",
+    "Evidence must support the exact field, not merely occur in the same document.",
+    "Expired, withdrawn, or superseded rules cannot be proposed as currently applicable."
+  ]
+}

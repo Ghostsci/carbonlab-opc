@@ -119,6 +119,22 @@ def _prepare_candidate(
     return response.json()
 
 
+def _prepare_quality_review(
+    client: TestClient,
+    token: str,
+    document: DocumentStore,
+    fields: dict,
+    candidate: dict,
+) -> dict:
+    response = client.post(
+        f"/api/upload/{document.id}/quality-review",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"candidate_token": candidate["candidate_token"], "fields": fields},
+    )
+    assert response.status_code == 200, response.json()
+    return response.json()
+
+
 def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
     client = TestClient(app)
     db = _session()
@@ -134,12 +150,14 @@ def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
             "facility": "炼钢厂",
         }
         candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
 
         tampered = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
@@ -156,6 +174,7 @@ def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
@@ -176,6 +195,221 @@ def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
             )
             db.commit()
         db.rollback()
+    finally:
+        db.close()
+
+
+def test_confirm_activity_requires_independent_a03_quality_gate():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-quality-gate")
+        enterprise = _enterprise(db, tenant, "83")
+        _user(db, tenant, enterprise, "upload-quality-gate@example.com")
+        document = _document(db, tenant, enterprise, filename="quality-gate.csv")
+        token = _login(client, "upload-quality-gate@example.com")
+        fields = {
+            "electricity_kwh": "632600 kWh",
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
+
+        blocked = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+        assert blocked.status_code == 409, blocked.json()
+        assert "A-03" in blocked.json()["detail"]
+        assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
+
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
+        assert quality["quality_status"] in {"pass", "pass_with_warnings"}
+        assert quality["formal_write_allowed"] is False
+        assert quality["next_gate"].startswith("H-01")
+    finally:
+        db.close()
+
+
+def test_a03_quality_token_is_bound_to_one_exact_candidate():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-quality-binding")
+        enterprise = _enterprise(db, tenant, "84")
+        _user(db, tenant, enterprise, "upload-quality-binding@example.com")
+        document = _document(db, tenant, enterprise, filename="quality-binding.csv")
+        token = _login(client, "upload-quality-binding@example.com")
+        fields = {
+            "electricity_kwh": "632600 kWh",
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        first_candidate = _prepare_candidate(client, token, document, fields)
+        first_quality = _prepare_quality_review(
+            client,
+            token,
+            document,
+            fields,
+            first_candidate,
+        )
+        second_candidate = _prepare_candidate(client, token, document, fields)
+
+        response = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": second_candidate["candidate_token"],
+                "quality_review_token": first_quality["quality_review_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+
+        assert response.status_code == 409, response.json()
+        assert "当前候选" in response.json()["detail"]
+        assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
+    finally:
+        db.close()
+
+
+def test_workforce_contract_endpoint_exposes_permissions_and_human_gates():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-workforce-contract")
+        enterprise = _enterprise(db, tenant, "85")
+        _user(db, tenant, enterprise, "upload-workforce-contract@example.com")
+        token = _login(client, "upload-workforce-contract@example.com")
+
+        response = client.get(
+            "/api/upload/workforce/roles",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200, response.json()
+        payload = response.json()
+        assert payload["contract_version"] == "carbon-passport-workforce-v1.0"
+        roles = {item["role_id"]: item for item in payload["roles"]}
+        assert set(roles) == {"H-00", "A-01", "A-02", "A-03", "H-01", "H-02", "R-01", "A-04", "H-03"}
+        assert roles["A-03"]["human_gate"] is False
+        assert "代替人工确认" in roles["A-03"]["forbidden_actions"]
+        assert roles["H-01"]["human_gate"] is True
+        assert "调用 LLM 生成结果" in roles["R-01"]["forbidden_actions"]
+    finally:
+        db.close()
+
+
+def test_document_workflow_exposes_clickable_agent_run_history():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-agent-history")
+        enterprise = _enterprise(db, tenant, "87")
+        _user(db, tenant, enterprise, "upload-agent-history@example.com")
+        document = _document(db, tenant, enterprise, filename="agent-history.csv")
+        document.ocr_result = {
+            "fields": {
+                "electricity_kwh": "632600 kWh",
+                "period": "2026-03",
+                "facility": "炼钢厂",
+            },
+            "raw_text": "用电量 632600 kWh，账单月份 2026-03，所属工厂 炼钢厂",
+            "confidence": 0.98,
+        }
+        db.commit()
+        token = _login(client, "upload-agent-history@example.com")
+        fields = dict(document.ocr_result["fields"])
+        candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
+        confirmed = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+        assert confirmed.status_code == 200, confirmed.json()
+
+        history = client.get(
+            f"/api/agent-ops/runs?source_file_id={document.id}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert history.status_code == 200, history.json()
+        by_agent = {item["agent_id"]: item for item in history.json()["runs"]}
+        assert {"A-02", "A-03", "H-01"}.issubset(by_agent)
+        assert by_agent["A-03"]["skill"]["skill_id"] == "carbon-evidence-quality-review"
+
+        detail = client.get(
+            f"/api/agent-ops/runs/{by_agent['A-03']['run_id']}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert detail.status_code == 200, detail.json()
+        assert detail.json()["event_chain_verified"] is True
+        assert [event["event_type"] for event in detail.json()["events"]] == [
+            "task_started",
+            "candidate_binding_verified",
+            "evidence_retrieved",
+            "quality_gate_evaluated",
+            "task_completed",
+        ]
+    finally:
+        db.close()
+
+
+def test_a03_does_not_treat_a_value_from_an_unrelated_source_field_as_evidence():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-quality-field-association")
+        enterprise = _enterprise(db, tenant, "86")
+        _user(db, tenant, enterprise, "upload-quality-field-association@example.com")
+        document = _document(db, tenant, enterprise, filename="field-association.csv")
+        document.ocr_result = {
+            "fields": {
+                "electricity_kwh": "632600 kWh",
+                "period": "2026",
+                "facility": "炼钢厂",
+            },
+            "raw_text": "炼钢厂 2026 632600 kWh",
+            "confidence": 99,
+        }
+        db.commit()
+        token = _login(client, "upload-quality-field-association@example.com")
+        fields = {
+            # 2026 exists in the document, but only as the reporting period. It
+            # must not be accepted as evidence for electricity consumption.
+            "electricity_kwh": "2026 kWh",
+            "period": "2026",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
+
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
+
+        electricity_evidence = next(
+            item for item in quality["findings"]
+            if item["check_key"] == "evidence_electricity_kwh"
+        )
+        assert electricity_evidence["result"] == "warning"
+        assert quality["quality_status"] == "pass_with_warnings"
     finally:
         db.close()
 
@@ -202,12 +436,14 @@ def test_confirm_activity_writes_workflow_checkpoint():
             "facility": "炼钢厂",
         }
         candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
 
         resp = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
@@ -400,10 +636,11 @@ def test_upload_inbox_lists_only_current_tenant_and_enterprise_in_stable_order(m
             "confidence": 0,
             "raw_text": "",
             "tables": [],
-            "errors": ["unreadable"],
-            "ocr_status": "failed",
-            "created_at": higher_id.created_at.isoformat().replace("+00:00", "Z"),
-        }
+                "errors": ["unreadable"],
+                "ocr_status": "failed",
+                "workforce": {},
+                "created_at": higher_id.created_at.isoformat().replace("+00:00", "Z"),
+            }
         assert body[2]["storage_url"] == f"/api/upload/{older.id}/download"
         assert body[2]["errors"] == ["OCR warning"]
         assert all("storage_path" not in item for item in body)
@@ -797,12 +1034,14 @@ def test_confirm_activity_preserves_large_integer_quantity_exactly():
             "facility": "炼钢厂",
         }
         candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
 
         response = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
@@ -868,12 +1107,15 @@ def test_confirm_activity_rejects_negative_quantity_after_candidate_lock():
             "facility": "炼钢厂",
         }
         candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
+        assert quality["quality_status"] == "fail"
 
         response = client.post(
             "/api/upload/confirm-activity",
             headers={"Authorization": f"Bearer {token}"},
             json={
                 "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
                 "file_id": str(document.id),
                 "document_content_hash": document.content_hash,
                 "filename": document.filename,
@@ -882,8 +1124,8 @@ def test_confirm_activity_rejects_negative_quantity_after_candidate_lock():
             },
         )
 
-        assert response.status_code == 400, response.json()
-        assert response.json()["detail"] == "活动数据数量必须大于 0"
+        assert response.status_code == 409, response.json()
+        assert "质检存在阻断项" in response.json()["detail"]
         assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
     finally:
         db.close()
@@ -973,7 +1215,7 @@ def test_confirm_activity_rejects_non_electricity_documents_from_activity_ledger
         db.close()
 
 
-def test_confirm_activity_persists_activity_and_emission_result_idempotently():
+def test_confirm_activity_requires_human_factor_gate_before_emission_result():
     client = TestClient(app)
     db = _session()
     try:
@@ -981,6 +1223,7 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
         enterprise = _enterprise(db, tenant, "33")
         _user(db, tenant, enterprise, "upload-formal@example.com")
         factor = EmissionFactor(
+            tenant_id=tenant.id,
             name="华东电网测试因子",
             code="TEST-GRID-EAST-2026",
             category="electricity_grid",
@@ -1024,7 +1267,9 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
             },
         }
         candidate = _prepare_candidate(client, token, document, payload["fields"])
+        quality = _prepare_quality_review(client, token, document, payload["fields"], candidate)
         payload["candidate_token"] = candidate["candidate_token"]
+        payload["quality_review_token"] = quality["quality_review_token"]
 
         first = client.post(
             "/api/upload/confirm-activity",
@@ -1041,14 +1286,91 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
 
         body = second.json()
         formal = body["formal_write"]
-        assert formal["calculation_status"] == "calculated"
-        assert formal["emission_result"]["co2_tonnes"] == 403.5988
+        assert formal["calculation_status"] == "pending_factor"
+        assert formal["emission_result"] is None
 
         source_id = uuid.UUID(formal["emission_source_id"])
         activity_id = uuid.UUID(formal["activity_data_id"])
-        result_id = uuid.UUID(formal["emission_result"]["emission_result_id"])
         assert db.query(EmissionSource).filter(EmissionSource.id == source_id).count() == 1
+        source = db.get(EmissionSource, source_id)
+        assert source.tenant_id == tenant.id
         assert db.query(ActivityData).filter(ActivityData.emission_source_id == source_id).count() == 1
+        assert db.query(EmissionResult).filter(EmissionResult.activity_data_id == activity_id).count() == 0
+
+        durable = client.get(
+            f"/api/upload/{document.id}/formal-write",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert durable.status_code == 200, durable.json()
+        assert durable.json()["formal_write"]["activity_data_id"] == str(activity_id)
+        assert durable.json()["formal_write"]["calculation_status"] == "pending_factor"
+        assert durable.json()["formal_write"]["activity_quantity"] == "632600"
+
+        candidates = client.get(
+            f"/api/upload/formal-activities/{activity_id}/factor-candidates",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert candidates.status_code == 200, candidates.json()
+        factor_candidates = candidates.json()["factor_candidates"]
+        assert [candidate["factor_id"] for candidate in factor_candidates] == [str(factor.id)]
+        candidate = factor_candidates[0]
+        assert candidate["tenant_scope"] == "tenant"
+        assert candidate["region_match"] == "exact"
+        assert candidate["preview_emissions"] == "403.5988"
+        assert candidate["preview_unit"] == "tCO2"
+
+        blank_reason = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(factor.id),
+                "factor_snapshot_sha256": candidate["factor_snapshot_sha256"],
+                "selection_note": "            ",
+            },
+        )
+        assert blank_reason.status_code == 400, blank_reason.json()
+        assert "有效字符" in blank_reason.json()["detail"]
+
+        stale = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(factor.id),
+                "factor_snapshot_sha256": "0" * 64,
+                "selection_note": "人工已核对因子年份、区域、来源及适用单位。",
+            },
+        )
+        assert stale.status_code == 409, stale.json()
+        assert db.query(EmissionResult).filter(EmissionResult.activity_data_id == activity_id).count() == 0
+
+        factor_confirmation = {
+            "factor_id": str(factor.id),
+            "factor_snapshot_sha256": candidate["factor_snapshot_sha256"],
+            "selection_note": "人工已核对因子年份、区域、来源及适用单位。",
+        }
+        calculated = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json=factor_confirmation,
+        )
+        assert calculated.status_code == 200, calculated.json()
+        replayed = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json=factor_confirmation,
+        )
+        assert replayed.status_code == 200, replayed.json()
+
+        calculated_formal = calculated.json()["formal_write"]
+        replayed_formal = replayed.json()["formal_write"]
+        assert calculated_formal["calculation_status"] == "calculated"
+        assert calculated_formal["emission_result"]["co2_tonnes"] == 403.5988
+        assert calculated_formal["emission_result"]["co2_tonnes_exact"] == "403.5988"
+        assert (
+            replayed_formal["emission_result"]["emission_result_id"]
+            == calculated_formal["emission_result"]["emission_result_id"]
+        )
+        result_id = uuid.UUID(calculated_formal["emission_result"]["emission_result_id"])
         assert db.query(EmissionResult).filter(EmissionResult.activity_data_id == activity_id).count() == 1
 
         activity = db.query(ActivityData).filter(ActivityData.id == activity_id).first()
@@ -1062,12 +1384,193 @@ def test_confirm_activity_persists_activity_and_emission_result_idempotently():
         assert result.audit_trail["formula"] == (
             "Quantity(activity) × Quantity(factor) → target emission unit"
         )
+        assert result.audit_trail["factor_confirmation"]["gate"] == "H-02"
+        assert result.audit_trail["factor_confirmation"]["selection_note"] == (
+            "人工已核对因子年份、区域、来源及适用单位。"
+        )
         assert result.unit == "tCO2"
+
+        # A later factor choice supersedes the first result.  Re-confirming the
+        # original factor must create a fresh current version rather than hand
+        # the UI the ID of the now-historical first result.
+        alternate_factor = EmissionFactor(
+            tenant_id=tenant.id,
+            name="华东电网备选测试因子",
+            code="TEST-GRID-EAST-ALT-2026",
+            category="electricity_grid",
+            region="华东",
+            year=2026,
+            value=Decimal("0.5000"),
+            unit="kgCO2/kWh",
+            source="test-alternate",
+            uncertainty=2.0,
+            is_default=False,
+        )
+        db.add(alternate_factor)
+        db.commit()
+        db.refresh(alternate_factor)
+
+        refreshed_candidates = client.get(
+            f"/api/upload/formal-activities/{activity_id}/factor-candidates",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert refreshed_candidates.status_code == 200, refreshed_candidates.json()
+        alternate_candidate = next(
+            item
+            for item in refreshed_candidates.json()["factor_candidates"]
+            if item["factor_id"] == str(alternate_factor.id)
+        )
+        alternate_confirmation = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(alternate_factor.id),
+                "factor_snapshot_sha256": alternate_candidate["factor_snapshot_sha256"],
+                "selection_note": "人工改用备选因子并核对年份、区域、来源及适用单位。",
+            },
+        )
+        assert alternate_confirmation.status_code == 200, alternate_confirmation.json()
+        alternate_result_id = uuid.UUID(
+            alternate_confirmation.json()["formal_write"]["emission_result"][
+                "emission_result_id"
+            ]
+        )
+        assert alternate_result_id != result_id
+
+        original_candidate = next(
+            item
+            for item in refreshed_candidates.json()["factor_candidates"]
+            if item["factor_id"] == str(factor.id)
+        )
+        restored_confirmation = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(factor.id),
+                "factor_snapshot_sha256": original_candidate["factor_snapshot_sha256"],
+                "selection_note": "人工重新选择原因子并再次核对年份、区域、来源及适用单位。",
+            },
+        )
+        assert restored_confirmation.status_code == 200, restored_confirmation.json()
+        restored_result_id = uuid.UUID(
+            restored_confirmation.json()["formal_write"]["emission_result"][
+                "emission_result_id"
+            ]
+        )
+        assert restored_result_id not in {result_id, alternate_result_id}
+
+        db.expire_all()
+        first_result = db.get(EmissionResult, result_id)
+        second_result = db.get(EmissionResult, alternate_result_id)
+        current_result = db.get(EmissionResult, restored_result_id)
+        assert first_result.superseded_by_id == alternate_result_id
+        assert second_result.superseded_by_id == restored_result_id
+        assert current_result.superseded_by_id is None
+        assert current_result.supersedes_id == alternate_result_id
+        assert current_result.factor_id == factor.id
+        assert current_result.version == 3
 
         db.expire_all()
         confirmed_document = db.get(DocumentStore, document.id)
         assert confirmed_document.ocr_status == "confirmed"
         assert confirmed_document.ocr_result["fields"] == payload["fields"]
         assert confirmed_document.ocr_result["human_confirmation"]["value_origin"] == "human_confirmed"
+    finally:
+        db.close()
+
+
+def test_factor_gate_hides_cross_tenant_private_factor_and_rejects_wrong_year():
+    client = TestClient(app)
+    db = _session()
+    try:
+        owner_tenant = _tenant(db, "factor-private-owner")
+        owner_enterprise = _enterprise(db, owner_tenant, "9412")
+        _user(db, owner_tenant, owner_enterprise, "factor-private-owner@example.com")
+        private_factor = EmissionFactor(
+            tenant_id=owner_tenant.id,
+            name="其他租户私有因子",
+            code="PRIVATE-GRID-EAST-2026",
+            category="electricity_grid",
+            region="华东",
+            year=2026,
+            value=Decimal("0.6000"),
+            unit="kgCO2e/kWh",
+            source="private-test",
+            is_default=True,
+        )
+
+        tenant = _tenant(db, "factor-gate-user")
+        enterprise = _enterprise(db, tenant, "9413")
+        _user(db, tenant, enterprise, "factor-gate-user@example.com")
+        wrong_year_factor = EmissionFactor(
+            tenant_id=None,
+            name="平台因子但年份不匹配",
+            code="GLOBAL-GRID-EAST-2025",
+            category="electricity_grid",
+            region="华东",
+            year=2025,
+            value=Decimal("0.5000"),
+            unit="kgCO2e/kWh",
+            source="platform-test",
+            is_default=True,
+        )
+        document = _document(db, tenant, enterprise, filename="factor-gate.csv")
+        db.add_all([private_factor, wrong_year_factor])
+        db.commit()
+        token = _login(client, "factor-gate-user@example.com")
+        fields = {
+            "electricity_kwh": "1000",
+            "period": "2026-03",
+            "facility": "炼钢厂",
+        }
+        candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(client, token, document, fields, candidate)
+        confirmed = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+        assert confirmed.status_code == 200, confirmed.json()
+        activity_id = confirmed.json()["formal_write"]["activity_data_id"]
+
+        candidates = client.get(
+            f"/api/upload/formal-activities/{activity_id}/factor-candidates",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert candidates.status_code == 200, candidates.json()
+        assert candidates.json()["factor_candidates"] == []
+
+        cross_tenant = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(private_factor.id),
+                "factor_snapshot_sha256": "0" * 64,
+                "selection_note": "尝试引用其他租户的私有排放因子进行计算。",
+            },
+        )
+        assert cross_tenant.status_code == 400
+        assert "不可见" in cross_tenant.json()["detail"]
+
+        wrong_year = client.post(
+            f"/api/upload/formal-activities/{activity_id}/confirm-factor",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "factor_id": str(wrong_year_factor.id),
+                "factor_snapshot_sha256": "0" * 64,
+                "selection_note": "尝试引用适用年份不一致的排放因子进行计算。",
+            },
+        )
+        assert wrong_year.status_code == 400
+        assert "适用年份" in wrong_year.json()["detail"]
+        assert db.query(EmissionResult).filter(EmissionResult.activity_data_id == uuid.UUID(activity_id)).count() == 0
     finally:
         db.close()

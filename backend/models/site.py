@@ -1,7 +1,7 @@
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 
 class Site(Base, UUIDMixin, TimestampMixin):
     __tablename__ = "sites"
+    __table_args__ = (
+        UniqueConstraint("id", "tenant_id", name="uq_sites_id_tenant"),
+    )
 
     enterprise_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("enterprises.id"), nullable=False, index=True
@@ -28,11 +31,13 @@ class Site(Base, UUIDMixin, TimestampMixin):
     )
     longitude: Mapped[float | None] = mapped_column()
     latitude: Mapped[float | None] = mapped_column()
-    tenant_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=True, index=True
+    tenant_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False, index=True
     )
 
     enterprise: Mapped["Enterprise"] = relationship(back_populates="sites")
     emission_sources: Mapped[list["EmissionSource"]] = relationship(
-        back_populates="site", cascade="all, delete-orphan"
+        back_populates="site",
+        cascade="all, delete-orphan",
+        foreign_keys="[EmissionSource.site_id, EmissionSource.tenant_id]",
     )

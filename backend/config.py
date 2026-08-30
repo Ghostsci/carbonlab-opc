@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+RAG_SCHEMA_EMBEDDING_DIMENSIONS = 1536
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -29,6 +32,12 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_model: str = "gpt-4o"
     embedding_model: str = "text-embedding-3-small"
+    rag_embedding_provider: str = "local_hash"
+    # Changing this value requires a database migration because pgvector
+    # dimensions are part of the column type.
+    rag_embedding_dimensions: int = RAG_SCHEMA_EMBEDDING_DIMENSIONS
+    rag_candidate_limit: int = 250
+    rag_max_source_chars: int = 20000
 
     # MinIO / S3
     minio_endpoint: str = "localhost:9000"

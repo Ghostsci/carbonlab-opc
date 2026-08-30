@@ -12,6 +12,16 @@ from backend.models.base import TimestampMixin, UUIDMixin
 class EmissionFactor(Base, UUIDMixin, TimestampMixin):
     __tablename__ = "emission_factors"
 
+    # ``NULL`` means a platform-governed reference factor that every tenant may
+    # read but no tenant runtime role may mutate.  A non-null value represents
+    # a tenant-private factor.  PostgreSQL RLS enforces that distinction; the
+    # explicit mapping keeps SQLite tests and service-level checks equivalent.
+    tenant_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid,
+        ForeignKey("tenants.id"),
+        nullable=True,
+        index=True,
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     code: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     category: Mapped[str] = mapped_column(

@@ -137,6 +137,44 @@ export interface RuleRecord {
   content_hash: string;
 }
 
+export interface RetrievalEvidenceHit {
+  rank: number;
+  chunk_id: string;
+  knowledge_document_id: string;
+  corpus_type: string;
+  source_type: string;
+  source_ref?: string | null;
+  title: string;
+  excerpt: string;
+  content_hash: string;
+  field_keys: string[];
+  ontology_concepts: string[];
+  jurisdiction?: string | null;
+  valid_from?: string | null;
+  valid_to?: string | null;
+  lexical_score: string;
+  vector_score: string;
+  fused_score: string;
+}
+
+export interface MethodologyCandidate {
+  rule: RuleRecord;
+  retrieval: RetrievalEvidenceHit;
+  methodology_ref: string;
+  human_confirmation_required: boolean;
+  formal_write_allowed: boolean;
+}
+
+export interface MethodologySearchResponse {
+  retrieval_run_id: string;
+  ontology_version: string;
+  embedding_model: string;
+  candidates: MethodologyCandidate[];
+  human_gate: string;
+  next_engine: string;
+  warning: string;
+}
+
 export interface EmissionCandidate {
   id: string;
   source_name: string;
@@ -149,6 +187,79 @@ export interface EmissionCandidate {
   document_id?: string | null;
   document_name?: string | null;
   evidence_ready: boolean;
+  quality_review_status?: string | null;
+  quality_review_id?: string | null;
+  enterprise_confirmation_status?: string | null;
+  governed_workflow?: boolean;
+  plain_view?: PlainEmissionPassport;
+}
+
+export interface PlainEmissionPassport {
+  record_kind: "activity_emission_passport_draft";
+  status: "matched_to_installation" | "awaiting_installation_identity";
+  matched_account_id?: string | null;
+  matched_account_code?: string | null;
+  installation: {
+    site_id: string;
+    name: string;
+    operator_name: string;
+    address: string;
+    grid_region: string;
+  };
+  period: {
+    start: string;
+    end: string;
+  };
+  document: {
+    id?: string | null;
+    filename?: string | null;
+    mime_type?: string | null;
+    content_hash?: string | null;
+    uploaded_at?: string | null;
+  };
+  activity: {
+    id: string;
+    source_id: string;
+    source_name: string;
+    category: string;
+    scope: string;
+    quantity: string;
+    unit: string;
+    data_source: string;
+    content_hash: string;
+    confirmed_at?: string | null;
+  };
+  factor: {
+    id: string;
+    code: string;
+    name: string;
+    value: string;
+    unit: string;
+    source: string;
+    source_url?: string | null;
+    year: number;
+    region?: string | null;
+    snapshot_sha256?: string | null;
+    selection_note?: string | null;
+  };
+  calculation: {
+    result_id: string;
+    result: string;
+    unit: string;
+    human_formula: string;
+    engine_formula?: string | null;
+    replay_match: boolean;
+    content_hash: string;
+  };
+  confirmations: Array<{
+    gate: string;
+    role: string;
+    status: string;
+    meaning: string;
+    confirmed_at?: string | null;
+    actor_user_id?: string | null;
+  }>;
+  limitations: string[];
 }
 
 export interface PassportDetail {
@@ -259,6 +370,13 @@ export function fetchEmissionCandidates(
   return api(`/api/passports/${accountId}/emission-candidates?${periodQuery(periodStart, periodEnd)}`, headers);
 }
 
+export function fetchPlainEmissionPassport(
+  emissionResultId: string,
+  headers: Headers,
+): Promise<PlainEmissionPassport> {
+  return api(`/api/passports/emission-results/${emissionResultId}/plain-view`, headers);
+}
+
 export function addOutput(
   accountId: string,
   payload: Record<string, unknown>,
@@ -281,6 +399,23 @@ export function fetchRules(headers: Headers): Promise<RuleRecord[]> {
 
 export function registerRule(payload: Record<string, unknown>, headers: Headers): Promise<RuleRecord> {
   return api("/api/passports/rules", headers, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function searchMethodologyCandidates(
+  accountId: string,
+  periodStart: string,
+  periodEnd: string,
+  headers: Headers,
+): Promise<MethodologySearchResponse> {
+  return api(`/api/passports/${accountId}/methodology-candidates`, headers, {
+    method: "POST",
+    body: JSON.stringify({
+      period_start: new Date(`${periodStart}T00:00:00Z`).toISOString(),
+      period_end: new Date(`${periodEnd}T23:59:59Z`).toISOString(),
+      jurisdiction: "EU",
+      top_k: 5,
+    }),
+  });
 }
 
 export function calculateSEE(

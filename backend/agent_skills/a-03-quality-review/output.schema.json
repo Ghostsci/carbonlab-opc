@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["quality_review_id", "quality_status", "score", "findings", "next_gate"],
+  "properties": {
+    "quality_review_id": {"type": "string"},
+    "quality_status": {"enum": ["pass", "pass_with_warnings", "fail"]},
+    "score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_key", "result", "message"],
+        "properties": {
+          "check_key": {"type": "string"},
+          "result": {"enum": ["pass", "warning", "fail"]},
+          "message": {"type": "string"},
+          "evidence_ref": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "next_gate": {"const": "H-01"}
+  },
+  "additionalProperties": false
+}

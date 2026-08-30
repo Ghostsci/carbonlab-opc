@@ -21,6 +21,12 @@ class DocumentStore(Base, UUIDMixin, TimestampMixin):
             "content_hash",
             name="uq_documents_tenant_enterprise_content_hash",
         ),
+        UniqueConstraint(
+            "id",
+            "tenant_id",
+            "enterprise_id",
+            name="uq_documents_id_tenant_enterprise",
+        ),
     )
 
     tenant_id: Mapped[uuid.UUID] = mapped_column(

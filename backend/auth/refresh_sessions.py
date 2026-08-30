@@ -14,6 +14,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from backend.auth.jwt import create_refresh_token, decode_token, refresh_token_expires_at
+from backend.auth.user_lookup import auth_user_by_id
 from backend.models.refresh_token_session import RefreshTokenSession
 from backend.models.user import User
 
@@ -131,7 +132,7 @@ def rotate_refresh_session(
         db.commit()
         raise _unauthorized()
 
-    user = db.query(User).filter(User.id == user_id).first()
+    user = auth_user_by_id(db, user_id)
     if user is None:
         session.revoked_at = now
         db.commit()

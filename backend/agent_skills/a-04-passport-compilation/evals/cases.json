@@ -1,0 +1,5 @@
+[
+  {"name": "draft_uses_only_formal_refs", "expect": {"next_gate": "H-03"}},
+  {"name": "missing_human_gate_blocks_compilation", "expect": {"status": "blocked"}},
+  {"name": "draft_never_auto_publishes", "expect": {"published": false}}
+]

@@ -11,7 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from backend.core.ledger import content_hash, idempotency_hash
+from backend.core.ledger import content_hash, idempotency_hash, ledger_decimal
 from backend.database import Base
 from backend.models.activity_data import ActivityData
 from backend.models.cbam_ledger import (
@@ -23,6 +23,7 @@ from backend.models.cbam_ledger import (
     SourceStreamAttribution,
 )
 from backend.models.document import DocumentStore
+from backend.models.emission_factor import EmissionFactor
 from backend.models.emission_result import EmissionResult
 from backend.models.emission_source import EmissionSource
 from backend.models.enterprise import Enterprise
@@ -40,6 +41,7 @@ from backend.models.site import Site
 from backend.services.cbam_inputs import persist_production_output
 from backend.services.cbam_see import calculate_and_persist_see, replay_see_result
 from backend.services.rule_records import TRUSTED_CBAM_PUBLISHERS
+from backend.core.quantity import Quantity, QuantityError
 
 
 class PassportConflict(RuntimeError):
@@ -293,7 +295,7 @@ def add_source_attribution(
     method: str,
     actor_id: uuid.UUID,
 ) -> SourceStreamAttribution:
-    account, _installation, processes, _products = _load_base_facts(
+    account, installation, processes, _products = _load_base_facts(
         db,
         tenant_id=tenant_id,
         account_id=account_id,
@@ -308,6 +310,7 @@ def add_source_attribution(
             EmissionResult.id == emission_result_id,
             EmissionResult.tenant_id == tenant_id,
             Site.enterprise_id == account.enterprise_id,
+            Site.name == installation.name,
         )
         .first()
     )
@@ -995,7 +998,7 @@ def list_emission_candidates(
     period_start: datetime | None = None,
     period_end: datetime | None = None,
 ) -> list[dict]:
-    account, _installation, _processes, _products = _load_base_facts(
+    account, installation, _processes, _products = _load_base_facts(
         db,
         tenant_id=tenant_id,
         account_id=account_id,
@@ -1010,6 +1013,7 @@ def list_emission_candidates(
             EmissionResult.tenant_id == tenant_id,
             EmissionResult.superseded_by_id.is_(None),
             Site.enterprise_id == account.enterprise_id,
+            Site.name == installation.name,
         )
     )
     if period_start is not None and period_end is not None:
@@ -1018,8 +1022,23 @@ def list_emission_candidates(
             EmissionResult.period_end == period_end,
         )
     rows = query.order_by(EmissionResult.period_start.desc()).all()
-    return [
-        {
+    candidates: list[dict] = []
+    for result, source, activity, document in rows:
+        snapshot = document.ocr_result if document and isinstance(document.ocr_result, dict) else {}
+        workforce = snapshot.get("workforce") if isinstance(snapshot.get("workforce"), dict) else {}
+        stages = workforce.get("stages") if isinstance(workforce.get("stages"), dict) else {}
+        quality_stage = (
+            stages.get("evidence_quality_review")
+            if isinstance(stages.get("evidence_quality_review"), dict)
+            else {}
+        )
+        confirmation_stage = (
+            stages.get("enterprise_confirmation")
+            if isinstance(stages.get("enterprise_confirmation"), dict)
+            else {}
+        )
+        legacy_human_confirmation = isinstance(snapshot.get("human_confirmation"), dict)
+        candidates.append({
             "id": str(result.id),
             "source_name": source.name,
             "scope": result.scope,
@@ -1031,9 +1050,276 @@ def list_emission_candidates(
             "document_id": str(document.id) if document else None,
             "document_name": document.filename if document else None,
             "evidence_ready": document is not None,
-        }
-        for result, source, _activity, document in rows
-    ]
+            "quality_review_status": quality_stage.get("status"),
+            "quality_review_id": quality_stage.get("quality_review_id"),
+            "enterprise_confirmation_status": (
+                confirmation_stage.get("status")
+                or ("completed" if legacy_human_confirmation else None)
+            ),
+            "governed_workflow": (
+                quality_stage.get("status") == "completed"
+                and confirmation_stage.get("status") == "completed"
+            ),
+            "plain_view": _plain_emission_passport_payload(
+                db,
+                tenant_id=tenant_id,
+                enterprise_id=account.enterprise_id,
+                result=result,
+                source=source,
+                activity=activity,
+                document=document,
+                site=source.site,
+            ),
+        })
+    return candidates
+
+
+def emission_result_plain_view(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    enterprise_id: uuid.UUID,
+    emission_result_id: uuid.UUID,
+) -> dict:
+    """Return a beginner-readable, tenant-scoped projection of one result.
+
+    This is deliberately a read model, not a new certification record.  It
+    proves how one confirmed source document became one deterministic activity
+    emission result and states which product-passport facts are still absent.
+    """
+    row = (
+        db.query(EmissionResult, EmissionSource, ActivityData, DocumentStore, Site)
+        .join(EmissionSource, EmissionSource.id == EmissionResult.emission_source_id)
+        .join(Site, Site.id == EmissionSource.site_id)
+        .join(ActivityData, ActivityData.id == EmissionResult.activity_data_id)
+        .outerjoin(DocumentStore, DocumentStore.id == ActivityData.document_id)
+        .filter(
+            EmissionResult.id == emission_result_id,
+            EmissionResult.tenant_id == tenant_id,
+            EmissionResult.superseded_by_id.is_(None),
+            EmissionSource.tenant_id == tenant_id,
+            ActivityData.tenant_id == tenant_id,
+            Site.tenant_id == tenant_id,
+            Site.enterprise_id == enterprise_id,
+        )
+        .first()
+    )
+    if row is None:
+        raise LookupError("activity emission result not found for current enterprise and tenant")
+    result, source, activity, document, site = row
+    return _plain_emission_passport_payload(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        result=result,
+        source=source,
+        activity=activity,
+        document=document,
+        site=site,
+    )
+
+
+def _plain_emission_passport_payload(
+    db: Session,
+    *,
+    tenant_id: uuid.UUID,
+    enterprise_id: uuid.UUID,
+    result: EmissionResult,
+    source: EmissionSource,
+    activity: ActivityData,
+    document: DocumentStore | None,
+    site: Site,
+) -> dict:
+    enterprise = (
+        db.query(Enterprise)
+        .filter(
+            Enterprise.id == enterprise_id,
+            Enterprise.tenant_id == tenant_id,
+        )
+        .one()
+    )
+    factor = None
+    if result.factor_id is not None:
+        factor = (
+            db.query(EmissionFactor)
+            .filter(
+                EmissionFactor.id == result.factor_id,
+                (
+                    (EmissionFactor.tenant_id.is_(None))
+                    | (EmissionFactor.tenant_id == tenant_id)
+                ),
+            )
+            .first()
+        )
+    if factor is None:
+        raise RuntimeError("formal emission result has no readable factor record")
+
+    account = (
+        db.query(InstallationAccount)
+        .join(
+            InstallationAccountMember,
+            InstallationAccountMember.account_id == InstallationAccount.id,
+        )
+        .join(Installation, Installation.id == InstallationAccountMember.installation_id)
+        .filter(
+            InstallationAccount.tenant_id == tenant_id,
+            InstallationAccount.enterprise_id == enterprise_id,
+            InstallationAccountMember.tenant_id == tenant_id,
+            Installation.tenant_id == tenant_id,
+            Installation.name == site.name,
+        )
+        .order_by(InstallationAccount.created_at.desc())
+        .first()
+    )
+
+    audit = result.audit_trail if isinstance(result.audit_trail, dict) else {}
+    factor_confirmation = (
+        audit.get("factor_confirmation")
+        if isinstance(audit.get("factor_confirmation"), dict)
+        else {}
+    )
+    document_snapshot = (
+        document.ocr_result
+        if document is not None and isinstance(document.ocr_result, dict)
+        else {}
+    )
+    workforce = (
+        document_snapshot.get("workforce")
+        if isinstance(document_snapshot.get("workforce"), dict)
+        else {}
+    )
+    stages = workforce.get("stages") if isinstance(workforce.get("stages"), dict) else {}
+    quality = (
+        stages.get("evidence_quality_review")
+        if isinstance(stages.get("evidence_quality_review"), dict)
+        else {}
+    )
+    enterprise_confirmation = (
+        stages.get("enterprise_confirmation")
+        if isinstance(stages.get("enterprise_confirmation"), dict)
+        else {}
+    )
+
+    replay_match = False
+    try:
+        replayed = (Quantity.of(activity.quantity, activity.unit) * Quantity.of(factor.value, factor.unit)).convert_to(result.unit)
+        replay_match = ledger_decimal(replayed.value) == ledger_decimal(result.co2_tonnes)
+    except QuantityError:
+        replay_match = False
+
+    quantity_text = _plain_decimal_text(activity.quantity)
+    factor_text = _plain_decimal_text(factor.value)
+    result_text = _plain_decimal_text(result.co2_tonnes)
+    if factor.unit.startswith("kg") and result.unit.startswith("t"):
+        human_formula = (
+            f"{quantity_text} {activity.unit} × {factor_text} {factor.unit} "
+            f"÷ 1,000 = {result_text} {result.unit}"
+        )
+    else:
+        human_formula = (
+            f"{quantity_text} {activity.unit} × {factor_text} {factor.unit} "
+            f"= {result_text} {result.unit}"
+        )
+
+    h01_status = enterprise_confirmation.get("status")
+    if not h01_status and activity.confirmed_at is not None:
+        h01_status = "completed"
+    a03_status = quality.get("status")
+    if not a03_status and isinstance(document_snapshot.get("quality_review"), dict):
+        a03_status = "completed"
+
+    return {
+        "record_kind": "activity_emission_passport_draft",
+        "status": "matched_to_installation" if account else "awaiting_installation_identity",
+        "matched_account_id": str(account.id) if account else None,
+        "matched_account_code": account.account_code if account else None,
+        "installation": {
+            "site_id": str(site.id),
+            "name": site.name,
+            "operator_name": enterprise.name,
+            "address": site.address,
+            "grid_region": site.grid_region,
+        },
+        "period": {
+            "start": _iso_utc(result.period_start),
+            "end": _iso_utc(result.period_end),
+        },
+        "document": {
+            "id": str(document.id) if document else None,
+            "filename": document.filename if document else None,
+            "mime_type": document.mime_type if document else None,
+            "content_hash": document.content_hash if document else None,
+            "uploaded_at": _iso_utc(document.created_at) if document else None,
+        },
+        "activity": {
+            "id": str(activity.id),
+            "source_id": str(source.id),
+            "source_name": source.name,
+            "category": source.category,
+            "scope": result.scope,
+            "quantity": quantity_text,
+            "unit": activity.unit,
+            "data_source": activity.data_source,
+            "content_hash": activity.content_hash,
+            "confirmed_at": _iso_utc(activity.confirmed_at),
+        },
+        "factor": {
+            "id": str(factor.id),
+            "code": factor.code,
+            "name": factor.name,
+            "value": factor_text,
+            "unit": factor.unit,
+            "source": factor.source,
+            "source_url": factor.source_url,
+            "year": factor.year,
+            "region": factor.region,
+            "snapshot_sha256": factor_confirmation.get("factor_snapshot_sha256"),
+            "selection_note": factor_confirmation.get("selection_note"),
+        },
+        "calculation": {
+            "result_id": str(result.id),
+            "result": result_text,
+            "unit": result.unit,
+            "human_formula": human_formula,
+            "engine_formula": audit.get("formula"),
+            "replay_match": replay_match,
+            "content_hash": result.content_hash,
+        },
+        "confirmations": [
+            {
+                "gate": "A-03",
+                "role": "证据质检员",
+                "status": a03_status or "not_recorded",
+                "meaning": "检查字段是否能在原文件中找到证据",
+            },
+            {
+                "gate": "H-01",
+                "role": "企业数据确认人",
+                "status": h01_status or "not_recorded",
+                "meaning": "确认用量、期间和装置属于本企业事实",
+                "confirmed_at": _iso_utc(activity.confirmed_at),
+            },
+            {
+                "gate": "H-02",
+                "role": "排放因子确认人",
+                "status": "completed" if factor_confirmation else "not_recorded",
+                "meaning": "人工确认因子的年份、区域、来源和单位",
+                "actor_user_id": factor_confirmation.get("actor_user_id"),
+            },
+            {
+                "gate": "R-01",
+                "role": "确定性计算引擎",
+                "status": "completed" if replay_match else "needs_review",
+                "meaning": "只按锁定的小数、单位和公式复算，不让大模型参与算术",
+            },
+        ],
+        "limitations": [
+            "当前记录只证明这一笔活动用量及其排放计算。",
+            "尚未加入报告期产量，因此不能计算单位产品碳排放。",
+            "尚未完成产品、方法学与发布复核，因此不能作为出口申报文书。",
+            "这不是政府证件，也不等于第三方或法定核查结论。",
+        ],
+    }
 
 
 def create_profile_snapshot(
@@ -1844,6 +2130,12 @@ def _iso_utc(value: datetime | None) -> str | None:
 
 def _decimal_text(value) -> str:
     return format(Decimal(str(value)), "f")
+
+
+def _plain_decimal_text(value) -> str:
+    """Remove storage-only zero padding from human-facing exact decimals."""
+    normalized = Decimal(str(value)).normalize()
+    return format(normalized, "f")
 
 
 def _exact_decimal(value, label: str) -> Decimal:

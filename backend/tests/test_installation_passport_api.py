@@ -124,6 +124,7 @@ def _published_passport_fixture(db, tenant, enterprise, user):
     formal = persist_confirmed_activity(
         db,
         user=user,
+        trusted_factor_id=factor.id,
         activity_record={
             "file_id": str(document.id),
             "document_content_hash": document.content_hash,
@@ -325,6 +326,17 @@ def test_incomplete_passport_cannot_be_reviewed_or_published():
         assert profile["status"] == "draft"
         assert profile["completeness_score"] < 100
         assert profile["replay"]["match"] is True, profile["replay"]
+        assert profile["agent_run_id"].startswith("run_")
+        run_detail = client.get(
+            f"/api/agent-ops/runs/{profile['agent_run_id']}",
+            headers=_headers(token),
+        )
+        assert run_detail.status_code == 200, run_detail.json()
+        assert run_detail.json()["agent_id"] == "A-04"
+        assert run_detail.json()["skill"]["skill_id"] == "carbon-passport-compilation"
+        assert run_detail.json()["output_snapshot"]["next_gate"] == "H-02"
+        assert run_detail.json()["final_action"]["handoff_to"] == "H-02"
+        assert run_detail.json()["event_chain_verified"] is True
 
         review = client.post(
             f"/api/passports/{account_id}/reviews",
@@ -418,11 +430,21 @@ def test_complete_passport_can_be_replayed_reviewed_and_published():
             json={"fields": fields},
         )
         assert candidate.status_code == 200, candidate.json()
+        quality = client.post(
+            f"/api/upload/{document['file_id']}/quality-review",
+            headers=headers,
+            json={
+                "candidate_token": candidate.json()["candidate_token"],
+                "fields": fields,
+            },
+        )
+        assert quality.status_code == 200, quality.json()
         confirmed = client.post(
             "/api/upload/confirm-activity",
             headers=headers,
             json={
                 "candidate_token": candidate.json()["candidate_token"],
+                "quality_review_token": quality.json()["quality_review_token"],
                 "file_id": document["file_id"],
                 "document_content_hash": document["content_hash"],
                 "filename": document["filename"],
@@ -431,9 +453,109 @@ def test_complete_passport_can_be_replayed_reviewed_and_published():
             },
         )
         assert confirmed.status_code == 200, confirmed.json()
-        emission_result_id = confirmed.json()["formal_write"]["emission_result"][
+        formal_write = confirmed.json()["formal_write"]
+        assert formal_write["calculation_status"] == "pending_factor"
+        factor_candidates = client.get(
+            f"/api/upload/formal-activities/{formal_write['activity_data_id']}/factor-candidates",
+            headers=headers,
+        )
+        assert factor_candidates.status_code == 200, factor_candidates.json()
+        selected_factor = next(
+            item
+            for item in factor_candidates.json()["factor_candidates"]
+            if item["factor_id"] == str(factor.id)
+        )
+        calculated = client.post(
+            f"/api/upload/formal-activities/{formal_write['activity_data_id']}/confirm-factor",
+            headers=headers,
+            json={
+                "factor_id": selected_factor["factor_id"],
+                "factor_snapshot_sha256": selected_factor["factor_snapshot_sha256"],
+                "selection_note": "人工核对适用年份、区域、来源和单位后确认用于本期计算。",
+            },
+        )
+        assert calculated.status_code == 200, calculated.json()
+        emission_result_id = calculated.json()["formal_write"]["emission_result"][
             "emission_result_id"
         ]
+        plain_view = client.get(
+            f"/api/passports/emission-results/{emission_result_id}/plain-view",
+            headers=headers,
+        )
+        assert plain_view.status_code == 200, plain_view.json()
+        plain = plain_view.json()
+        assert plain["record_kind"] == "activity_emission_passport_draft"
+        assert plain["matched_account_id"] == account_id
+        assert plain["installation"]["name"] == "热轧卷板生产装置"
+        assert plain["activity"]["quantity"] == "2000000"
+        assert plain["activity"]["unit"] == "kWh"
+        assert plain["factor"]["value"] == "0.5"
+        assert plain["factor"]["unit"] == "kgCO2e/kWh"
+        assert plain["calculation"]["result"] == "1000"
+        assert plain["calculation"]["unit"] == "tCO2e"
+        assert plain["calculation"]["replay_match"] is True
+        assert "÷ 1,000" in plain["calculation"]["human_formula"]
+        assert [item["status"] for item in plain["confirmations"]] == [
+            "completed",
+            "completed",
+            "completed",
+            "completed",
+        ]
+        governed_candidates = client.get(
+            f"/api/passports/{account_id}/emission-candidates",
+            headers=headers,
+            params={
+                "period_start": "2026-01-01T00:00:00Z",
+                "period_end": "2026-03-31T23:59:59Z",
+            },
+        )
+        assert governed_candidates.status_code == 200, governed_candidates.json()
+        assert governed_candidates.json()[0]["quality_review_status"] == "completed"
+        assert governed_candidates.json()[0]["enterprise_confirmation_status"] == "completed"
+        assert governed_candidates.json()[0]["governed_workflow"] is True
+        assert governed_candidates.json()[0]["plain_view"]["calculation"]["result"] == "1000"
+
+        other_account = client.post(
+            "/api/passports",
+            headers=headers,
+            json={
+                "request_key": uuid.uuid4().hex,
+                "installation_name": "同企业另一生产装置",
+                "operator_name": enterprise.name,
+                "country_code": "CN",
+                "process_name": "另一生产工序",
+                "aggregate_goods_category": "iron_steel",
+                "production_route": "eaf",
+                "product_name": "另一钢材产品",
+                "cn_code": "72085200",
+            },
+        )
+        assert other_account.status_code == 201, other_account.json()
+        other_account_id = other_account.json()["account"]["id"]
+        other_process_id = other_account.json()["processes"][0]["id"]
+        other_candidates = client.get(
+            f"/api/passports/{other_account_id}/emission-candidates",
+            headers=headers,
+            params={
+                "period_start": "2026-01-01T00:00:00Z",
+                "period_end": "2026-03-31T23:59:59Z",
+            },
+        )
+        assert other_candidates.status_code == 200, other_candidates.json()
+        assert other_candidates.json() == []
+        wrong_installation_attribution = client.post(
+            f"/api/passports/{other_account_id}/attributions",
+            headers=headers,
+            json={
+                "process_id": other_process_id,
+                "emission_result_id": emission_result_id,
+                "period_start": "2026-01-01T00:00:00Z",
+                "period_end": "2026-03-31T23:59:59Z",
+                "share": "1",
+                "method": "metered_allocation",
+            },
+        )
+        assert wrong_installation_attribution.status_code == 404
 
         output = client.post(
             f"/api/passports/{account_id}/outputs",

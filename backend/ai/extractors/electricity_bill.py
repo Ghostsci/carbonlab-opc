@@ -6,6 +6,10 @@ import csv
 import re
 
 
+class MultipleElectricityRecordsError(ValueError):
+    """Raised when one upload contains several independent billing periods."""
+
+
 class ElectricityBillExtractor:
     FIELD_KEYS = (
         "supplier_name",
@@ -143,18 +147,43 @@ class ElectricityBillExtractor:
         lines = [line.strip() for line in text.splitlines() if line.strip()]
         for index in range(len(lines) - 1):
             header_line = lines[index]
-            value_line = lines[index + 1]
             for delimiter in (",", "\t", "，"):
-                if delimiter not in header_line or delimiter not in value_line:
+                if delimiter not in header_line:
                     continue
                 headers = self._split_row(header_line, delimiter)
-                values = self._split_row(value_line, delimiter)
-                if len(headers) < 2 or len(values) < 2:
+                header_keys = [
+                    self.HEADER_ALIASES.get(self._normalize_header(header))
+                    for header in headers
+                ]
+                if len(headers) < 2 or sum(key is not None for key in header_keys) < 2:
                     continue
 
+                record_rows: list[list[str]] = []
+                for value_line in lines[index + 1 :]:
+                    if delimiter not in value_line:
+                        break
+                    values = self._split_row(value_line, delimiter)
+                    if len(values) != len(headers):
+                        break
+                    populated_recognized = sum(
+                        bool(value.strip())
+                        for key, value in zip(header_keys, values)
+                        if key is not None
+                    )
+                    if populated_recognized < 2:
+                        break
+                    record_rows.append(values)
+
+                if len(record_rows) > 1:
+                    raise MultipleElectricityRecordsError(
+                        "Multiple billing records detected; upload one billing period per document."
+                    )
+                if not record_rows:
+                    continue
+                values = record_rows[0]
+
                 row_fields: dict[str, str] = {}
-                for header, value in zip(headers, values):
-                    key = self.HEADER_ALIASES.get(self._normalize_header(header))
+                for key, value in zip(header_keys, values):
                     value = value.strip()
                     if not key or not value:
                         continue

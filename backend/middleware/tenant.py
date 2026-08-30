@@ -15,7 +15,7 @@ from uuid import UUID
 from fastapi import Depends, HTTPException, Request, status
 
 from backend.auth.jwt import decode_token
-from backend.models.user import User
+from backend.auth.public_paths import is_public_path
 
 # FastAPI doesn't have a built-in request-scoped DI container,
 # so we use contextvars for the tenant scope.
@@ -46,12 +46,11 @@ def peek_current_tenant_id() -> str | None:
 async def tenant_middleware(request: Request, call_next):
     """Extract tenant from JWT and set contextvar for downstream dependencies."""
     path = request.url.path
-    public_prefixes = {"/api/health", "/api/auth", "/api/scope3/suppliers", "/docs", "/openapi.json", "/redoc"}
 
     # Clear on every request
     _current_tenant_id.set(None)
 
-    if request.method == "OPTIONS" or any(path.startswith(p) for p in public_prefixes):
+    if request.method == "OPTIONS" or is_public_path(path):
         return await call_next(request)
 
     auth_header = request.headers.get("Authorization")
@@ -60,10 +59,11 @@ async def tenant_middleware(request: Request, call_next):
             payload = decode_token(auth_header.removeprefix("Bearer "))
             tenant_id = payload.get("tenant_id")
             if not tenant_id and payload.get("sub"):
+                from backend.auth.user_lookup import auth_user_by_id
                 from backend.database import get_sessionmaker
 
                 with get_sessionmaker()() as db:
-                    user = db.query(User).filter(User.id == UUID(payload["sub"])).first()
+                    user = auth_user_by_id(db, UUID(payload["sub"]))
                     tenant_id = str(user.tenant_id) if user and user.tenant_id else None
             if tenant_id:
                 _current_tenant_id.set(tenant_id)

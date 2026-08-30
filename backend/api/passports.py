@@ -13,6 +13,13 @@ from sqlalchemy.orm import Session
 from backend.auth.dependencies import get_current_user
 from backend.database import get_db
 from backend.models.user import User
+from backend.ai.rag import get_rag_service
+from backend.services.agent_ops import (
+    append_agent_run_event,
+    complete_agent_run,
+    start_agent_run,
+)
+from backend.services.rule_records import resolve_rule_record
 from backend.services.installation_passport import (
     PassportConflict,
     add_production_output,
@@ -23,6 +30,7 @@ from backend.services.installation_passport import (
     create_passport_account,
     create_profile_snapshot,
     create_sharing_grant,
+    emission_result_plain_view,
     export_shared_package,
     grant_payload,
     list_passport_accounts,
@@ -154,6 +162,16 @@ class CalculateSEERequest(BaseModel):
     methodology_ref: str = Field(pattern=r"^rule_record:[0-9a-fA-F-]{36}$")
 
 
+class MethodologySearchRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    period_start: datetime
+    period_end: datetime
+    query: str | None = Field(default=None, max_length=500)
+    jurisdiction: str = Field(default="EU", pattern=r"^[A-Z]{2,8}$")
+    top_k: int = Field(default=5, ge=1, le=10)
+
+
 class CreateSharingGrantRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
@@ -244,6 +262,7 @@ def create_rule(
             actor_id=user.id,
             **req.model_dump(),
         )
+        get_rag_service().index_rule(db, rule)
         db.commit()
         return _rule_payload(rule)
     except ValueError as exc:
@@ -288,6 +307,27 @@ def get_shared_package(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
 
+@router.get("/emission-results/{emission_result_id}/plain-view")
+def get_emission_result_plain_view(
+    emission_result_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Explain one formal activity-emission result without audit jargon."""
+    tenant_id, enterprise_id = _context(user)
+    try:
+        return emission_result_plain_view(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=enterprise_id,
+            emission_result_id=emission_result_id,
+        )
+    except LookupError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+
 @router.get("/{account_id}")
 def get_passport(
     account_id: uuid.UUID,
@@ -309,6 +349,86 @@ def get_passport(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@router.post("/{account_id}/methodology-candidates")
+def search_methodology_candidates(
+    account_id: uuid.UUID,
+    req: MethodologySearchRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Return applicable rule candidates; H-02 must still choose one explicitly."""
+    tenant_id, enterprise_id = _context(user)
+    if user.role not in {"platform_admin", "admin", "manager", "auditor"}:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="当前角色无方法学检索权限")
+    if req.period_start >= req.period_end:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="报告期间无效")
+    try:
+        detail = passport_detail(
+            db,
+            tenant_id=tenant_id,
+            account_id=account_id,
+            period_start=req.period_start,
+            period_end=req.period_end,
+        )
+    except LookupError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    process = detail["processes"][0] if detail["processes"] else {}
+    product = detail["products"][0] if detail["products"] else {}
+    query = req.query or (
+        f"CBAM 方法规则 产品 {product.get('name', '')} CN {product.get('cn_code', '')} "
+        f"生产路线 {process.get('production_route', '')} 报告期 "
+        f"{req.period_start.date().isoformat()} 至 {req.period_end.date().isoformat()}"
+    )
+    retrieval = get_rag_service().search(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        actor_id=user.id,
+        role_id="H-02",
+        purpose="methodology_rule_review",
+        query_text=query,
+        corpus_types={"public_methodology"},
+        top_k=req.top_k,
+        valid_at=req.period_start,
+        jurisdiction=req.jurisdiction,
+        field_key="methodology_ref",
+    )
+    candidates: list[dict] = []
+    for hit in retrieval.hits:
+        if hit.source_type != "rule_record" or not hit.source_ref:
+            continue
+        try:
+            rule = resolve_rule_record(
+                db,
+                tenant_id=tenant_id,
+                reference=f"rule_record:{hit.source_ref}",
+                expected_kind="cbam_methodology",
+                period_start=req.period_start,
+                period_end=req.period_end,
+            )
+        except ValueError:
+            continue
+        candidates.append(
+            {
+                "rule": _rule_payload(rule),
+                "retrieval": hit.model_dump(),
+                "methodology_ref": f"rule_record:{rule.id}",
+                "human_confirmation_required": True,
+                "formal_write_allowed": False,
+            }
+        )
+    db.commit()
+    return {
+        "retrieval_run_id": retrieval.retrieval_run_id,
+        "ontology_version": retrieval.ontology_version,
+        "embedding_model": retrieval.embedding_model,
+        "candidates": candidates,
+        "human_gate": "H-02 方法与复核负责人",
+        "next_engine": "R-01 确定性核算执行员",
+        "warning": retrieval.warning,
+    }
 
 
 @router.get("/{account_id}/emission-candidates")
@@ -514,8 +634,61 @@ def create_profile(
             period_end=req.period_end,
             actor_id=user.id,
         )
+        compilation_run = start_agent_run(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=user.enterprise_id,
+            agent_id="A-04",
+            trigger="profile_freeze",
+            trigger_ref=str(account_id),
+            input_snapshot={
+                "account_id": str(account_id),
+                "installation_id": str(profile.installation_id),
+                "period_start": req.period_start,
+                "period_end": req.period_end,
+                "formal_record_refs": list(profile.derived_from),
+            },
+            summary="A-04 从正式记录装配可重放的护照草稿",
+        )
+        append_agent_run_event(
+            db,
+            run=compilation_run,
+            event_type="passport_draft_compiled",
+            status="warning" if profile.completeness_score < 100 else "success",
+            title="护照草稿已冻结",
+            summary=(
+                f"完整度 {profile.completeness_score}%，数据质量 {profile.data_quality_grade}；"
+                "草稿仍需 H-03 授权发布"
+            ),
+            payload={
+                "profile_version_id": str(profile.id),
+                "status": profile.status,
+                "completeness_score": profile.completeness_score,
+                "data_quality_grade": profile.data_quality_grade,
+                "derived_from": list(profile.derived_from),
+                "content_hash": profile.content_hash,
+            },
+            evidence_refs=list(profile.derived_from),
+        )
+        complete_agent_run(
+            db,
+            run=compilation_run,
+            summary="A-04 已冻结护照草稿并先交给 H-02 方法复核，复核后再进入 H-03 发布门",
+            output_snapshot={
+                "profile_version_id": str(profile.id),
+                "status": "ready_for_review" if profile.completeness_score == 100 else "draft",
+                "completeness_score": profile.completeness_score,
+                "data_quality_grade": profile.data_quality_grade,
+                "derived_from": list(profile.derived_from),
+                "next_gate": "H-02",
+            },
+            final_action={"handoff_to": "H-02", "auto_publish": False},
+            evidence_refs=list(profile.derived_from),
+        )
         db.commit()
-        return profile_payload(db, profile)
+        payload = profile_payload(db, profile)
+        payload["agent_run_id"] = compilation_run.run_id
+        return payload
     except LookupError as exc:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
@@ -546,8 +719,58 @@ def review_profile(
             summary=req.summary,
             findings=req.findings,
         )
+        review_run = start_agent_run(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=user.enterprise_id,
+            agent_id="H-02",
+            trigger="profile_review",
+            trigger_ref=str(req.profile_version_id),
+            input_snapshot={
+                "account_id": str(account_id),
+                "profile_version_id": str(req.profile_version_id),
+                "verdict": req.verdict,
+                "finding_count": len(req.findings),
+            },
+            summary="H-02 对冻结护照草稿执行方法学复核",
+        )
+        append_agent_run_event(
+            db,
+            run=review_run,
+            event_type="methodology_review_recorded",
+            status="blocked" if req.verdict == "fail" else (
+                "warning" if req.verdict == "pass_with_actions" else "success"
+            ),
+            title="方法学复核已记录",
+            summary=f"复核结论 {req.verdict}；该结论不等于法定 CBAM 核查",
+            payload={
+                "review_id": str(review.id),
+                "profile_version_id": str(req.profile_version_id),
+                "verdict": req.verdict,
+                "finding_count": len(req.findings),
+                "disclaimer": review.disclaimer,
+            },
+            evidence_refs=[str(req.profile_version_id), str(review.id)],
+        )
+        complete_agent_run(
+            db,
+            run=review_run,
+            summary="H-02 已完成护照草稿方法学复核",
+            output_snapshot={
+                "review_id": str(review.id),
+                "verdict": req.verdict,
+                "next_gate": "H-03" if req.verdict != "fail" else "H-02",
+            },
+            final_action={
+                "handoff_to": "H-03" if req.verdict != "fail" else "H-02",
+                "publication_blocked": req.verdict == "fail",
+            },
+            evidence_refs=[str(req.profile_version_id), str(review.id)],
+        )
         db.commit()
-        return review_payload(review)
+        payload = review_payload(review)
+        payload["agent_run_id"] = review_run.run_id
+        return payload
     except LookupError as exc:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
@@ -578,8 +801,56 @@ def publish_profile(
             methodology_review_id=req.methodology_review_id,
             actor_id=user.id,
         )
+        release_run = start_agent_run(
+            db,
+            tenant_id=tenant_id,
+            enterprise_id=user.enterprise_id,
+            agent_id="H-03",
+            trigger="profile_publish",
+            trigger_ref=str(profile.id),
+            input_snapshot={
+                "account_id": str(account_id),
+                "profile_version_id": str(req.profile_version_id),
+                "methodology_review_id": str(req.methodology_review_id),
+            },
+            summary="H-03 执行最终复核、版本冻结和授权发布",
+        )
+        append_agent_run_event(
+            db,
+            run=release_run,
+            event_type="passport_published",
+            status="success",
+            title="护照版本已授权发布",
+            summary="发布版本已通过重放、正式事实和方法学复核门禁",
+            payload={
+                "published_profile_version_id": str(profile.id),
+                "supersedes_id": str(profile.supersedes_id),
+                "content_hash": profile.content_hash,
+                "completeness_score": profile.completeness_score,
+                "data_quality_grade": profile.data_quality_grade,
+            },
+            evidence_refs=[
+                str(req.profile_version_id),
+                str(req.methodology_review_id),
+                str(profile.id),
+            ],
+        )
+        complete_agent_run(
+            db,
+            run=release_run,
+            summary="H-03 已发布可验证、可重放的护照版本",
+            output_snapshot={
+                "profile_version_id": str(profile.id),
+                "status": profile.status,
+                "content_hash": profile.content_hash,
+            },
+            final_action={"published": True},
+            evidence_refs=[str(profile.id)],
+        )
         db.commit()
-        return profile_payload(db, profile)
+        payload = profile_payload(db, profile)
+        payload["agent_run_id"] = release_run.run_id
+        return payload
     except LookupError as exc:
         db.rollback()
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc

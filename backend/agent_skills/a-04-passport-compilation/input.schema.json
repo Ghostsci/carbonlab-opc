@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["account_id", "installation_id", "period_start", "period_end", "formal_record_refs"],
+  "properties": {
+    "account_id": {"type": "string", "format": "uuid"},
+    "installation_id": {"type": "string", "format": "uuid"},
+    "period_start": {"type": "string"},
+    "period_end": {"type": "string"},
+    "formal_record_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

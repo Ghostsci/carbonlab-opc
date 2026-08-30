@@ -4,7 +4,7 @@ import uuid
 
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from backend.config import settings
 from backend.core.ledger import content_hash
@@ -65,6 +65,28 @@ def _register_sqlite_integrity_functions(dbapi_connection, _connection_record):
     register_sqlite_integrity_functions(dbapi_connection)
 
 
+@event.listens_for(Session, "after_begin")
+def _apply_postgres_tenant_context(_session, _transaction, connection):
+    """Re-apply the request tenant whenever a PostgreSQL transaction begins.
+
+    ``SET LOCAL`` is intentionally scoped to one transaction. SQLAlchemy may
+    begin another transaction after ``commit()`` when an expired ORM object is
+    read, so setting the tenant only once in ``get_db`` creates a post-commit
+    RLS failure. Applying the GUC at every transaction boundary preserves both
+    RLS isolation and normal ORM lifecycle semantics.
+    """
+    if connection.dialect.name != "postgresql":
+        return
+    from backend.middleware.tenant import peek_current_tenant_id
+
+    tenant_id = peek_current_tenant_id()
+    if tenant_id:
+        connection.execute(
+            text("SELECT set_config('app.current_tenant_id', :tenant_id, true)"),
+            {"tenant_id": tenant_id},
+        )
+
+
 def get_engine():
     global _engine
     if _engine is None:
@@ -89,15 +111,6 @@ def get_sessionmaker():
 def get_db():
     db = get_sessionmaker()()
     try:
-        if db.bind is not None and db.bind.dialect.name == "postgresql":
-            from backend.middleware.tenant import peek_current_tenant_id
-
-            tenant_id = peek_current_tenant_id()
-            if tenant_id:
-                db.execute(
-                    text("SET LOCAL app.current_tenant_id = :tenant_id"),
-                    {"tenant_id": tenant_id},
-                )
         yield db
     finally:
         db.close()

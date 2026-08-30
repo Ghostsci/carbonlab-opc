@@ -27,9 +27,6 @@ _EXPORTS = {
     "RAGService": ("backend.ai.rag", "RAGService"),
     "RAGResponse": ("backend.ai.rag", "RAGResponse"),
     "get_rag_service": ("backend.ai.rag", "get_rag_service"),
-    "recommend_factors": ("backend.ai.factor_recommender", "recommend_factors"),
-    "FactorMatch": ("backend.ai.factor_recommender", "FactorMatch"),
-    "RecommendResult": ("backend.ai.factor_recommender", "RecommendResult"),
     "understand_document": (
         "backend.ai.doc_understanding",
         "understand_document",

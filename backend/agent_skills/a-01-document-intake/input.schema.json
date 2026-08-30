@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["file_id", "tenant_id", "enterprise_id", "filename", "content_hash"],
+  "properties": {
+    "file_id": {"type": "string", "format": "uuid"},
+    "tenant_id": {"type": "string", "format": "uuid"},
+    "enterprise_id": {"type": "string", "format": "uuid"},
+    "filename": {"type": "string", "minLength": 1},
+    "mime_type": {"type": ["string", "null"]},
+    "size_bytes": {"type": "integer", "minimum": 0},
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "additionalProperties": false
+}

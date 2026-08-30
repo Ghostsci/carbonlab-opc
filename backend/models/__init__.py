@@ -5,6 +5,7 @@ Importing this package registers the selected SQLAlchemy models with
 """
 
 from backend.models.activity_data import ActivityData
+from backend.models.agent_ops import AgentRunEvent, AgentRunLog
 from backend.models.ai_os import ContextPackRecord, WorkflowInstance, WorkflowStep
 from backend.models.cbam import CBAMReport, EmbeddedEmission, Product
 from backend.models.cbam_ledger import (
@@ -30,6 +31,12 @@ from backend.models.installation_passport import (
     InstallationProfileVersion,
     MethodologyReview,
     ProfileDistributionEvent,
+)
+from backend.models.knowledge import (
+    KnowledgeChunk,
+    KnowledgeDocument,
+    RetrievalHit,
+    RetrievalRun,
 )
 from backend.models.refresh_token_session import RefreshTokenSession
 from backend.models.rule_record import RuleRecord

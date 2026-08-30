@@ -2,6 +2,8 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import {
   Building2,
+  Bot,
+  Calculator,
   ChevronDown,
   Fingerprint,
   HelpCircle,
@@ -14,8 +16,10 @@ import {
 import { useState } from "react";
 
 const NAV_ITEMS = [
-  { to: "/upload", zh: "文件接入与确认", en: "Data Inbox", icon: Inbox },
+  { to: "/upload", zh: "数字员工工作台", en: "AI Workflow", icon: Inbox },
+  { to: "/calculations", zh: "核算工作台", en: "Calculation", icon: Calculator },
   { to: "/passports", zh: "工厂碳数据护照", en: "Passport", icon: Fingerprint },
+  { to: "/agent-ops", zh: "数字员工治理", en: "AgentOps", icon: Bot },
 ];
 
 function roleLabel(role?: string) {

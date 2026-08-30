@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from backend.auth.dependencies import get_current_user
 from backend.auth.jwt import create_access_token
+from backend.auth.user_lookup import auth_user_by_email
 from backend.auth.refresh_sessions import (
     create_refresh_session,
     revoke_refresh_session,
@@ -136,46 +137,18 @@ def _require_allowed_browser_origin(request: Request) -> None:
     response_model_exclude_none=True,
 )
 def register(req: RegisterRequest, request: Request, response: Response, db: Session = Depends(get_db)):
+    del req, response, db
     _require_allowed_browser_origin(request)
-    existing = db.query(User).filter(User.email == req.email).first()
-    if existing:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="该邮箱已注册",
-        )
-    if len(req.password) < 6:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="密码长度不能少于6位",
-        )
-
-    user = User(
-        email=req.email,
-        password_hash=pwd_context.hash(req.password),
-        role="member",
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-
-    access_token = create_access_token(
-        str(user.id),
-        user.email,
-        str(user.tenant_id) if user.tenant_id else None,
-    )
-    refresh_token = create_refresh_session(db, user)
-    _set_auth_cookies(response, refresh_token)
-
-    return TokenResponse(
-        access_token=access_token,
-        user=user.to_dict(),
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="企业账号由管理员按租户开通；当前不开放公开注册",
     )
 
 
 @router.post("/login", response_model=TokenResponse, response_model_exclude_none=True)
 def login(req: LoginRequest, request: Request, response: Response, db: Session = Depends(get_db)):
     _require_allowed_browser_origin(request)
-    user = db.query(User).filter(User.email == req.email).first()
+    user = auth_user_by_email(db, str(req.email))
     if not user or not pwd_context.verify(req.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

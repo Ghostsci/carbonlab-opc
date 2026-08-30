@@ -1,0 +1,13 @@
+{
+  "skill_id": "carbon-evidence-extraction",
+  "role_id": "A-02",
+  "display_name": "碳证据提取",
+  "version": "1.0.0",
+  "category": "evidence_extraction",
+  "execution_mode": "model_assisted_candidate_generation",
+  "input_schema": "input.schema.json",
+  "output_schema": "output.schema.json",
+  "allowed_tools": ["document_parser", "table_reader", "ontology_mapper", "tenant_evidence_rag"],
+  "human_handoff": ["ambiguous_value", "missing_evidence", "unsupported_unit", "conflicting_sources"],
+  "stores_raw_chain_of_thought": false
+}

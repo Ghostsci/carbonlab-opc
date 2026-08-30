@@ -1,0 +1,163 @@
+{
+  "dataset_id": "carbonlab-competition-batch-v1",
+  "generated_for": "OPC competition controlled product validation",
+  "synthetic": true,
+  "contains_real_customer_data": false,
+  "record_model": "one billing document per facility per month",
+  "demo_factor": {
+    "value": "0.5",
+    "unit": "kgCO2e/kWh"
+  },
+  "positive_cases": [
+    {
+      "filename": "positive/DEMO_ONLY_202601_HR_electricity_bill.csv",
+      "facility": "一号热轧生产装置（合成）",
+      "period": "2026年01月",
+      "electricity_kwh": "2480000",
+      "unit_price_cny_per_kwh": "0.7180",
+      "total_amount_cny": "1780640.00",
+      "meter_reading_start_kwh": "184200000",
+      "meter_reading_end_kwh": "186680000",
+      "expected_tco2e_at_demo_factor": "1240.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202602_HR_electricity_bill.csv",
+      "facility": "一号热轧生产装置（合成）",
+      "period": "2026-02",
+      "electricity_kwh": "2360000",
+      "unit_price_cny_per_kwh": "0.7040",
+      "total_amount_cny": "1661440.00",
+      "meter_reading_start_kwh": "186680000",
+      "meter_reading_end_kwh": "189040000",
+      "expected_tco2e_at_demo_factor": "1180.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202603_HR_electricity_bill.csv",
+      "facility": "一号热轧生产装置（合成）",
+      "period": "2026-03-01 至 2026-03-31",
+      "electricity_kwh": "2610000",
+      "unit_price_cny_per_kwh": "0.7310",
+      "total_amount_cny": "1907910.00",
+      "meter_reading_start_kwh": "189040000",
+      "meter_reading_end_kwh": "191650000",
+      "expected_tco2e_at_demo_factor": "1305.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202601_CR_electricity_bill.csv",
+      "facility": "二号冷轧生产装置（合成）",
+      "period": "2026-01",
+      "electricity_kwh": "1520000",
+      "unit_price_cny_per_kwh": "0.7220",
+      "total_amount_cny": "1097440.00",
+      "meter_reading_start_kwh": "96200000",
+      "meter_reading_end_kwh": "97720000",
+      "expected_tco2e_at_demo_factor": "760.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202602_CR_electricity_bill.csv",
+      "facility": "二号冷轧生产装置（合成）",
+      "period": "2026-02-01 至 2026-02-28",
+      "electricity_kwh": "1450000",
+      "unit_price_cny_per_kwh": "0.7090",
+      "total_amount_cny": "1028050.00",
+      "meter_reading_start_kwh": "97720000",
+      "meter_reading_end_kwh": "99170000",
+      "expected_tco2e_at_demo_factor": "725.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202603_CR_electricity_bill.csv",
+      "facility": "二号冷轧生产装置（合成）",
+      "period": "2026年03月",
+      "electricity_kwh": "1630000",
+      "unit_price_cny_per_kwh": "0.7360",
+      "total_amount_cny": "1199680.00",
+      "meter_reading_start_kwh": "99170000",
+      "meter_reading_end_kwh": "100800000",
+      "expected_tco2e_at_demo_factor": "815.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202601_PA_electricity_bill.csv",
+      "facility": "公辅动力中心（合成）",
+      "period": "2026-01-01 至 2026-01-31",
+      "electricity_kwh": "830000",
+      "unit_price_cny_per_kwh": "0.7160",
+      "total_amount_cny": "594280.00",
+      "meter_reading_start_kwh": "43800000",
+      "meter_reading_end_kwh": "44630000",
+      "expected_tco2e_at_demo_factor": "415.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202602_PA_electricity_bill.csv",
+      "facility": "公辅动力中心（合成）",
+      "period": "2026年02月",
+      "electricity_kwh": "790000",
+      "unit_price_cny_per_kwh": "0.7010",
+      "total_amount_cny": "553790.00",
+      "meter_reading_start_kwh": "44630000",
+      "meter_reading_end_kwh": "45420000",
+      "expected_tco2e_at_demo_factor": "395.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202603_PA_electricity_bill.csv",
+      "facility": "公辅动力中心（合成）",
+      "period": "2026-03",
+      "electricity_kwh": "910000",
+      "unit_price_cny_per_kwh": "0.7280",
+      "total_amount_cny": "662480.00",
+      "meter_reading_start_kwh": "45420000",
+      "meter_reading_end_kwh": "46330000",
+      "expected_tco2e_at_demo_factor": "455.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202601_AS_electricity_bill.csv",
+      "facility": "空压站（合成）",
+      "period": "2026年01月",
+      "electricity_kwh": "310000",
+      "unit_price_cny_per_kwh": "0.7190",
+      "total_amount_cny": "222890.00",
+      "meter_reading_start_kwh": "21600000",
+      "meter_reading_end_kwh": "21910000",
+      "expected_tco2e_at_demo_factor": "155.000000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202602_AS_electricity_bill.csv",
+      "facility": "空压站（合成）",
+      "period": "2026-02",
+      "electricity_kwh": "295000",
+      "unit_price_cny_per_kwh": "0.7060",
+      "total_amount_cny": "208270.00",
+      "meter_reading_start_kwh": "21910000",
+      "meter_reading_end_kwh": "22205000",
+      "expected_tco2e_at_demo_factor": "147.500000000000"
+    },
+    {
+      "filename": "positive/DEMO_ONLY_202603_AS_electricity_bill.csv",
+      "facility": "空压站（合成）",
+      "period": "2026-03-01 至 2026-03-31",
+      "electricity_kwh": "328000",
+      "unit_price_cny_per_kwh": "0.7330",
+      "total_amount_cny": "240424.00",
+      "meter_reading_start_kwh": "22205000",
+      "meter_reading_end_kwh": "22533000",
+      "expected_tco2e_at_demo_factor": "164.000000000000"
+    }
+  ],
+  "negative_cases": [
+    {
+      "filename": "negative/NEG_01_missing_quantity.csv",
+      "expected": "quality gate rejects missing electricity quantity"
+    },
+    {
+      "filename": "negative/NEG_02_negative_quantity.csv",
+      "expected": "quality gate rejects non-positive electricity quantity"
+    },
+    {
+      "filename": "negative/NEG_03_wrong_unit_mwh.csv",
+      "expected": "extractor abstains because MWh conversion is not approved in this path"
+    },
+    {
+      "filename": "negative/NEG_04_multiple_billing_records.csv",
+      "expected": "extractor rejects multiple billing records instead of silently taking row one"
+    }
+  ]
+}

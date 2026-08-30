@@ -109,7 +109,7 @@ def test_seed_builds_both_demo_paths_once_and_reuses_them(tmp_path, monkeypatch)
                 "users": 1,
                 "emission_factors": 1,
                 "documents": 2,
-                "sites": 2,
+                "sites": 6,
                 "emission_sources": 2,
                 "activity_data": 2,
                 "emission_results": 2,
@@ -136,6 +136,7 @@ def test_seed_builds_both_demo_paths_once_and_reuses_them(tmp_path, monkeypatch)
             assert {item.name for item in demo_sites} == {
                 seed.INCOMPLETE_FACILITY,
                 seed.REFERENCE_FACILITY,
+                *seed.COMPETITION_DEMO_FACILITIES,
             }
             assert {item.grid_region for item in demo_sites} == {
                 seed.DEMO_FACTOR_REGION
@@ -300,6 +301,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
             db.flush()
             east_source = EmissionSource(
                 site_id=east_site.id,
+                tenant_id=real_tenant.id,
                 name="真实华东外购电力",
                 scope="scope_2",
                 category="purchased_electricity",
@@ -307,6 +309,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
             )
             national_source = EmissionSource(
                 site_id=national_site.id,
+                tenant_id=real_tenant.id,
                 name="真实全国外购电力",
                 scope="scope_2",
                 category="purchased_electricity",
@@ -318,6 +321,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
             national_site_id = national_site.id
             east_source_id = east_source.id
             national_source_id = national_source.id
+            real_tenant_id = real_tenant.id
 
         seed.main()
         with SessionLocal() as db:
@@ -347,6 +351,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
                     db,
                     source=db.get(EmissionSource, east_source_id),
                     period_start=seed.PERIOD_START,
+                    tenant_id=real_tenant_id,
                 )
                 is None
             )
@@ -355,6 +360,7 @@ def test_repeat_seed_migrates_only_known_demo_factor_and_sites(tmp_path, monkeyp
                     db,
                     source=db.get(EmissionSource, national_source_id),
                     period_start=seed.PERIOD_START,
+                    tenant_id=real_tenant_id,
                 )
                 is None
             )

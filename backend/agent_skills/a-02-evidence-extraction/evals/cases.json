@@ -1,0 +1,5 @@
+[
+  {"name": "exact_large_integer_is_preserved", "expect": {"value": "9007199254740993"}},
+  {"name": "missing_field_remains_unconfirmed", "expect": {"status": "needs_confirmation"}},
+  {"name": "candidate_never_writes_formal_ledger", "expect": {"formal_write": false}}
+]

@@ -76,6 +76,12 @@ GRANT_EXPIRES_AT = datetime(2099, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
 
 INCOMPLETE_FACILITY = "热轧卷板生产装置（演示）"
 REFERENCE_FACILITY = "DEMO ONLY｜完整参考装置（非监管用途）"
+COMPETITION_DEMO_FACILITIES = (
+    "一号热轧生产装置（合成）",
+    "二号冷轧生产装置（合成）",
+    "公辅动力中心（合成）",
+    "空压站（合成）",
+)
 REFERENCE_RECIPIENT = "DEMO ONLY｜虚构外部演示接收方（非真实客户）"
 REFERENCE_GRANT_PURPOSE = (
     "DEMO ONLY｜仅演示最小字段导出；非真实客户交付、非监管申报"
@@ -867,6 +873,8 @@ def main() -> None:
     with get_sessionmaker()() as db:
         tenant, enterprise, user = _ensure_identity(db)
         factor = _ensure_demo_factor(db)
+        for facility in COMPETITION_DEMO_FACILITIES:
+            _ensure_demo_site(db, user=user, facility=facility)
         db.commit()
 
         incomplete = _seed_incomplete_passport(

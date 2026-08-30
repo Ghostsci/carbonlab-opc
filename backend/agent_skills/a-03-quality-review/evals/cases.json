@@ -1,0 +1,5 @@
+[
+  {"name": "unrelated_citation_does_not_support_field", "expect": {"result": "fail"}},
+  {"name": "cross_tenant_evidence_is_rejected", "expect": {"result": "fail"}},
+  {"name": "warning_never_becomes_human_confirmation", "expect": {"next_gate": "H-01"}}
+]

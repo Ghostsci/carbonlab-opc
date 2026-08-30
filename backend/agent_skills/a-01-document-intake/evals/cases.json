@@ -1,0 +1,5 @@
+[
+  {"name": "owned_csv_is_registered", "expect": {"status": "completed", "next_role_id": "A-02"}},
+  {"name": "unsupported_extension_is_blocked", "expect": {"status": "blocked"}},
+  {"name": "duplicate_hash_is_reused_not_duplicated", "expect": {"reused": true}}
+]

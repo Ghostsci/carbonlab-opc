@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["candidate_id", "fields", "coverage", "next_role_id"],
+  "properties": {
+    "candidate_id": {"type": "string"},
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key", "value", "status", "evidence_refs"],
+        "properties": {
+          "key": {"type": "string"},
+          "value": {"type": ["string", "null"]},
+          "status": {"enum": ["candidate", "needs_confirmation", "conflict"]},
+          "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "coverage": {"type": "number", "minimum": 0, "maximum": 1},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "next_role_id": {"const": "A-03"}
+  },
+  "additionalProperties": false
+}
