@@ -2,11 +2,13 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import {
   AlertCircle,
   AlertTriangle,
+  ArrowRight,
   Bot,
   CheckCircle2,
   ClipboardCheck,
   ChevronLeft,
   ChevronRight,
+  Database,
   Download,
   FileSpreadsheet,
   FileText,
@@ -270,7 +272,39 @@ type ReviewBundle = {
 
 type Notice = { tone: NoticeTone; text: string };
 
+type StandardizationSpec = {
+  canonicalKey: string;
+  canonicalLabel: string;
+  aliases: string[];
+  standardUnit: string;
+  destination: string;
+};
+
 const DEFAULT_FACTOR_SELECTION_NOTE = "已核对因子年份、区域、来源及单位，确认用于本期活动排放计算。";
+
+const STANDARDIZATION_SPECS: StandardizationSpec[] = [
+  {
+    canonicalKey: "electricity_kwh",
+    canonicalLabel: "外购电力消耗量",
+    aliases: ["electricity_kwh", "用电量", "activity_quantity", "quantity"],
+    standardUnit: "kWh",
+    destination: "ActivityData.quantity",
+  },
+  {
+    canonicalKey: "period",
+    canonicalLabel: "统计期间",
+    aliases: ["period", "账单月份", "billing_month", "date", "抄表日期"],
+    standardUnit: "日期区间",
+    destination: "ActivityData.period",
+  },
+  {
+    canonicalKey: "facility",
+    canonicalLabel: "所属设施",
+    aliases: ["facility", "所属工厂", "customer_name"],
+    standardUnit: "企业设施标识",
+    destination: "Installation",
+  },
+];
 
 const fieldLabels: Record<string, string> = {
   billing_month: "账单月份",
@@ -1395,6 +1429,12 @@ export default function Upload() {
                 </div>
               )}
 
+              <StandardizationCard
+                file={selected}
+                review={selectedReview?.review || null}
+                formalWrite={selectedFormalWrite || null}
+              />
+
               {selectedReview && (
                 <QualityReviewCard
                   review={selectedReview.review}
@@ -1776,6 +1816,135 @@ function FactorConfirmationCard({
       <p className="mt-3 text-[11px] font-semibold leading-5 text-slate-500">
         R-01 使用 Decimal + Quantity 单位内核，模型不参与数值运算。
       </p>
+    </div>
+  );
+}
+
+function StandardizationCard({
+  file,
+  review,
+  formalWrite,
+}: {
+  file: InboxFile;
+  review: QualityReviewResponse | null;
+  formalWrite: FormalWrite | null;
+}) {
+  const rows = STANDARDIZATION_SPECS.map((spec) => {
+    const aliases = new Set(spec.aliases.map((alias) => alias.toLowerCase()));
+    const sourceField = file.fields.find((field) => aliases.has(field.key.toLowerCase()));
+    const sourceLocator = sourceField
+      ? file.fieldSources[sourceField.key]
+        || file.fieldSources[spec.canonicalKey]
+        || spec.aliases.map((alias) => file.fieldSources[alias]).find(Boolean)
+      : null;
+
+    let status = "已完成映射";
+    let statusClass = "zc-pill-blue";
+    if (!sourceField) {
+      status = "待补充";
+      statusClass = "zc-pill-amber";
+    } else if (formalWrite) {
+      status = "已入正式账本";
+      statusClass = "zc-pill-green";
+    } else if (review?.quality_status === "fail") {
+      status = "质检阻断";
+      statusClass = "zc-pill-red";
+    } else if (review?.warnings_resolved === false) {
+      status = "待人工处置";
+      statusClass = "zc-pill-amber";
+    } else if (review) {
+      status = "待 H-01 确认";
+      statusClass = "zc-pill-amber";
+    }
+
+    return { spec, sourceField, sourceLocator, status, statusClass };
+  });
+  const mappedCount = rows.filter((row) => row.sourceField).length;
+  const retrievals = Object.values(review?.retrievals || {});
+  const ontologyVersion = retrievals[0]?.ontology_version || "carbon-passport-ontology-v0.1.0";
+  const traceIds = retrievals.map((retrieval) => retrieval.retrieval_run_id.slice(0, 8));
+
+  const stages = [
+    { label: "原始票据", value: "已保留" },
+    { label: "标准字段", value: `${mappedCount}/${rows.length}` },
+    {
+      label: "证据质检",
+      value: formalWrite
+        ? "已完成"
+        : review
+        ? review.quality_status === "fail"
+          ? "有阻断"
+          : review.warnings_resolved === false
+            ? "待处置"
+            : "已完成"
+        : "待运行",
+    },
+    { label: "正式账本", value: formalWrite ? "已入库" : "待确认" },
+  ];
+
+  return (
+    <div className="mt-5 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
+          <Database size={19} />
+        </span>
+        <div className="min-w-0">
+          <h3 className="text-sm font-black text-slate-950">数据标准化入库</h3>
+          <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+            不同票据先翻译成统一的碳数据语言；原件不丢失，不能确定的内容仍由人确认。
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-1.5 rounded-xl border border-blue-100 bg-white/85 px-3 py-2">
+        {stages.map((stage, index) => (
+          <div key={stage.label} className="contents">
+            <span className="rounded-lg bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-600">
+              {stage.label} · <b className="text-blue-700">{stage.value}</b>
+            </span>
+            {index < stages.length - 1 && <ArrowRight size={12} className="text-slate-300" />}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 space-y-2">
+        {rows.map(({ spec, sourceField, sourceLocator, status, statusClass }) => (
+          <div key={spec.canonicalKey} className="rounded-xl border border-slate-100 bg-white px-3 py-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold text-slate-400">原始字段</p>
+                <p className="mt-0.5 truncate text-xs font-black text-slate-800">
+                  {sourceField ? `${sourceField.label}（${sourceField.key}）` : "未识别"}
+                </p>
+              </div>
+              <span className={`zc-pill shrink-0 ${statusClass}`}>{status}</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2 rounded-lg bg-blue-50 px-2.5 py-2">
+              <ArrowRight size={13} className="shrink-0 text-blue-500" />
+              <div className="min-w-0">
+                <p className="truncate text-xs font-black text-blue-900">{spec.canonicalLabel}</p>
+                <p className="mt-0.5 truncate font-mono text-[10px] text-blue-600">
+                  {spec.canonicalKey} · {spec.standardUnit}
+                </p>
+              </div>
+            </div>
+            <div className="mt-2 flex items-start justify-between gap-3 text-[10px] leading-4 text-slate-500">
+              <span className="min-w-0 truncate">来源：{sourceLocatorLabel(sourceLocator)}</span>
+              <span className="shrink-0 font-mono text-slate-400">→ {spec.destination}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <details className="mt-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-600">
+        <summary className="cursor-pointer font-black text-slate-700">查看技术详情</summary>
+        <div className="mt-2 space-y-1.5 border-t border-slate-100 pt-2 leading-5">
+          <p><b>本体版本：</b><span className="font-mono">{ontologyVersion}</span></p>
+          <p><b>原文件指纹：</b><span className="font-mono">{file.contentHash ? `${file.contentHash.slice(0, 16)}…` : "待生成"}</span></p>
+          <p><b>证据检索 Trace：</b><span className="font-mono">{traceIds.length > 0 ? traceIds.join("、") : "运行 A-03 后生成"}</span></p>
+          <p><b>正式记录：</b><span className="font-mono">{formalWrite ? `ActivityData ${formalWrite.activity_data_id.slice(0, 12)}…` : "H-01 确认后写入"}</span></p>
+        </div>
+      </details>
     </div>
   );
 }
