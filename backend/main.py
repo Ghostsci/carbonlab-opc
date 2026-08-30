@@ -6,6 +6,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from backend.api.ai import router as ai_router
 from backend.api.agent_ops import router as agent_ops_router
 from backend.api.auth import router as auth_router
+from backend.api.formal_activities import router as formal_activities_router
 from backend.api.health import router as health_router
 from backend.api.knowledge import router as knowledge_router
 from backend.api.passports import router as passports_router
@@ -76,4 +77,5 @@ app.include_router(upload_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 app.include_router(agent_ops_router, prefix="/api")
 app.include_router(knowledge_router, prefix="/api")
+app.include_router(formal_activities_router, prefix="/api")
 app.include_router(passports_router, prefix="/api")

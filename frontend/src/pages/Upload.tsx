@@ -1945,6 +1945,14 @@ function StandardizationCard({
           <p><b>正式记录：</b><span className="font-mono">{formalWrite ? `ActivityData ${formalWrite.activity_data_id.slice(0, 12)}…` : "H-01 确认后写入"}</span></p>
         </div>
       </details>
+      {formalWrite && (
+        <Link
+          to={`/data-ledger?activity_id=${encodeURIComponent(formalWrite.activity_data_id)}`}
+          className="zc-button-soft mt-3 flex w-full justify-center"
+        >
+          <Database size={15} /> 查看已入库的标准化数据
+        </Link>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   Bot,
   Calculator,
   ChevronDown,
+  Database,
   Fingerprint,
   HelpCircle,
   Inbox,
@@ -17,6 +18,7 @@ import { useState } from "react";
 
 const NAV_ITEMS = [
   { to: "/upload", zh: "数字员工工作台", en: "AI Workflow", icon: Inbox },
+  { to: "/data-ledger", zh: "标准化数据台账", en: "Data Ledger", icon: Database },
   { to: "/calculations", zh: "核算工作台", en: "Calculation", icon: Calculator },
   { to: "/passports", zh: "工厂碳数据护照", en: "Passport", icon: Fingerprint },
   { to: "/agent-ops", zh: "数字员工治理", en: "AgentOps", icon: Bot },
