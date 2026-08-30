@@ -482,7 +482,9 @@ function DetailDrawer({
                 <h3 className="font-black text-slate-950">A-03 证据质检</h3>
                 <div className="mt-3 flex items-end gap-2"><span className="text-3xl font-black text-slate-950">{detail.quality_review.score ?? "-"}</span><span className="mb-1 text-xs font-bold text-slate-400">/ 100</span></div>
                 <p className="mt-1 text-xs font-semibold text-slate-500">{detail.quality_review.score_label}，不等于事实准确率</p>
-                {detail.quality_review.warnings_resolved === true ? (
+                {detail.quality_review.score == null && detail.quality_review.status === "pass" ? (
+                  <span className="zc-pill zc-pill-slate mt-3">历史质检门禁已通过，未保存数值评分</span>
+                ) : detail.quality_review.warnings_resolved === true ? (
                   <span className="zc-pill zc-pill-green mt-3"><CheckCircle2 size={12} /> 提示已人工处置</span>
                 ) : detail.quality_review.warnings_resolved === false ? (
                   <span className="zc-pill zc-pill-amber mt-3"><AlertTriangle size={12} /> 仍待人工处置</span>
