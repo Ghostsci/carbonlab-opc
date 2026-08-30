@@ -203,14 +203,66 @@ def _finding(
     message: str,
     *,
     evidence_ref: str | None = None,
+    field_key: str | None = None,
+    source_locator: dict[str, Any] | None = None,
+    observed_value: Any = None,
+    expected_value: Any = None,
 ) -> dict[str, Any]:
+    human_action = (
+        "confirm_source"
+        if result == "warning"
+        else "correct_and_rerun"
+        if result == "fail"
+        else "none"
+    )
     return {
         "check_key": check_key,
         "label": label,
         "result": result,
         "message": message,
         "evidence_ref": evidence_ref,
+        "field_key": field_key,
+        "source_locator": _compact_locator(source_locator),
+        "observed_value": None if observed_value is None else str(observed_value),
+        "expected_value": None if expected_value is None else str(expected_value),
+        "human_action": human_action,
+        "requires_human_resolution": result == "warning",
     }
+
+
+def _compact_locator(locator: Any) -> dict[str, Any] | None:
+    if not isinstance(locator, dict):
+        return None
+    allowed = {
+        "kind",
+        "sheet",
+        "row",
+        "column",
+        "column_label",
+        "cell",
+        "header_cell",
+        "header",
+        "raw_value",
+        "unit",
+        "unit_source",
+        "text_line_start",
+        "text_line_end",
+        "excerpt",
+    }
+    compact = {key: value for key, value in locator.items() if key in allowed and value not in (None, "")}
+    return compact or None
+
+
+def _locator_label(locator: dict[str, Any] | None) -> str:
+    if not locator:
+        return "原文件（未能自动定位）"
+    if locator.get("sheet") and locator.get("cell"):
+        return f"工作表“{locator['sheet']}”单元格 {locator['cell']}"
+    if locator.get("cell"):
+        return f"单元格 {locator['cell']}"
+    if locator.get("text_line_start"):
+        return f"原文第 {locator['text_line_start']} 行"
+    return "原文件（未能自动定位）"
 
 
 def evaluate_document_quality(
@@ -230,6 +282,9 @@ def evaluate_document_quality(
     raw_text = source_snapshot.get("raw_text")
     if not isinstance(raw_text, str):
         raw_text = ""
+    field_sources = source_snapshot.get("field_sources")
+    if not isinstance(field_sources, dict):
+        field_sources = {}
     retrieval_evidence = retrieval_evidence or {}
 
     if document_type == "electricity_bill":
@@ -247,8 +302,19 @@ def evaluate_document_quality(
     }
     labels = {"electricity_kwh": "用电量", "period": "报告期间", "facility": "所属设施"}
     for key, (field_key, value) in selected.items():
+        locator = _compact_locator(field_sources.get(key) or field_sources.get(field_key or ""))
+        location = _locator_label(locator)
         if value in (None, ""):
-            findings.append(_finding(f"required_{key}", labels[key], "fail", f"缺少{labels[key]}，禁止进入人工确认。"))
+            findings.append(
+                _finding(
+                    f"required_{key}",
+                    labels[key],
+                    "fail",
+                    f"缺少{labels[key]}，禁止进入人工确认。",
+                    field_key=field_key or key,
+                    expected_value=f"有效的{labels[key]}",
+                )
+            )
             continue
         findings.append(
             _finding(
@@ -257,6 +323,9 @@ def evaluate_document_quality(
                 "pass",
                 f"候选中已包含{labels[key]}。",
                 evidence_ref=f"field:{field_key}",
+                field_key=field_key or key,
+                source_locator=locator,
+                observed_value=value,
             )
         )
         needle = _normalized(value)
@@ -274,6 +343,9 @@ def evaluate_document_quality(
                         if isinstance(retrieval, dict) and retrieval.get("retrieval_run_id")
                         else None
                     ),
+                    field_key=field_key or key,
+                    source_locator=locator,
+                    observed_value=value,
                 )
             )
         else:
@@ -294,6 +366,9 @@ def evaluate_document_quality(
                         else "检索命中属于当前字段，但片段未直接支持当前编辑值，禁止把相似性当作事实。"
                     ),
                     evidence_ref=f"retrieval:{retrieval.get('retrieval_run_id')}",
+                    field_key=field_key or key,
+                    source_locator=locator,
+                    observed_value=value,
                 )
             )
         support = _source_supports(
@@ -304,13 +379,13 @@ def evaluate_document_quality(
         )
         if support is True:
             result = "pass"
-            message = f"{labels[key]}可在当前源文件识别快照中定位。"
+            message = f"{labels[key]}可在{location}定位。"
         elif support is None:
             result = "warning"
-            message = f"源文件没有可搜索文本，{labels[key]}必须由人工对照原件确认。"
+            message = f"源文件没有可搜索文本，{labels[key]}必须由人工打开原件确认。"
         else:
             result = "warning"
-            message = f"{labels[key]}与识别快照不完全一致，可能是人工修正，必须说明后确认。"
+            message = f"{labels[key]}与识别快照不完全一致；请到{location}核对并说明。"
         findings.append(
             _finding(
                 f"evidence_{key}",
@@ -318,12 +393,30 @@ def evaluate_document_quality(
                 result,
                 message,
                 evidence_ref=f"document:{document_content_hash[:16]}",
+                field_key=field_key or key,
+                source_locator=locator,
+                observed_value=value,
             )
         )
 
     quantity_value = selected["electricity_kwh"][1]
+    quantity_field_key = selected["electricity_kwh"][0] or "electricity_kwh"
+    quantity_locator = _compact_locator(
+        field_sources.get("electricity_kwh") or field_sources.get(quantity_field_key)
+    )
     if isinstance(quantity_value, bool | float):
-        findings.append(_finding("quantity_exactness", "数值精度", "fail", "用电量不得使用二进制浮点数。"))
+        findings.append(
+            _finding(
+                "quantity_exactness",
+                "数值精度",
+                "fail",
+                "用电量不得使用二进制浮点数。",
+                field_key=quantity_field_key,
+                source_locator=quantity_locator,
+                observed_value=quantity_value,
+                expected_value="十进制定点数",
+            )
+        )
     elif quantity_value not in (None, ""):
         match = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", str(quantity_value))
         try:
@@ -331,17 +424,100 @@ def evaluate_document_quality(
         except InvalidOperation:
             number = None
         if number is None or number <= 0:
-            findings.append(_finding("quantity_positive", "用电量约束", "fail", "用电量必须是大于零的精确数值。"))
+            findings.append(
+                _finding(
+                    "quantity_positive",
+                    "用电量约束",
+                    "fail",
+                    "用电量必须是大于零的精确数值。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value=quantity_value,
+                    expected_value="> 0",
+                )
+            )
         else:
-            findings.append(_finding("quantity_positive", "用电量约束", "pass", "用电量为正数，且可按十进制定点值解析。"))
+            findings.append(
+                _finding(
+                    "quantity_positive",
+                    "用电量约束",
+                    "pass",
+                    "用电量为正数，且可按十进制定点值解析。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value=quantity_value,
+                    expected_value="> 0",
+                )
+            )
 
         unit_match = re.search(r"(?i)(kwh|mwh|wh|gj|mj|t|kg)\b", str(quantity_value))
+        source_unit = str((quantity_locator or {}).get("unit") or "").strip()
+        source_location = _locator_label(quantity_locator)
         if unit_match and unit_match.group(1).lower() != "kwh":
-            findings.append(_finding("quantity_unit", "用电量单位", "fail", f"当前字段单位为 {unit_match.group(1)}，不能静默按 kWh 写入。"))
+            findings.append(
+                _finding(
+                    "quantity_unit",
+                    "用电量单位",
+                    "fail",
+                    f"当前字段单位为 {unit_match.group(1)}，不能静默按 kWh 写入。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value=unit_match.group(1),
+                    expected_value="kWh",
+                )
+            )
         elif unit_match:
-            findings.append(_finding("quantity_unit", "用电量单位", "pass", "候选值明确标注为 kWh。"))
+            findings.append(
+                _finding(
+                    "quantity_unit",
+                    "用电量单位",
+                    "pass",
+                    "候选值明确标注为 kWh。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value="kWh",
+                    expected_value="kWh",
+                )
+            )
+        elif source_unit.lower() == "kwh":
+            findings.append(
+                _finding(
+                    "quantity_unit",
+                    "用电量单位",
+                    "pass",
+                    f"候选数字未重复携带单位，但{source_location}的表头/单位列明确标注为 kWh。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value=source_unit,
+                    expected_value="kWh",
+                )
+            )
+        elif source_unit:
+            findings.append(
+                _finding(
+                    "quantity_unit",
+                    "用电量单位",
+                    "fail",
+                    f"{source_location}标注的单位是 {source_unit}，不能静默按 kWh 写入。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value=source_unit,
+                    expected_value="kWh",
+                )
+            )
         else:
-            findings.append(_finding("quantity_unit", "用电量单位", "warning", "候选值未显式携带单位，人工确认时须确认其为 kWh。"))
+            findings.append(
+                _finding(
+                    "quantity_unit",
+                    "用电量单位",
+                    "warning",
+                    f"候选值和可定位的原文上下文都没有明确单位；请到{source_location}确认是否为 kWh。",
+                    field_key=quantity_field_key,
+                    source_locator=quantity_locator,
+                    observed_value="未识别到单位",
+                    expected_value="kWh",
+                )
+            )
 
     failed = sum(item["result"] == "fail" for item in findings)
     warned = sum(item["result"] == "warning" for item in findings)
@@ -349,6 +525,9 @@ def evaluate_document_quality(
     total = max(1, len(findings))
     score = max(0, min(100, round(((passed + warned * 0.5) / total) * 100)))
     quality_status = "fail" if failed else "pass_with_warnings" if warned else "pass"
+    resolution_required_keys = [
+        item["check_key"] for item in findings if item["requires_human_resolution"]
+    ]
     return {
         "quality_status": quality_status,
         "score": score,
@@ -363,6 +542,10 @@ def evaluate_document_quality(
         "findings": findings,
         "retrievals": retrieval_evidence,
         "human_confirmation_required": True,
+        "human_resolution_required": bool(resolution_required_keys),
+        "resolution_required_keys": resolution_required_keys,
+        "warnings_resolved": not resolution_required_keys,
+        "score_label": "自动质检覆盖得分（不等于事实准确率）",
     }
 
 
@@ -381,6 +564,9 @@ def issue_quality_review(
     expires_at = issued_at + timedelta(minutes=QUALITY_REVIEW_TOKEN_TTL_MINUTES)
     review_id = uuid.uuid4().hex
     result_hash = canonical_sha256(result)
+    resolution_required_keys = [
+        str(item) for item in result.get("resolution_required_keys", []) if str(item)
+    ]
     claims = {
         "sub": actor_user_id,
         "aud": QUALITY_REVIEW_AUDIENCE,
@@ -398,6 +584,8 @@ def issue_quality_review(
         "quality_status": result["quality_status"],
         "quality_score": result["score"],
         "quality_result_sha256": result_hash,
+        "resolution_required_keys": resolution_required_keys,
+        "warnings_resolved": not resolution_required_keys,
         "contract_version": WORKFORCE_CONTRACT_VERSION,
     }
     return {
@@ -406,10 +594,12 @@ def issue_quality_review(
         "quality_result_sha256": result_hash,
         "issued_at": issued_at.isoformat(),
         "expires_at": expires_at.isoformat(),
+        "resolution_required_keys": resolution_required_keys,
+        "warnings_resolved": not resolution_required_keys,
     }
 
 
-def verify_quality_review(
+def _validated_quality_review_claims(
     token: str,
     *,
     actor_user_id: str,
@@ -456,10 +646,129 @@ def verify_quality_review(
         raise QualityReviewError("质检结果缺少有效内容哈希")
     if not isinstance(score, int):
         raise QualityReviewError("质检结果分数格式无效")
+    required_keys = claims.get("resolution_required_keys") or []
+    if not isinstance(required_keys, list) or not all(isinstance(item, str) and item for item in required_keys):
+        raise QualityReviewError("质检结果的人工处置清单格式无效")
+    if claims.get("warnings_resolved") not in {True, False}:
+        raise QualityReviewError("质检结果缺少人工处置状态")
+    return claims
+
+
+def verify_quality_review(
+    token: str,
+    *,
+    actor_user_id: str,
+    tenant_id: str,
+    enterprise_id: str,
+    file_id: str,
+    document_content_hash: str,
+    candidate: dict[str, str],
+    require_warning_resolution: bool = True,
+) -> dict[str, Any]:
+    claims = _validated_quality_review_claims(
+        token,
+        actor_user_id=actor_user_id,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        file_id=file_id,
+        document_content_hash=document_content_hash,
+        candidate=candidate,
+    )
+    required_keys = list(claims.get("resolution_required_keys") or [])
+    warnings_resolved = bool(claims.get("warnings_resolved"))
+    if require_warning_resolution and required_keys and not warnings_resolved:
+        raise QualityReviewError("A-03 仍有提示未由 H-01 逐项核对，请先定位原文并提交人工处置说明")
     return {
-        "quality_review_id": review_id,
-        "quality_status": quality_status,
-        "quality_score": score,
-        "quality_result_sha256": result_hash,
+        "quality_review_id": str(claims["jti"]),
+        "quality_status": str(claims["quality_status"]),
+        "quality_score": int(claims["quality_score"]),
+        "quality_result_sha256": str(claims["quality_result_sha256"]),
         "contract_version": WORKFORCE_CONTRACT_VERSION,
+        "resolution_required_keys": required_keys,
+        "warnings_resolved": warnings_resolved,
+        "resolution_sha256": claims.get("resolution_sha256"),
+        "resolved_at": claims.get("resolved_at"),
+    }
+
+
+def resolve_quality_review(
+    token: str,
+    *,
+    actor_user_id: str,
+    tenant_id: str,
+    enterprise_id: str,
+    file_id: str,
+    document_content_hash: str,
+    candidate: dict[str, str],
+    resolutions: list[dict[str, str]],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Bind explicit H-01 dispositions to every non-blocking A-03 warning."""
+    claims = _validated_quality_review_claims(
+        token,
+        actor_user_id=actor_user_id,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        file_id=file_id,
+        document_content_hash=document_content_hash,
+        candidate=candidate,
+    )
+    required = list(claims.get("resolution_required_keys") or [])
+    if not required:
+        raise QualityReviewError("当前质检没有需要单独处置的提示")
+
+    by_key: dict[str, dict[str, str]] = {}
+    for resolution in resolutions:
+        check_key = str(resolution.get("check_key") or "").strip()
+        decision = str(resolution.get("decision") or "").strip()
+        reason = str(resolution.get("reason") or "").strip()
+        if check_key in by_key:
+            raise QualityReviewError(f"人工处置项重复：{check_key}")
+        if decision != "confirmed_source":
+            raise QualityReviewError(f"人工处置动作无效：{check_key}")
+        if len(reason) < 8:
+            raise QualityReviewError(f"人工处置说明过短：{check_key}")
+        by_key[check_key] = {
+            "check_key": check_key,
+            "decision": decision,
+            "reason": reason,
+        }
+
+    missing = [check_key for check_key in required if check_key not in by_key]
+    unexpected = sorted(set(by_key) - set(required))
+    if missing:
+        raise QualityReviewError(f"仍有未处置的 A-03 提示：{', '.join(missing)}")
+    if unexpected:
+        raise QualityReviewError(f"提交了不属于本次质检的处置项：{', '.join(unexpected)}")
+
+    ordered = [by_key[check_key] for check_key in required]
+    resolved_at = now or datetime.now(timezone.utc)
+    resolution_sha256 = canonical_sha256(
+        {
+            "quality_review_id": claims["jti"],
+            "actor_user_id": actor_user_id,
+            "resolutions": ordered,
+        }
+    )
+    updated_claims = dict(claims)
+    updated_claims.update(
+        {
+            "warnings_resolved": True,
+            "resolution_sha256": resolution_sha256,
+            "resolution_keys": required,
+            "resolved_at": resolved_at.isoformat(),
+        }
+    )
+    return {
+        "quality_review_id": str(claims["jti"]),
+        "quality_review_token": jwt.encode(updated_claims, SECRET_KEY, algorithm=ALGORITHM),
+        "quality_status": str(claims["quality_status"]),
+        "quality_score": int(claims["quality_score"]),
+        "quality_result_sha256": str(claims["quality_result_sha256"]),
+        "resolution_required_keys": required,
+        "warnings_resolved": True,
+        "resolution_sha256": resolution_sha256,
+        "resolved_at": resolved_at.isoformat(),
+        "resolutions": ordered,
+        "expires_at": datetime.fromtimestamp(int(claims["exp"]), timezone.utc).isoformat(),
     }

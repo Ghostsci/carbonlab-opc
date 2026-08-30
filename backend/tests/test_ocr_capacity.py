@@ -5,6 +5,7 @@ from pathlib import Path
 from openpyxl import Workbook
 
 from backend.ai.ocr import DocumentType, OCRService
+from backend.services.digital_workforce import evaluate_document_quality
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -130,3 +131,32 @@ def test_packaged_1000_row_competition_fixture_remains_processable():
     assert result.fields["meter_reading_start"] == "184200000"
     assert result.fields["meter_reading_end"] == "186680000"
     assert "1000条用电明细" in result.raw_text
+
+    electricity_source = result.field_sources["electricity_kwh"]
+    assert electricity_source["sheet"] == "账单摘要"
+    assert electricity_source["cell"] == "E5"
+    assert electricity_source["header_cell"] == "E4"
+    assert electricity_source["unit"] == "kWh"
+    assert electricity_source["unit_source"] == "header"
+
+    quality = evaluate_document_quality(
+        document_type=result.document_type.value,
+        document_content_hash="a" * 64,
+        fields=result.fields,
+        source_snapshot={
+            "fields": result.fields,
+            "raw_text": result.raw_text,
+            "field_sources": result.field_sources,
+        },
+        retrieval_evidence={
+            key: {
+                "retrieval_run_id": f"run-{key}",
+                "hits": [{"field_keys": [key], "excerpt": result.field_sources[key]["excerpt"]}],
+            }
+            for key in ("electricity_kwh", "period", "facility")
+        },
+    )
+    unit_finding = next(item for item in quality["findings"] if item["check_key"] == "quantity_unit")
+    assert unit_finding["result"] == "pass"
+    assert unit_finding["source_locator"]["cell"] == "E5"
+    assert "kWh" in unit_finding["message"]

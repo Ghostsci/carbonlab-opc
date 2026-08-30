@@ -12,6 +12,7 @@ import {
   FileText,
   ImageIcon,
   Loader2,
+  MapPin,
   PencilLine,
   RefreshCw,
   ShieldCheck,
@@ -55,6 +56,7 @@ type ApiUploadFile = {
   confidence?: number | null;
   raw_text?: string | null;
   tables?: unknown[] | null;
+  field_sources?: Record<string, SourceLocator> | null;
   errors?: unknown[] | null;
   ocr_status?: string | null;
   workforce?: WorkforceDocumentSnapshot | null;
@@ -75,6 +77,7 @@ type InboxFile = {
   storageUrl?: string;
   contentHash?: string;
   tables: unknown[];
+  fieldSources: Record<string, SourceLocator>;
   errors: string[];
   ocrStatus: string;
   workforce: WorkforceDocumentSnapshot;
@@ -185,12 +188,35 @@ type CandidateSnapshotResponse = {
   expires_at: string;
 };
 
+type SourceLocator = {
+  kind?: string;
+  sheet?: string;
+  row?: number;
+  column?: number;
+  column_label?: string;
+  cell?: string;
+  header_cell?: string;
+  header?: string;
+  raw_value?: string;
+  unit?: string;
+  unit_source?: string;
+  text_line_start?: number;
+  text_line_end?: number;
+  excerpt?: string;
+};
+
 type QualityFinding = {
   check_key: string;
   label: string;
   result: "pass" | "warning" | "fail";
   message: string;
   evidence_ref?: string | null;
+  field_key?: string | null;
+  source_locator?: SourceLocator | null;
+  observed_value?: string | null;
+  expected_value?: string | null;
+  human_action?: "none" | "confirm_source" | "correct_and_rerun";
+  requires_human_resolution?: boolean;
 };
 
 type QualityReviewResponse = {
@@ -202,6 +228,11 @@ type QualityReviewResponse = {
   summary: string;
   counts: { passed: number; warnings: number; failed: number };
   findings: QualityFinding[];
+  score_label?: string;
+  human_resolution_required?: boolean;
+  resolution_required_keys?: string[];
+  warnings_resolved?: boolean;
+  resolution_sha256?: string | null;
   retrievals?: Record<string, {
     retrieval_run_id: string;
     ontology_version: string;
@@ -216,6 +247,19 @@ type QualityReviewResponse = {
   }>;
   expires_at: string;
   next_gate: string;
+};
+
+type QualityResolutionResponse = {
+  quality_review_id: string;
+  quality_review_token: string;
+  quality_status: "pass" | "pass_with_warnings";
+  quality_score: number;
+  quality_result_sha256: string;
+  resolution_required_keys: string[];
+  warnings_resolved: true;
+  resolution_sha256: string;
+  resolved_at: string;
+  expires_at: string;
 };
 
 type ReviewBundle = {
@@ -269,6 +313,7 @@ function parseUploadFile(value: unknown, index?: number): ApiUploadFile {
     confidence: typeof value.confidence === "number" ? value.confidence : 0,
     raw_text: typeof value.raw_text === "string" ? value.raw_text : "",
     tables: Array.isArray(value.tables) ? value.tables : [],
+    field_sources: isRecord(value.field_sources) ? value.field_sources as Record<string, SourceLocator> : {},
     errors: Array.isArray(value.errors) ? value.errors : [],
     ocr_status: typeof value.ocr_status === "string" ? value.ocr_status : undefined,
     workforce: isRecord(value.workforce) ? value.workforce as WorkforceDocumentSnapshot : {},
@@ -391,6 +436,7 @@ function toInboxFile(
     storageUrl: `/api/upload/${file.file_id}/download`,
     contentHash: file.content_hash || undefined,
     tables: file.tables || [],
+    fieldSources: file.field_sources || {},
     errors,
     ocrStatus,
     workforce: file.workforce || {},
@@ -414,6 +460,14 @@ function exactEmissionText(result: FormalEmissionResult): string {
   const [integer, fraction] = raw.split(".");
   const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return fraction ? `${grouped}.${fraction}` : grouped;
+}
+
+function sourceLocatorLabel(locator?: SourceLocator | null): string {
+  if (!locator) return "原文件（未能自动定位）";
+  if (locator.sheet && locator.cell) return `工作表“${locator.sheet}” · ${locator.cell}`;
+  if (locator.cell) return `单元格 ${locator.cell}`;
+  if (locator.text_line_start) return `原文第 ${locator.text_line_start} 行`;
+  return "原文件（未能自动定位）";
 }
 
 function missingElectricityFields(file: InboxFile | undefined): string[] {
@@ -462,10 +516,12 @@ export default function Upload() {
   const [activeFilter, setActiveFilter] = useState<InboxFilter>("all");
   const [listState, setListState] = useState<ListState>("loading");
   const [listError, setListError] = useState<string | null>(null);
-  const [operation, setOperation] = useState<"upload" | "understand" | "quality" | "confirm" | "factor" | null>(null);
+  const [operation, setOperation] = useState<"upload" | "understand" | "quality" | "resolve" | "confirm" | "factor" | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [confirmResult, setConfirmResult] = useState<{ fileId: string; data: ConfirmResponse } | null>(null);
   const [reviewBundle, setReviewBundle] = useState<ReviewBundle | null>(null);
+  const [activeQualityFinding, setActiveQualityFinding] = useState<QualityFinding | null>(null);
+  const [qualityResolutionReasons, setQualityResolutionReasons] = useState<Record<string, string>>({});
   const [durableFormalWrite, setDurableFormalWrite] = useState<{
     fileId: string;
     data: FormalWrite | null;
@@ -689,6 +745,8 @@ export default function Upload() {
     ));
     setConfirmResult(null);
     setReviewBundle(null);
+    setActiveQualityFinding(null);
+    setQualityResolutionReasons({});
   };
 
   const handleUpload = async (file: File) => {
@@ -696,6 +754,8 @@ export default function Upload() {
     setNotice({ tone: "info", text: "正在上传文件并调用 OCR 识别..." });
     setConfirmResult(null);
     setReviewBundle(null);
+    setActiveQualityFinding(null);
+    setQualityResolutionReasons({});
 
     try {
       const form = new FormData();
@@ -744,6 +804,8 @@ export default function Upload() {
     }));
     setConfirmResult((current) => (current?.fileId === fileId ? null : current));
     setReviewBundle((current) => (current?.fileId === fileId ? null : current));
+    setActiveQualityFinding(null);
+    setQualityResolutionReasons({});
   };
 
   const reUnderstand = async () => {
@@ -800,6 +862,8 @@ export default function Upload() {
     setNotice({ tone: "info", text: "A-02 正在锁定候选，A-03 随后独立检查证据、单位与异常..." });
     setConfirmResult(null);
     setReviewBundle(null);
+    setActiveQualityFinding(null);
+    setQualityResolutionReasons({});
 
     try {
       const candidateResponse = await fetch(`/api/upload/${selected.id}/candidate`, {
@@ -827,12 +891,70 @@ export default function Upload() {
       }
       const review = await qualityResponse.json() as QualityReviewResponse;
       setReviewBundle({ fileId, candidate, review });
+      setActiveQualityFinding(
+        review.findings.find((finding) => finding.result !== "pass")
+        || review.findings.find((finding) => finding.source_locator)
+        || review.findings[0]
+        || null,
+      );
       setNotice({
         tone: review.quality_status === "fail" ? "error" : review.quality_status === "pass_with_warnings" ? "warning" : "success",
         text: `A-03 质检${review.quality_status === "fail" ? "未通过" : "完成"}：${review.summary}`,
       });
     } catch (error) {
       setNotice({ tone: "error", text: error instanceof Error ? error.message : "A-03 质检失败" });
+    } finally {
+      setOperation(null);
+    }
+  };
+
+  const submitQualityResolutions = async () => {
+    if (!selected || !selectedReview) return;
+    const requiredKeys = selectedReview.review.resolution_required_keys || [];
+    if (requiredKeys.length === 0) return;
+    const missing = requiredKeys.filter((checkKey) => (qualityResolutionReasons[checkKey] || "").trim().length < 8);
+    if (missing.length > 0) {
+      setNotice({ tone: "warning", text: `请先逐项定位并确认 ${missing.length} 个 A-03 提示。` });
+      return;
+    }
+
+    setOperation("resolve");
+    setNotice({ tone: "info", text: "正在保存 H-01 的逐项核对结论与处置指纹..." });
+    try {
+      const response = await fetch(`/api/upload/${selected.id}/quality-review/resolve`, {
+        method: "POST",
+        headers: { ...getHeaders(), "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          candidate_token: selectedReview.candidate.candidate_token,
+          quality_review_token: selectedReview.review.quality_review_token,
+          fields: fieldsToObject(selected.fields),
+          resolutions: requiredKeys.map((checkKey) => ({
+            check_key: checkKey,
+            decision: "confirmed_source",
+            reason: qualityResolutionReasons[checkKey].trim(),
+          })),
+        }),
+      });
+      if (!response.ok) throw new Error(await responseError(response, "保存人工处置失败"));
+      const resolved = await response.json() as QualityResolutionResponse;
+      setReviewBundle((current) => current?.fileId === selected.id
+        ? {
+            ...current,
+            review: {
+              ...current.review,
+              quality_review_token: resolved.quality_review_token,
+              warnings_resolved: true,
+              resolution_sha256: resolved.resolution_sha256,
+            },
+          }
+        : current);
+      setNotice({
+        tone: "success",
+        text: `已完成 ${requiredKeys.length} 项人工核对并留痕，现在可以进行 H-01 最终确认。`,
+      });
+    } catch (error) {
+      setNotice({ tone: "error", text: error instanceof Error ? error.message : "保存人工处置失败" });
     } finally {
       setOperation(null);
     }
@@ -945,6 +1067,8 @@ export default function Upload() {
       setSelectedId(next.id);
       setConfirmResult(null);
       setReviewBundle(null);
+      setActiveQualityFinding(null);
+      setQualityResolutionReasons({});
     }
   };
 
@@ -961,7 +1085,8 @@ export default function Upload() {
   );
   const qualityAccepted = Boolean(
     selectedReview
-    && ["pass", "pass_with_warnings"].includes(selectedReview.review.quality_status),
+    && ["pass", "pass_with_warnings"].includes(selectedReview.review.quality_status)
+    && selectedReview.review.warnings_resolved !== false,
   );
   const canConfirm = Boolean(
     selected
@@ -980,6 +1105,13 @@ export default function Upload() {
     && factorSelectionNote.trim().length >= 12
     && operation === null,
   );
+  const focusQualityField = (fieldKey?: string | null) => {
+    if (!fieldKey) return;
+    const target = Array.from(document.querySelectorAll<HTMLElement>("[data-quality-field]"))
+      .find((element) => element.dataset.qualityField === fieldKey);
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    target?.querySelector<HTMLTextAreaElement>("textarea")?.focus({ preventScroll: true });
+  };
   const passportSearch = new URLSearchParams();
   if (selectedFormalWrite?.suggested_passport_account_id) {
     passportSearch.set("account_id", selectedFormalWrite.suggested_passport_account_id);
@@ -1186,7 +1318,11 @@ export default function Upload() {
           </div>
           <div className="flex min-h-[790px] items-start justify-center bg-slate-50 p-8">
             {selected ? (
-              <DocumentPreview file={{ ...selected, storageUrl: previewUrl || undefined }} previewError={previewError} />
+              <DocumentPreview
+                file={{ ...selected, storageUrl: previewUrl || undefined }}
+                previewError={previewError}
+                activeFinding={selectedReview ? activeQualityFinding : null}
+              />
             ) : (
               <PanelEmpty
                 loading={listState === "loading"}
@@ -1259,7 +1395,29 @@ export default function Upload() {
                 </div>
               )}
 
-              {selectedReview && <QualityReviewCard review={selectedReview.review} />}
+              {selectedReview && (
+                <QualityReviewCard
+                  review={selectedReview.review}
+                  activeCheckKey={activeQualityFinding?.check_key || null}
+                  resolutionReasons={qualityResolutionReasons}
+                  resolving={operation === "resolve"}
+                  onLocate={(finding) => setActiveQualityFinding(finding)}
+                  onFocusField={(finding) => focusQualityField(finding.field_key)}
+                  onConfirmSource={(finding) => {
+                    setActiveQualityFinding(finding);
+                    setQualityResolutionReasons((current) => ({
+                      ...current,
+                      [finding.check_key]: current[finding.check_key]
+                        || `已对照${sourceLocatorLabel(finding.source_locator)}及原始凭证，确认当前候选值可保留。`,
+                    }));
+                  }}
+                  onReasonChange={(checkKey, reason) => setQualityResolutionReasons((current) => ({
+                    ...current,
+                    [checkKey]: reason,
+                  }))}
+                  onSubmit={() => void submitQualityResolutions()}
+                />
+              )}
 
               <div className="mt-5 rounded-2xl bg-blue-50 p-4">
                 <span className="font-bold text-slate-900">写入目标</span>
@@ -1341,6 +1499,8 @@ export default function Upload() {
                   ? "H-01 正在确认并写入..."
                   : selectedFormalWrite || selectedConfirm || selected.status === "已完成"
                     ? "H-01 已确认并写入活动数据"
+                    : selectedReview?.review.warnings_resolved === false
+                      ? "请先逐项处置 A-03 提示"
                     : !qualityAccepted
                       ? "须先通过 A-03 质检"
                       : "H-01 人工确认并写入正式账本"}
@@ -1638,9 +1798,38 @@ function NoticeBanner({ notice, onClose }: { notice: Notice; onClose: () => void
   );
 }
 
-function QualityReviewCard({ review }: { review: QualityReviewResponse }) {
+function QualityReviewCard({
+  review,
+  activeCheckKey,
+  resolutionReasons,
+  resolving,
+  onLocate,
+  onFocusField,
+  onConfirmSource,
+  onReasonChange,
+  onSubmit,
+}: {
+  review: QualityReviewResponse;
+  activeCheckKey: string | null;
+  resolutionReasons: Record<string, string>;
+  resolving: boolean;
+  onLocate: (finding: QualityFinding) => void;
+  onFocusField: (finding: QualityFinding) => void;
+  onConfirmSource: (finding: QualityFinding) => void;
+  onReasonChange: (checkKey: string, reason: string) => void;
+  onSubmit: () => void;
+}) {
   const blocked = review.quality_status === "fail";
   const warned = review.quality_status === "pass_with_warnings";
+  const requiredKeys = review.resolution_required_keys || review.findings
+    .filter((finding) => finding.requires_human_resolution)
+    .map((finding) => finding.check_key);
+  const resolvedCount = requiredKeys.filter((checkKey) => (resolutionReasons[checkKey] || "").trim().length >= 8).length;
+  const allResolved = requiredKeys.length > 0 && resolvedCount === requiredKeys.length;
+  const orderedFindings = [...review.findings].sort((left, right) => {
+    const rank = { fail: 0, warning: 1, pass: 2 } as const;
+    return rank[left.result] - rank[right.result];
+  });
   return (
     <div className={`mt-5 rounded-2xl border p-4 ${blocked ? "border-red-200 bg-red-50" : warned ? "border-amber-200 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
       <div className="flex items-start justify-between gap-3">
@@ -1653,16 +1842,95 @@ function QualityReviewCard({ review }: { review: QualityReviewResponse }) {
             <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">{review.summary}</p>
           </div>
         </div>
-        <span className={`zc-pill ${blocked ? "zc-pill-red" : warned ? "zc-pill-amber" : "zc-pill-green"}`}>{review.score} 分</span>
+        <div className="text-right">
+          <span className={`zc-pill ${blocked ? "zc-pill-red" : warned ? "zc-pill-amber" : "zc-pill-green"}`}>{review.score} 分</span>
+          <p className="mt-1 max-w-28 text-[9px] font-semibold leading-4 text-slate-500">自动检查覆盖得分<br />不是事实准确率</p>
+        </div>
       </div>
-      <div className="mt-3 max-h-48 space-y-2 overflow-y-auto pr-1">
-        {review.findings.map((finding) => (
-          <div key={finding.check_key} className="flex gap-2 rounded-xl bg-white/75 px-3 py-2 text-xs leading-5">
-            <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${finding.result === "fail" ? "bg-red-500" : finding.result === "warning" ? "bg-amber-500" : "bg-emerald-500"}`} />
-            <span><b className="text-slate-800">{finding.label}：</b><span className="text-slate-600">{finding.message}</span></span>
+      {(blocked || warned) && (
+        <div className="mt-3 rounded-xl border border-white/80 bg-white/80 px-3 py-2 text-[11px] font-semibold leading-5 text-slate-600">
+          <b className="text-slate-900">人工该怎么做：</b>
+          先点“定位原文”查看具体行/单元格；原文正确则逐项确认并留说明，原文或候选错误则点“修改字段”后重新质检。
+        </div>
+      )}
+      <div className="mt-3 max-h-[420px] space-y-2 overflow-y-auto pr-1">
+        {orderedFindings.map((finding) => {
+          const actionable = finding.result !== "pass";
+          const selected = activeCheckKey === finding.check_key;
+          const reason = resolutionReasons[finding.check_key] || "";
+          return (
+          <div
+            key={finding.check_key}
+            className={`rounded-xl border px-3 py-2 text-xs leading-5 transition ${selected ? "border-blue-300 bg-blue-50" : actionable ? "border-white bg-white/90" : "border-transparent bg-white/60"}`}
+          >
+            <div className="flex gap-2">
+              <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${finding.result === "fail" ? "bg-red-500" : finding.result === "warning" ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <b className="text-slate-800">{finding.label}</b>
+                  {finding.source_locator && (
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600">
+                      {sourceLocatorLabel(finding.source_locator)}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-slate-600">{finding.message}</p>
+                {actionable && (finding.observed_value || finding.expected_value) && (
+                  <div className="mt-2 grid grid-cols-2 gap-2 rounded-lg bg-slate-50 p-2 text-[10px]">
+                    <span><b className="text-slate-700">检测到：</b>{finding.observed_value || "-"}</span>
+                    <span><b className="text-slate-700">应满足：</b>{finding.expected_value || "人工确认"}</span>
+                  </div>
+                )}
+                {actionable && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button type="button" onClick={() => onLocate(finding)} className="zc-button h-8 px-2.5 text-[11px]">
+                      <MapPin size={13} /> 定位原文
+                    </button>
+                    {finding.field_key && (
+                      <button type="button" onClick={() => onFocusField(finding)} className="zc-button h-8 px-2.5 text-[11px]">
+                        <PencilLine size={13} /> 修改字段
+                      </button>
+                    )}
+                    {finding.result === "warning" && !review.warnings_resolved && (
+                      <button type="button" onClick={() => onConfirmSource(finding)} className="zc-button-soft h-8 px-2.5 text-[11px]">
+                        <CheckCircle2 size={13} /> 原文无误，确认保留
+                      </button>
+                    )}
+                  </div>
+                )}
+                {finding.result === "warning" && reason && !review.warnings_resolved && (
+                  <textarea
+                    value={reason}
+                    onChange={(event) => onReasonChange(finding.check_key, event.currentTarget.value)}
+                    rows={2}
+                    className="mt-2 w-full resize-y rounded-lg border border-amber-200 bg-white px-2.5 py-2 text-[11px] leading-5 text-slate-700 outline-none focus:border-blue-300"
+                    aria-label={`${finding.label}人工处置说明`}
+                  />
+                )}
+              </div>
+            </div>
           </div>
-        ))}
+        );})}
       </div>
+      {requiredKeys.length > 0 && (
+        <div className={`mt-3 rounded-xl border p-3 ${review.warnings_resolved ? "border-emerald-200 bg-emerald-50" : "border-amber-200 bg-white"}`}>
+          <div className="flex items-center justify-between gap-3 text-xs font-black">
+            <span>{review.warnings_resolved ? "H-01 已完成逐项处置" : `人工处置进度 ${resolvedCount}/${requiredKeys.length}`}</span>
+            {review.resolution_sha256 && <span className="font-mono text-[9px] text-slate-400">{review.resolution_sha256.slice(0, 12)}…</span>}
+          </div>
+          {!review.warnings_resolved && (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={!allResolved || resolving}
+              className="mt-2 w-full zc-button-primary py-2.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {resolving ? <Loader2 size={15} className="animate-spin" /> : <ShieldCheck size={15} />}
+              {resolving ? "正在保存处置记录…" : "提交人工处置并生成留痕"}
+            </button>
+          )}
+        </div>
+      )}
       {review.retrievals && Object.keys(review.retrievals).length > 0 && (
         <div className="mt-3 rounded-xl border border-blue-100 bg-white/80 p-3">
           <div className="flex items-center gap-2 text-xs font-black text-blue-800">
@@ -1681,7 +1949,7 @@ function QualityReviewCard({ review }: { review: QualityReviewResponse }) {
           </div>
         </div>
       )}
-      <p className="mt-3 text-[11px] font-semibold text-slate-500">质检只给出风险清单；通过后仍须 H-01 对事实负责。</p>
+      <p className="mt-3 text-[11px] font-semibold text-slate-500">A-03 只指出风险和位置；H-01 必须查看原文、决定修改或保留，并对最终事实负责。</p>
     </div>
   );
 }
@@ -1725,32 +1993,83 @@ function PanelEmpty({ loading, title, body }: { loading?: boolean; title: string
   );
 }
 
-function DocumentPreview({ file, previewError }: { file: InboxFile; previewError?: string | null }) {
+function DocumentPreview({
+  file,
+  previewError,
+  activeFinding,
+}: {
+  file: InboxFile;
+  previewError?: string | null;
+  activeFinding?: QualityFinding | null;
+}) {
+  const lineRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const activeLine = activeFinding?.source_locator?.text_line_start;
+
+  useEffect(() => {
+    if (!activeLine) return;
+    lineRefs.current[activeLine]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeLine]);
+
+  const locationBanner = activeFinding ? (
+    <div className="mb-3 flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-semibold leading-5 text-blue-800">
+      <MapPin size={15} className="mt-0.5 shrink-0" />
+      <span>
+        正在定位：<b>{activeFinding.label}</b> · {sourceLocatorLabel(activeFinding.source_locator)}
+        {activeFinding.source_locator?.header ? ` · 表头“${activeFinding.source_locator.header}”` : ""}
+      </span>
+    </div>
+  ) : null;
+
   if (file.storageUrl && file.mimeType.startsWith("image/")) {
     return (
-      <img
-        src={file.storageUrl}
-        alt={file.name}
-        className="max-h-[730px] max-w-full rounded-sm bg-white object-contain shadow-xl shadow-slate-200/70"
-      />
+      <div className="w-full max-w-[720px]">
+        {locationBanner}
+        <img
+          src={file.storageUrl}
+          alt={file.name}
+          className="max-h-[730px] max-w-full rounded-sm bg-white object-contain shadow-xl shadow-slate-200/70"
+        />
+      </div>
     );
   }
 
   if (file.storageUrl && (file.mimeType === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"))) {
     return (
-      <iframe
-        src={file.storageUrl}
-        title={file.name}
-        className="h-[730px] w-full max-w-[720px] rounded-sm bg-white shadow-xl shadow-slate-200/70"
-      />
+      <div className="w-full max-w-[720px]">
+        {locationBanner}
+        <iframe
+          src={file.storageUrl}
+          title={file.name}
+          className="h-[730px] w-full rounded-sm bg-white shadow-xl shadow-slate-200/70"
+        />
+      </div>
     );
   }
 
   if (file.rawText.trim()) {
     return (
-      <div className="w-full max-w-[620px] rounded-sm bg-white p-10 shadow-xl shadow-slate-200/70">
-        <h3 className="mb-4 break-words text-xl font-black">{file.name}</h3>
-        <pre className="whitespace-pre-wrap break-words text-sm leading-7 text-slate-700">{file.rawText}</pre>
+      <div className="w-full max-w-[720px]">
+        {locationBanner}
+        <div className="max-h-[730px] overflow-y-auto rounded-sm bg-white p-8 shadow-xl shadow-slate-200/70">
+          <h3 className="mb-4 break-words text-xl font-black">{file.name}</h3>
+          <div className="font-mono text-xs leading-6 text-slate-700">
+            {file.rawText.split("\n").map((line, index) => {
+              const lineNumber = index + 1;
+              const lineEnd = activeFinding?.source_locator?.text_line_end || activeLine;
+              const highlighted = Boolean(activeLine && lineNumber >= activeLine && lineNumber <= (lineEnd || activeLine));
+              return (
+                <div
+                  key={lineNumber}
+                  ref={(element) => { lineRefs.current[lineNumber] = element; }}
+                  className={`grid grid-cols-[44px_1fr] rounded px-1 transition ${highlighted ? "bg-amber-100 ring-2 ring-amber-300" : "hover:bg-slate-50"}`}
+                >
+                  <span className="select-none pr-3 text-right text-slate-300">{lineNumber}</span>
+                  <pre className="whitespace-pre-wrap break-words font-mono">{line || " "}</pre>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     );
   }
@@ -1814,7 +2133,7 @@ function Field({
   const statusLabel = data.status === "人工修正" ? "待确认 / 人工修正" : data.status;
 
   return (
-    <div>
+    <div data-quality-field={data.key}>
       <div className="mb-1 flex items-center justify-between gap-2 text-xs font-semibold text-slate-500">
         <span>{data.label}</span>
         <div className="flex items-center gap-2">

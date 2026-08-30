@@ -27,7 +27,9 @@ def test_each_ai_employee_has_one_versioned_non_reasoning_skill():
 
     assert {skill.role_id for skill in skills} == REQUIRED_AI_ROLES
     assert len({skill.skill_id for skill in skills}) == len(skills)
-    assert all(skill.version == "1.0.0" for skill in skills)
+    versions = {skill.role_id: skill.version for skill in skills}
+    assert versions["A-03"] == "1.1.0"
+    assert all(version == "1.0.0" for role_id, version in versions.items() if role_id != "A-03")
     assert all(len(skill.package_sha256) == 64 for skill in skills)
     assert all(len(skill.instruction_sha256) == 64 for skill in skills)
     assert all(skill.stores_raw_chain_of_thought is False for skill in skills)
@@ -77,7 +79,7 @@ def test_workforce_endpoint_exposes_skill_version_and_hash_per_ai_employee():
         for role_id in REQUIRED_AI_ROLES:
             skill = by_role[role_id]["skill"]
             assert skill["role_id"] == role_id
-            assert skill["version"] == "1.0.0"
+            assert skill["version"] == ("1.1.0" if role_id == "A-03" else "1.0.0")
             assert len(skill["package_sha256"]) == 64
         assert by_role["H-01"]["skill"] is None
         assert by_role["R-01"]["skill"] is None

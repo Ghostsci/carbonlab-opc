@@ -6,6 +6,7 @@ import csv
 import datetime as dt
 import io
 import math
+import re
 import unicodedata
 import zipfile
 from dataclasses import dataclass, field
@@ -28,6 +29,7 @@ class OCRResult:
     confidence: float
     raw_text: str
     tables: list[dict[str, Any]] = field(default_factory=list)
+    field_sources: dict[str, dict[str, Any]] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
     read_status: str = "read"
     reader: str = "unknown"
@@ -61,6 +63,19 @@ class OCRService:
     MAX_XLSX_COLUMNS = 100
     MAX_XLSX_ARCHIVE_MEMBERS = 2_000
     MAX_XLSX_UNCOMPRESSED_BYTES = 50 * 1024 * 1024
+
+    SOURCE_HEADER_ALIASES: dict[str, tuple[str, ...]] = {
+        "supplier_name": ("供电公司", "供应商", "供电单位"),
+        "customer_name": ("户名", "用户名称", "客户名称"),
+        "customer_number": ("户号", "客户编号", "用户编号"),
+        "period": ("账单月份", "报告期间", "统计期间", "计费周期", "抄表日期"),
+        "electricity_kwh": ("本期用电量", "用电量", "有功电量", "总电量"),
+        "unit_price": ("电价", "单价"),
+        "total_amount": ("电费合计", "应收电费", "合计金额", "金额"),
+        "meter_reading_start": ("上期读数", "上次读数", "期初读数"),
+        "meter_reading_end": ("本期读数", "本次读数", "期末读数"),
+        "facility": ("所属工厂", "所属设施", "工厂", "生产区域", "用电地址"),
+    }
 
     def __init__(self, use_llm_fallback: bool = True):
         # Kept for API compatibility. Unsafe implicit LLM/OCR fallback is not
@@ -149,6 +164,7 @@ class OCRService:
                 reader=reader,
             )
         confidence = self._estimate_confidence(text, fields, doc_type)
+        field_sources = self._locate_field_sources(path, text, fields)
         if not any(value.strip() for value in fields.values()):
             return OCRResult(
                 document_type=doc_type,
@@ -166,6 +182,7 @@ class OCRService:
             confidence=round(confidence, 1),
             raw_text=text,
             tables=self._extract_tables(text),
+            field_sources=field_sources,
             read_status="read",
             reader=reader,
         )
@@ -446,6 +463,282 @@ class OCRService:
         """Reserved for a future layout-aware table adapter."""
         del text
         return []
+
+    def _locate_field_sources(
+        self,
+        path: Path,
+        text: str,
+        fields: dict[str, str],
+    ) -> dict[str, dict[str, Any]]:
+        """Locate extracted candidates in the owned source document.
+
+        The locator is deliberately compact: only extracted business fields are
+        indexed, rather than persisting every cell from a large workbook.  It is
+        sufficient for a reviewer to jump from an A-03 finding back to the exact
+        source row/cell and see the unit context that produced the candidate.
+        """
+        try:
+            if path.suffix.lower() == ".xlsx":
+                return self._locate_xlsx_field_sources(path, fields)
+            if path.suffix.lower() in {".csv", ".txt"}:
+                return self._locate_delimited_field_sources(text, fields)
+        except (OSError, ValueError, csv.Error):
+            # Location metadata improves reviewability but must never turn a
+            # readable document into a failed upload.  A-03 will fall back to a
+            # text-line locator and require explicit human confirmation.
+            pass
+        return self._locate_text_field_sources(text, fields)
+
+    def _locate_xlsx_field_sources(
+        self,
+        path: Path,
+        fields: dict[str, str],
+    ) -> dict[str, dict[str, Any]]:
+        from openpyxl import load_workbook
+        from openpyxl.utils import get_column_letter
+
+        workbook = load_workbook(
+            filename=path,
+            read_only=True,
+            data_only=True,
+            keep_links=False,
+        )
+        located: dict[str, dict[str, Any]] = {}
+        raw_line = 0
+        try:
+            for worksheet in workbook.worksheets:
+                raw_line += 1  # [Sheet: ...] marker emitted by _extract_xlsx.
+                active_headers: dict[str, tuple[int, str, int]] = {}
+                unit_column: int | None = None
+                for row_index, row in enumerate(worksheet.iter_rows(values_only=True), start=1):
+                    cells = [self._cell_text(value) for value in row]
+                    if not any(cells):
+                        continue
+                    raw_line += 1
+                    detected_headers: dict[str, tuple[int, str, int]] = {}
+                    detected_unit_column: int | None = None
+                    for column_index, cell in enumerate(cells, start=1):
+                        key = self._source_field_key(cell)
+                        if key:
+                            detected_headers[key] = (column_index, cell, row_index)
+                        if self._normalize_source_label(cell) in {"单位", "计量单位"}:
+                            detected_unit_column = column_index
+                    if detected_headers:
+                        active_headers = detected_headers
+                        unit_column = detected_unit_column
+                        continue
+
+                    for field_key, candidate in fields.items():
+                        if field_key in located or candidate in (None, ""):
+                            continue
+                        header = active_headers.get(field_key)
+                        if header and header[0] <= len(cells):
+                            column_index, header_text, header_row = header
+                            raw_value = cells[column_index - 1]
+                            if self._source_values_match(candidate, raw_value):
+                                unit, unit_source = self._source_unit_context(
+                                    header_text=header_text,
+                                    raw_value=raw_value,
+                                    unit_value=(
+                                        cells[unit_column - 1]
+                                        if unit_column and unit_column <= len(cells)
+                                        else ""
+                                    ),
+                                )
+                                column_letter = get_column_letter(column_index)
+                                located[field_key] = {
+                                    "kind": "spreadsheet_cell",
+                                    "sheet": worksheet.title,
+                                    "row": row_index,
+                                    "column": column_index,
+                                    "column_label": column_letter,
+                                    "cell": f"{column_letter}{row_index}",
+                                    "header_cell": f"{column_letter}{header_row}",
+                                    "header": header_text,
+                                    "raw_value": raw_value,
+                                    "unit": unit,
+                                    "unit_source": unit_source,
+                                    "text_line_start": raw_line,
+                                    "text_line_end": raw_line,
+                                    "excerpt": self._row_excerpt(cells, column_index),
+                                }
+                                continue
+
+                        # Also support label/value layouts such as
+                        # "本期用电量 | 632600 | kWh".
+                        for column_index, label in enumerate(cells, start=1):
+                            if self._source_field_key(label) != field_key:
+                                continue
+                            for value_column in range(column_index + 1, min(len(cells), column_index + 3) + 1):
+                                raw_value = cells[value_column - 1]
+                                if not self._source_values_match(candidate, raw_value):
+                                    continue
+                                unit_value = cells[value_column] if value_column < len(cells) else ""
+                                unit, unit_source = self._source_unit_context(
+                                    header_text=label,
+                                    raw_value=raw_value,
+                                    unit_value=unit_value,
+                                )
+                                column_letter = get_column_letter(value_column)
+                                located[field_key] = {
+                                    "kind": "spreadsheet_cell",
+                                    "sheet": worksheet.title,
+                                    "row": row_index,
+                                    "column": value_column,
+                                    "column_label": column_letter,
+                                    "cell": f"{column_letter}{row_index}",
+                                    "header_cell": f"{get_column_letter(column_index)}{row_index}",
+                                    "header": label,
+                                    "raw_value": raw_value,
+                                    "unit": unit,
+                                    "unit_source": unit_source,
+                                    "text_line_start": raw_line,
+                                    "text_line_end": raw_line,
+                                    "excerpt": self._row_excerpt(cells, value_column),
+                                }
+                                break
+            return located
+        finally:
+            workbook.close()
+
+    def _locate_delimited_field_sources(
+        self,
+        text: str,
+        fields: dict[str, str],
+    ) -> dict[str, dict[str, Any]]:
+        located: dict[str, dict[str, Any]] = {}
+        rows = list(csv.reader(io.StringIO(text)))
+        active_headers: dict[str, tuple[int, str, int]] = {}
+        unit_column: int | None = None
+        for row_index, row in enumerate(rows, start=1):
+            cells = [str(value).strip() for value in row]
+            detected_headers: dict[str, tuple[int, str, int]] = {}
+            detected_unit_column: int | None = None
+            for column_index, cell in enumerate(cells, start=1):
+                key = self._source_field_key(cell)
+                if key:
+                    detected_headers[key] = (column_index, cell, row_index)
+                if self._normalize_source_label(cell) in {"单位", "计量单位"}:
+                    detected_unit_column = column_index
+            if detected_headers:
+                active_headers = detected_headers
+                unit_column = detected_unit_column
+                continue
+            for field_key, candidate in fields.items():
+                if field_key in located or candidate in (None, ""):
+                    continue
+                header = active_headers.get(field_key)
+                if not header or header[0] > len(cells):
+                    continue
+                column_index, header_text, header_row = header
+                raw_value = cells[column_index - 1]
+                if not self._source_values_match(candidate, raw_value):
+                    continue
+                unit, unit_source = self._source_unit_context(
+                    header_text=header_text,
+                    raw_value=raw_value,
+                    unit_value=(cells[unit_column - 1] if unit_column and unit_column <= len(cells) else ""),
+                )
+                located[field_key] = {
+                    "kind": "delimited_cell",
+                    "row": row_index,
+                    "column": column_index,
+                    "cell": f"R{row_index}C{column_index}",
+                    "header_cell": f"R{header_row}C{column_index}",
+                    "header": header_text,
+                    "raw_value": raw_value,
+                    "unit": unit,
+                    "unit_source": unit_source,
+                    "text_line_start": row_index,
+                    "text_line_end": row_index,
+                    "excerpt": self._row_excerpt(cells, column_index),
+                }
+        return located
+
+    def _locate_text_field_sources(
+        self,
+        text: str,
+        fields: dict[str, str],
+    ) -> dict[str, dict[str, Any]]:
+        located: dict[str, dict[str, Any]] = {}
+        for field_key, candidate in fields.items():
+            if candidate in (None, ""):
+                continue
+            for line_number, line in enumerate(text.splitlines(), start=1):
+                if not self._source_values_match(candidate, line):
+                    continue
+                unit, unit_source = self._source_unit_context(
+                    header_text=line,
+                    raw_value=line,
+                    unit_value="",
+                )
+                located[field_key] = {
+                    "kind": "text_line",
+                    "text_line_start": line_number,
+                    "text_line_end": line_number,
+                    "raw_value": candidate,
+                    "unit": unit,
+                    "unit_source": unit_source,
+                    "excerpt": line[:500],
+                }
+                break
+        return located
+
+    def _source_field_key(self, value: Any) -> str | None:
+        normalized = self._normalize_source_label(value)
+        if not normalized:
+            return None
+        for field_key, aliases in self.SOURCE_HEADER_ALIASES.items():
+            for alias in aliases:
+                alias_normalized = self._normalize_source_label(alias)
+                if normalized == alias_normalized or normalized.startswith(alias_normalized):
+                    return field_key
+        return None
+
+    def _normalize_source_label(self, value: Any) -> str:
+        normalized = re.sub(r"\s+", "", str(value or "").strip().lower())
+        normalized = normalized.replace("（", "(").replace("）", ")")
+        return re.sub(r"\([^)]*\)$", "", normalized)
+
+    def _normalize_source_value(self, value: Any) -> str:
+        text = str(value or "").strip().lower().replace(",", "")
+        return re.sub(r"[^0-9a-z\u4e00-\u9fff.+-]+", "", text)
+
+    def _source_values_match(self, candidate: Any, raw_value: Any) -> bool:
+        needle = self._normalize_source_value(candidate)
+        haystack = self._normalize_source_value(raw_value)
+        if not needle or not haystack:
+            return False
+        return needle == haystack or needle in haystack or haystack in needle
+
+    def _source_unit_context(
+        self,
+        *,
+        header_text: str,
+        raw_value: str,
+        unit_value: str,
+    ) -> tuple[str | None, str | None]:
+        unit_patterns = (
+            (r"(?i)kw[·.]?h|千瓦时", "kWh"),
+            (r"(?i)mwh|兆瓦时", "MWh"),
+            (r"(?i)wh|瓦时", "Wh"),
+            (r"(?i)gj", "GJ"),
+            (r"(?i)mj", "MJ"),
+        )
+        for source_name, value in (
+            ("value", raw_value),
+            ("header", header_text),
+            ("unit_column", unit_value),
+        ):
+            for pattern, canonical in unit_patterns:
+                if re.search(pattern, str(value or "")):
+                    return canonical, source_name
+        return None, None
+
+    def _row_excerpt(self, cells: list[str], focus_column: int) -> str:
+        start = max(0, focus_column - 3)
+        end = min(len(cells), focus_column + 2)
+        return " | ".join(cell for cell in cells[start:end] if cell)[:500]
 
 
 _ocr_service = OCRService()

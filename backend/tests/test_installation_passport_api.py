@@ -439,12 +439,33 @@ def test_complete_passport_can_be_replayed_reviewed_and_published():
             },
         )
         assert quality.status_code == 200, quality.json()
+        quality_payload = quality.json()
+        if quality_payload.get("resolution_required_keys"):
+            resolved = client.post(
+                f"/api/upload/{document['file_id']}/quality-review/resolve",
+                headers=headers,
+                json={
+                    "candidate_token": candidate.json()["candidate_token"],
+                    "quality_review_token": quality_payload["quality_review_token"],
+                    "fields": fields,
+                    "resolutions": [
+                        {
+                            "check_key": check_key,
+                            "decision": "confirmed_source",
+                            "reason": "测试中已对照原始文件并确认人工归一化后的报告期间。",
+                        }
+                        for check_key in quality_payload["resolution_required_keys"]
+                    ],
+                },
+            )
+            assert resolved.status_code == 200, resolved.json()
+            quality_payload["quality_review_token"] = resolved.json()["quality_review_token"]
         confirmed = client.post(
             "/api/upload/confirm-activity",
             headers=headers,
             json={
                 "candidate_token": candidate.json()["candidate_token"],
-                "quality_review_token": quality.json()["quality_review_token"],
+                "quality_review_token": quality_payload["quality_review_token"],
                 "file_id": document["file_id"],
                 "document_content_hash": document["content_hash"],
                 "filename": document["filename"],

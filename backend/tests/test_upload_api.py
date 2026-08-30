@@ -125,6 +125,8 @@ def _prepare_quality_review(
     document: DocumentStore,
     fields: dict,
     candidate: dict,
+    *,
+    resolve_warnings: bool = True,
 ) -> dict:
     response = client.post(
         f"/api/upload/{document.id}/quality-review",
@@ -132,7 +134,40 @@ def _prepare_quality_review(
         json={"candidate_token": candidate["candidate_token"], "fields": fields},
     )
     assert response.status_code == 200, response.json()
-    return response.json()
+    quality = response.json()
+    if (
+        resolve_warnings
+        and quality["quality_status"] == "pass_with_warnings"
+        and quality.get("resolution_required_keys")
+    ):
+        resolution_response = client.post(
+            f"/api/upload/{document.id}/quality-review/resolve",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
+                "fields": fields,
+                "resolutions": [
+                    {
+                        "check_key": check_key,
+                        "decision": "confirmed_source",
+                        "reason": "测试中已逐项对照当前源文件，确认保留该候选值。",
+                    }
+                    for check_key in quality["resolution_required_keys"]
+                ],
+            },
+        )
+        assert resolution_response.status_code == 200, resolution_response.json()
+        resolved = resolution_response.json()
+        quality.update(
+            {
+                "quality_review_token": resolved["quality_review_token"],
+                "warnings_resolved": True,
+                "resolution_sha256": resolved["resolution_sha256"],
+                "resolutions": resolved["resolutions"],
+            }
+        )
+    return quality
 
 
 def test_confirm_activity_requires_exact_server_signed_candidate_snapshot():
@@ -414,6 +449,74 @@ def test_a03_does_not_treat_a_value_from_an_unrelated_source_field_as_evidence()
         db.close()
 
 
+def test_a03_warning_must_be_located_and_explicitly_resolved_before_formal_write():
+    client = TestClient(app)
+    db = _session()
+    try:
+        tenant = _tenant(db, "upload-quality-warning-resolution")
+        enterprise = _enterprise(db, tenant, "96")
+        _user(db, tenant, enterprise, "upload-quality-warning-resolution@example.com")
+        document = _document(db, tenant, enterprise, filename="warning-resolution.csv")
+        document.ocr_result = {
+            "fields": {
+                "electricity_kwh": "632600",
+                "period": "2026-03",
+                "facility": "炼钢厂",
+            },
+            "raw_text": "用电量 632600，账单月份 2026-03，所属工厂 炼钢厂",
+            "field_sources": {
+                "electricity_kwh": {
+                    "kind": "delimited_cell",
+                    "row": 2,
+                    "column": 5,
+                    "cell": "R2C5",
+                    "header": "本期用电量",
+                    "raw_value": "632600",
+                    "text_line_start": 2,
+                    "excerpt": "2026-03 | 632600 | 炼钢厂",
+                },
+            },
+            "confidence": 96,
+        }
+        db.commit()
+        token = _login(client, "upload-quality-warning-resolution@example.com")
+        fields = dict(document.ocr_result["fields"])
+        candidate = _prepare_candidate(client, token, document, fields)
+        quality = _prepare_quality_review(
+            client,
+            token,
+            document,
+            fields,
+            candidate,
+            resolve_warnings=False,
+        )
+        unit_finding = next(
+            item for item in quality["findings"] if item["check_key"] == "quantity_unit"
+        )
+        assert unit_finding["result"] == "warning"
+        assert unit_finding["source_locator"]["cell"] == "R2C5"
+        assert quality["warnings_resolved"] is False
+
+        blocked = client.post(
+            "/api/upload/confirm-activity",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "candidate_token": candidate["candidate_token"],
+                "quality_review_token": quality["quality_review_token"],
+                "file_id": str(document.id),
+                "document_content_hash": document.content_hash,
+                "filename": document.filename,
+                "document_type": "electricity_bill",
+                "fields": fields,
+            },
+        )
+        assert blocked.status_code == 409, blocked.json()
+        assert "逐项核对" in blocked.json()["detail"]
+        assert db.query(ActivityData).filter(ActivityData.tenant_id == tenant.id).count() == 0
+    finally:
+        db.close()
+
+
 def test_confirm_activity_writes_workflow_checkpoint():
     client = TestClient(app)
     db = _session()
@@ -562,6 +665,7 @@ def test_upload_inbox_lists_only_current_tenant_and_enterprise_in_stable_order(m
                 "confidence": 0,
                 "raw_text": "",
                 "tables": [],
+                "field_sources": {},
                 "errors": ["unreadable"],
             },
             created_at=created_at,
@@ -636,6 +740,7 @@ def test_upload_inbox_lists_only_current_tenant_and_enterprise_in_stable_order(m
             "confidence": 0,
             "raw_text": "",
             "tables": [],
+                "field_sources": {},
                 "errors": ["unreadable"],
                 "ocr_status": "failed",
                 "workforce": {},

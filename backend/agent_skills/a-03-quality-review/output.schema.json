@@ -6,6 +6,9 @@
     "quality_review_id": {"type": "string"},
     "quality_status": {"enum": ["pass", "pass_with_warnings", "fail"]},
     "score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "score_label": {"type": "string"},
+    "resolution_required_keys": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "warnings_resolved": {"type": "boolean"},
     "findings": {
       "type": "array",
       "items": {
@@ -13,9 +16,35 @@
         "required": ["check_key", "result", "message"],
         "properties": {
           "check_key": {"type": "string"},
+          "label": {"type": "string"},
           "result": {"enum": ["pass", "warning", "fail"]},
           "message": {"type": "string"},
-          "evidence_ref": {"type": ["string", "null"]}
+          "evidence_ref": {"type": ["string", "null"]},
+          "field_key": {"type": ["string", "null"]},
+          "observed_value": {"type": ["string", "null"]},
+          "expected_value": {"type": ["string", "null"]},
+          "human_action": {"enum": ["none", "confirm_source", "correct_and_rerun"]},
+          "requires_human_resolution": {"type": "boolean"},
+          "source_locator": {
+            "type": ["object", "null"],
+            "properties": {
+              "kind": {"type": "string"},
+              "sheet": {"type": "string"},
+              "row": {"type": "integer", "minimum": 1},
+              "column": {"type": "integer", "minimum": 1},
+              "column_label": {"type": "string"},
+              "cell": {"type": "string"},
+              "header_cell": {"type": "string"},
+              "header": {"type": "string"},
+              "raw_value": {"type": "string"},
+              "unit": {"type": "string"},
+              "unit_source": {"type": "string"},
+              "text_line_start": {"type": "integer", "minimum": 1},
+              "text_line_end": {"type": "integer", "minimum": 1},
+              "excerpt": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
         },
         "additionalProperties": false
       }

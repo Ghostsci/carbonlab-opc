@@ -6,7 +6,7 @@ import tempfile
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
@@ -41,6 +41,7 @@ from backend.services.digital_workforce import (
     QualityReviewError,
     evaluate_document_quality,
     issue_quality_review,
+    resolve_quality_review,
     verify_quality_review,
     workforce_contract_payload,
 )
@@ -86,6 +87,19 @@ class QualityReviewRequest(BaseModel):
     fields: dict[str, Any] = Field(min_length=1)
 
 
+class QualityFindingResolution(BaseModel):
+    check_key: str = Field(min_length=1, max_length=120)
+    decision: Literal["confirmed_source"]
+    reason: str = Field(min_length=8, max_length=500)
+
+
+class ResolveQualityReviewRequest(BaseModel):
+    candidate_token: str = Field(min_length=1)
+    quality_review_token: str = Field(min_length=1)
+    fields: dict[str, Any] = Field(min_length=1)
+    resolutions: list[QualityFindingResolution] = Field(min_length=1, max_length=50)
+
+
 class ConfirmActivityFactorRequest(BaseModel):
     factor_id: uuid.UUID
     factor_snapshot_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -118,6 +132,7 @@ def _document_response(document: DocumentStore) -> dict[str, Any]:
         "confidence": snapshot.get("confidence") or 0,
         "raw_text": snapshot.get("raw_text") or "",
         "tables": snapshot.get("tables") or [],
+        "field_sources": snapshot.get("field_sources") or {},
         "errors": errors,
         "ocr_status": document.ocr_status,
         "workforce": snapshot.get("workforce") or {},
@@ -135,7 +150,9 @@ def _record_workforce_stage(
     snapshot = dict(document.ocr_result or {})
     workforce = dict(snapshot.get("workforce") or {})
     stages = dict(workforce.get("stages") or {})
+    previous = dict(stages.get(stage_key) or {})
     stages[stage_key] = {
+        **previous,
         "status": status_value,
         "at": datetime.now(timezone.utc).isoformat(),
         **(payload or {}),
@@ -263,6 +280,26 @@ async def upload_file(
         .first()
     )
     if existing is not None:
+        existing_snapshot = dict(existing.ocr_result or {})
+        if not existing_snapshot.get("field_sources"):
+            tmp_path: Path | None = None
+            try:
+                with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
+                    tmp.write(content)
+                    tmp_path = Path(tmp.name)
+                refreshed = ocr_service.process(tmp_path)
+                if refreshed.field_sources:
+                    existing_snapshot["field_sources"] = refreshed.field_sources
+                    if not existing_snapshot.get("raw_text"):
+                        existing_snapshot["raw_text"] = refreshed.raw_text[: settings.rag_max_source_chars]
+                    existing.ocr_result = existing_snapshot
+            except (OSError, ValueError):
+                # Reuse remains safe without the optional review locator. A-03
+                # will require explicit manual source confirmation instead.
+                pass
+            finally:
+                if tmp_path is not None:
+                    tmp_path.unlink(missing_ok=True)
         intake_run = start_agent_run(
             db,
             tenant_id=user.tenant_id,
@@ -340,6 +377,7 @@ async def upload_file(
             "confidence": result.confidence,
             "raw_text": result.raw_text[: settings.rag_max_source_chars],
             "tables": result.tables,
+            "field_sources": result.field_sources,
             "errors": result.errors,
             "workforce": {
                 "contract_version": workforce_contract_payload()["contract_version"],
@@ -846,6 +884,9 @@ def review_document_candidate(
             "score": result["score"],
             "quality_result_sha256": signed["quality_result_sha256"],
             "counts": result["counts"],
+            "findings": result["findings"],
+            "resolution_required_keys": result["resolution_required_keys"],
+            "warnings_resolved": result["warnings_resolved"],
         },
     )
     document.ocr_status = "quality_failed" if result["quality_status"] == "fail" else "quality_reviewed"
@@ -859,6 +900,117 @@ def review_document_candidate(
         "agent": {"role_id": "A-03", "display_name": "碳数据质检员"},
         "formal_write_allowed": False,
         "next_gate": "H-01 企业数据确认人",
+    }
+
+
+@router.post("/{file_id}/quality-review/resolve")
+def resolve_document_quality_warnings(
+    file_id: uuid.UUID,
+    req: ResolveQualityReviewRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Record H-01's explicit disposition for every non-blocking A-03 warning."""
+    tenant_id, enterprise_id = _require_document_context(user)
+    document = (
+        db.query(DocumentStore)
+        .filter(
+            DocumentStore.id == file_id,
+            DocumentStore.tenant_id == tenant_id,
+            DocumentStore.enterprise_id == enterprise_id,
+        )
+        .first()
+    )
+    if document is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="文件不存在或无权访问")
+    try:
+        candidate = verify_candidate_snapshot(
+            req.candidate_token,
+            actor_user_id=str(user.id),
+            tenant_id=str(tenant_id),
+            enterprise_id=str(enterprise_id),
+            file_id=str(document.id),
+            document_content_hash=document.content_hash,
+            document_type=document.doc_type,
+            fields=req.fields,
+        )
+        resolved = resolve_quality_review(
+            req.quality_review_token,
+            actor_user_id=str(user.id),
+            tenant_id=str(tenant_id),
+            enterprise_id=str(enterprise_id),
+            file_id=str(document.id),
+            document_content_hash=document.content_hash,
+            candidate=candidate,
+            resolutions=[item.model_dump() for item in req.resolutions],
+        )
+    except CandidateSnapshotError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except QualityReviewError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+
+    resolution_run = start_agent_run(
+        db,
+        tenant_id=tenant_id,
+        enterprise_id=enterprise_id,
+        agent_id="H-01",
+        trigger="quality_warning_resolution",
+        trigger_ref=resolved["quality_review_id"],
+        source_file_id=document.id,
+        input_snapshot={
+            "file_id": str(document.id),
+            "candidate_id": candidate["candidate_id"],
+            "quality_review_id": resolved["quality_review_id"],
+            "resolution_required_keys": resolved["resolution_required_keys"],
+        },
+        summary="H-01 对照原件逐项处置 A-03 非阻断提示",
+    )
+    append_agent_run_event(
+        db,
+        run=resolution_run,
+        event_type="quality_warnings_resolved",
+        status="success",
+        title="A-03 提示已由人工逐项处置",
+        summary=f"已处置 {len(resolved['resolutions'])} 项提示，并生成不可替换的处置指纹",
+        payload={
+            "quality_review_id": resolved["quality_review_id"],
+            "resolution_sha256": resolved["resolution_sha256"],
+            "resolutions": resolved["resolutions"],
+        },
+        evidence_refs=[str(document.id), resolved["quality_review_id"]],
+    )
+    complete_agent_run(
+        db,
+        run=resolution_run,
+        summary="H-01 已完成提示处置；候选可进入最终企业事实确认",
+        output_snapshot={
+            "quality_review_id": resolved["quality_review_id"],
+            "resolution_sha256": resolved["resolution_sha256"],
+            "warnings_resolved": True,
+            "next_gate": "H-01-final-confirmation",
+        },
+        final_action={"handoff_to": "H-01-final-confirmation"},
+        evidence_refs=[str(document.id), resolved["quality_review_id"]],
+    )
+    _record_workforce_stage(
+        document,
+        "evidence_quality_review",
+        status_value="completed",
+        payload={
+            "warnings_resolved": True,
+            "resolved_at": resolved["resolved_at"],
+            "resolution_run_id": resolution_run.run_id,
+            "resolution_sha256": resolved["resolution_sha256"],
+            "resolutions": resolved["resolutions"],
+        },
+    )
+    db.commit()
+    return {
+        **resolved,
+        "state": "quality_warnings_resolved",
+        "agent": {"role_id": "H-01", "display_name": "企业数据确认人"},
+        "formal_write_allowed": True,
+        "next_gate": "H-01 企业事实最终确认",
     }
 
 
@@ -955,6 +1107,7 @@ def confirm_activity_data(
             "candidate_subject_sha256": confirmation["subject_sha256"],
             "quality_review_id": quality_review["quality_review_id"],
             "quality_result_sha256": quality_review["quality_result_sha256"],
+            "quality_resolution_sha256": quality_review.get("resolution_sha256"),
         }
     )
     # Evidence identity is server-authoritative.  The client may edit extracted
@@ -1005,6 +1158,7 @@ def confirm_activity_data(
             "fields_sha256": confirmation["fields_sha256"],
             "quality_review_id": quality_review["quality_review_id"],
             "quality_result_sha256": quality_review["quality_result_sha256"],
+            "quality_resolution_sha256": quality_review.get("resolution_sha256"),
         },
         summary="H-01 对照原始证据承担企业事实确认责任",
     )
@@ -1025,6 +1179,7 @@ def confirm_activity_data(
             "candidate_id": confirmation["candidate_id"],
             "quality_review_id": quality_review["quality_review_id"],
             "activity_data_id": formal_write["activity_data_id"],
+            "quality_resolution_sha256": quality_review.get("resolution_sha256"),
         },
         evidence_refs=[str(document.id), formal_write["activity_data_id"]],
     )
@@ -1067,6 +1222,7 @@ def confirm_activity_data(
             "actor_user_id": str(user.id),
             "candidate_id": confirmation["candidate_id"],
             "quality_review_id": quality_review["quality_review_id"],
+            "quality_resolution_sha256": quality_review.get("resolution_sha256"),
         },
     )
     document.ocr_status = "confirmed"
