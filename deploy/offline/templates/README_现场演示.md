@@ -13,7 +13,9 @@
 
 ### Mac
 
-双击 `1_START_CARBONLAB.command`。首次运行会导入离线镜像，通常需要数分钟；后续启动更快。
+**推荐：双击 `1_START_CARBONLAB.app`。** 该入口不会读取个人 `.zshrc`、OpenClaw 或其他终端插件配置，可避免补全脚本报错影响比赛演示。首次运行会导入离线镜像，通常需要 1—3 分钟；后续启动更快。
+
+如果 macOS 首次提示“无法验证开发者”，请右键该 App，选择“打开”，再确认一次。`1_START_CARBONLAB.command` 作为技术人员备用入口保留。
 
 ### Windows
 

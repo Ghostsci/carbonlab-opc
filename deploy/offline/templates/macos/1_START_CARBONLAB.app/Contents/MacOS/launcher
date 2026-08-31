@@ -1,0 +1,33 @@
+#!/bin/zsh -f
+set -u
+
+ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+LOG_DIR="$ROOT_DIR/diagnostics"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/app-launch-$(date +%Y%m%d-%H%M%S).log"
+
+if [[ "${CARBONLAB_NO_UI:-0}" != "1" ]]; then
+  /usr/bin/osascript -e 'display notification "正在检查 Docker 并启动离线服务，首次运行可能需要 1—3 分钟。" with title "零碳云"' >/dev/null 2>&1 || true
+fi
+
+/bin/zsh -f "$ROOT_DIR/1_START_CARBONLAB.command" </dev/null >"$LOG_FILE" 2>&1
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]]; then
+  if [[ "${CARBONLAB_NO_UI:-0}" != "1" ]]; then
+    /usr/bin/osascript <<'APPLESCRIPT' >/dev/null 2>&1 || true
+display dialog "零碳云已经启动，浏览器将打开登录页。\n\n如未自动打开，请访问：http://127.0.0.1:15173/login" with title "启动成功" buttons {"知道了"} default button 1
+APPLESCRIPT
+  fi
+else
+  if [[ "${CARBONLAB_NO_UI:-0}" != "1" ]]; then
+    /usr/bin/osascript - "$LOG_FILE" <<'APPLESCRIPT' >/dev/null 2>&1 || true
+on run argv
+  set logPath to item 1 of argv
+  display alert "零碳云启动失败" message "请查看诊断日志：" & return & logPath buttons {"知道了"} default button 1 as critical
+end run
+APPLESCRIPT
+  fi
+fi
+
+exit $exit_code

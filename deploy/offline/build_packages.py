@@ -138,7 +138,8 @@ def _build_one(
     platform: str,
     image_tag: str,
     package_name: str,
-    code_commit: str,
+    package_commit: str,
+    runtime_commit: str,
     rollback_tag: str,
     screenshots: Path | None,
     validation_report: Path | None,
@@ -197,7 +198,9 @@ def _build_one(
         "product": "CarbonLab / 零碳云",
         "edition": "competition-slim-offline-demo",
         "built_at": built_at,
-        "git_commit": code_commit,
+        "git_commit": package_commit,
+        "package_git_commit": package_commit,
+        "runtime_image_git_commit": runtime_commit,
         "rollback_tag": rollback_tag,
         "platform": platform,
         "image_tag": image_tag,
@@ -237,6 +240,8 @@ def _build_one(
 
     for command in package_root.glob("*.command"):
         command.chmod(command.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    for executable in package_root.glob("*.app/Contents/MacOS/*"):
+        executable.chmod(executable.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     _write_checksums(package_root)
     _zip_directory(package_root, archive_path)
     return {
@@ -259,37 +264,45 @@ def main() -> int:
     parser.add_argument("--arm-validation", type=Path)
     parser.add_argument("--amd-validation", type=Path)
     parser.add_argument("--rollback-tag", default="zcy-pre-offline-package-slim-20260831")
+    parser.add_argument("--runtime-commit")
+    parser.add_argument("--release-suffix", default="")
+    parser.add_argument("--platform", choices=("both", "macos", "windows"), default="both")
     args = parser.parse_args()
 
     args.output.mkdir(parents=True, exist_ok=True)
-    code_commit = _run("git", "rev-parse", "HEAD")
-    products = [
-        _build_one(
+    package_commit = _run("git", "rev-parse", "HEAD")
+    runtime_commit = args.runtime_commit or package_commit
+    products = []
+    if args.platform in {"both", "macos"}:
+        products.append(_build_one(
             output=args.output,
             platform_key="macos",
             platform="linux/arm64",
             image_tag="20260831-slim-arm64",
-            package_name="CarbonLab_Demo_macOS_AppleSilicon_轻量离线版_20260831",
-            code_commit=code_commit,
+            package_name=f"CarbonLab_Demo_macOS_AppleSilicon_轻量离线版{args.release_suffix}_20260831",
+            package_commit=package_commit,
+            runtime_commit=runtime_commit,
             rollback_tag=args.rollback_tag,
             screenshots=args.screenshots,
             validation_report=args.arm_validation,
-        ),
-        _build_one(
+        ))
+    if args.platform in {"both", "windows"}:
+        products.append(_build_one(
             output=args.output,
             platform_key="windows",
             platform="linux/amd64",
             image_tag="20260831-slim-amd64",
-            package_name="CarbonLab_Demo_Windows_x64_轻量离线版_20260831",
-            code_commit=code_commit,
+            package_name=f"CarbonLab_Demo_Windows_x64_轻量离线版{args.release_suffix}_20260831",
+            package_commit=package_commit,
+            runtime_commit=runtime_commit,
             rollback_tag=args.rollback_tag,
             screenshots=args.screenshots,
             validation_report=args.amd_validation,
-        ),
-    ]
+        ))
     result = {
         "built_at": datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds"),
-        "git_commit": code_commit,
+        "git_commit": package_commit,
+        "runtime_image_git_commit": runtime_commit,
         "products": products,
     }
     manifest = args.output / "CarbonLab_轻量离线包_MANIFEST_20260831.json"

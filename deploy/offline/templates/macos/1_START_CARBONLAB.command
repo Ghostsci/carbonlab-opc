@@ -1,17 +1,19 @@
-#!/bin/zsh
+#!/bin/zsh -f
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$ROOT_DIR/config/demo.env"
 COMPOSE_FILE="$ROOT_DIR/compose.offline.yml"
 IMAGE_ARCHIVE="$ROOT_DIR/images/carbonlab-offline-images.tar.gz"
-PROJECT_NAME="carbonlab_competition_demo"
+PROJECT_NAME="${CARBONLAB_PROJECT_NAME:-carbonlab_competition_demo}"
 mkdir -p "$ROOT_DIR/diagnostics"
 
 fail() {
   print -u2 "\n启动失败：$1"
   print -u2 "请运行 3_CHECK_CARBONLAB.command，并查看 diagnostics/ 目录。"
-  read "?按回车键关闭窗口..."
+  if [[ -t 0 ]]; then
+    read "?按回车键关闭窗口..."
+  fi
   exit 1
 }
 
@@ -53,8 +55,12 @@ for _ in {1..120}; do
     FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}/login"
     print "\n零碳云已就绪：$FRONTEND_URL"
     print "登录页点击『一键进入演示』即可。"
-    open "$FRONTEND_URL"
-    read "?按回车键关闭本窗口（系统会继续运行）..."
+    if [[ "${CARBONLAB_NO_BROWSER:-0}" != "1" ]]; then
+      open "$FRONTEND_URL"
+    fi
+    if [[ -t 0 ]]; then
+      read "?按回车键关闭本窗口（系统会继续运行）..."
+    fi
     exit 0
   fi
   sleep 2
