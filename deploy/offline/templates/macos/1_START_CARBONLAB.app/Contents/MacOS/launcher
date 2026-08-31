@@ -1,6 +1,10 @@
 #!/bin/zsh -f
 set -u
 
+# Finder does not inherit the user's interactive shell PATH. Keep launcher
+# discovery deterministic for both Docker Desktop and OrbStack installations.
+export PATH="/usr/local/bin:/opt/homebrew/bin:/Applications/Docker.app/Contents/Resources/bin:$HOME/.orbstack/bin:/usr/bin:/bin:/usr/sbin:/sbin:${PATH:-}"
+
 ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
 LOG_DIR="$ROOT_DIR/diagnostics"
 mkdir -p "$LOG_DIR"
