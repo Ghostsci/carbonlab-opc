@@ -11,23 +11,35 @@ try {
     if ($hostArchitecture -ne "AMD64") {
         throw "This package targets a Windows x64 computer. Detected: $hostArchitecture"
     }
-    Wait-DockerDesktop
-    Import-OfflineImages -Root $root
+    $docker = Resolve-DockerExecutable
+    Wait-DockerDesktop -DockerExe $docker
+
+    $healthUrl = "http://127.0.0.1:$env:BACKEND_PORT/api/health"
+    $frontendUrl = "http://127.0.0.1:$env:FRONTEND_PORT/login"
+    try {
+        $existingHealth = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 3
+        $existingFrontend = Invoke-WebRequest -UseBasicParsing -Uri $frontendUrl -TimeoutSec 3
+        if ($existingHealth.status -eq "ok" -and $existingFrontend.StatusCode -eq 200) {
+            Write-Host "CarbonLab is already running: $frontendUrl"
+            if ($env:CARBONLAB_NO_BROWSER -ne "1") { Start-Process $frontendUrl }
+            exit 0
+        }
+    } catch { }
+
+    Import-OfflineImages -Root $root -DockerExe $docker
 
     $compose = Get-ComposeArguments -Root $root
     Write-Host "Starting CarbonLab offline demo..."
-    & docker.exe @compose up -d
+    & $docker @compose up -d
     if ($LASTEXITCODE -ne 0) { throw "docker compose up failed" }
 
-    $healthUrl = "http://127.0.0.1:$env:BACKEND_PORT/api/health"
     for ($index = 0; $index -lt 120; $index++) {
         try {
             $health = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 3
             if ($health.status -eq "ok") {
-                $frontendUrl = "http://127.0.0.1:$env:FRONTEND_PORT/login"
                 Write-Host "CarbonLab is ready: $frontendUrl"
                 Write-Host "Click '一键进入演示' on the login page."
-                Start-Process $frontendUrl
+                if ($env:CARBONLAB_NO_BROWSER -ne "1") { Start-Process $frontendUrl }
                 exit 0
             }
         } catch { }

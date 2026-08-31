@@ -22,19 +22,52 @@ function Get-DemoRoot {
 
 function Get-ComposeArguments {
     param([Parameter(Mandatory = $true)][string]$Root)
+    $projectName = if ($env:CARBONLAB_PROJECT_NAME) {
+        $env:CARBONLAB_PROJECT_NAME
+    } else {
+        "carbonlab_competition_demo"
+    }
     return @(
         "compose",
         "--env-file", (Join-Path $Root "config\demo.env"),
         "-f", (Join-Path $Root "compose.offline.yml"),
-        "-p", "carbonlab_competition_demo"
+        "-p", $projectName
     )
 }
 
-function Wait-DockerDesktop {
-    if (Get-Command docker.exe -ErrorAction SilentlyContinue) {
-        & docker.exe info *> $null
-        if ($LASTEXITCODE -eq 0) { return }
+function Resolve-DockerExecutable {
+    $candidates = [System.Collections.Generic.List[string]]::new()
+    if ($env:CARBONLAB_DOCKER_EXE) {
+        $candidates.Add($env:CARBONLAB_DOCKER_EXE)
     }
+    $command = Get-Command docker.exe -ErrorAction SilentlyContinue
+    if ($command) {
+        $commandPath = if ($command.Source) { $command.Source } else { $command.Path }
+        if ($commandPath) { $candidates.Add($commandPath) }
+    }
+    if ($env:ProgramFiles) {
+        $candidates.Add((Join-Path $env:ProgramFiles "Docker\Docker\resources\bin\docker.exe"))
+    }
+    if ($env:LOCALAPPDATA) {
+        $candidates.Add((Join-Path $env:LOCALAPPDATA "Programs\Docker\Docker\resources\bin\docker.exe"))
+        $candidates.Add((Join-Path $env:LOCALAPPDATA "Docker\resources\bin\docker.exe"))
+    }
+    if ($env:USERPROFILE) {
+        $candidates.Add((Join-Path $env:USERPROFILE ".docker\bin\docker.exe"))
+    }
+    foreach ($candidate in $candidates) {
+        if ($candidate -and (Test-Path -LiteralPath $candidate -PathType Leaf)) {
+            return (Resolve-Path -LiteralPath $candidate).Path
+        }
+    }
+    throw "Docker CLI was not found. Install Docker Desktop before going offline."
+}
+
+function Wait-DockerDesktop {
+    param([Parameter(Mandatory = $true)][string]$DockerExe)
+
+    & $DockerExe info *> $null
+    if ($LASTEXITCODE -eq 0) { return }
 
     $dockerDesktop = Join-Path $env:ProgramFiles "Docker\Docker\Docker Desktop.exe"
     if (-not (Test-Path -LiteralPath $dockerDesktop)) {
@@ -44,19 +77,22 @@ function Wait-DockerDesktop {
     Write-Host "Starting Docker Desktop..."
     for ($index = 0; $index -lt 120; $index++) {
         Start-Sleep -Seconds 2
-        & docker.exe info *> $null
+        & $DockerExe info *> $null
         if ($LASTEXITCODE -eq 0) { return }
     }
     throw "Docker Desktop did not become ready within four minutes."
 }
 
 function Import-OfflineImages {
-    param([Parameter(Mandatory = $true)][string]$Root)
+    param(
+        [Parameter(Mandatory = $true)][string]$Root,
+        [Parameter(Mandatory = $true)][string]$DockerExe
+    )
     $appImage = "carbonlab-offline-backend:$env:CARBONLAB_IMAGE_TAG"
     $databaseImage = "carbonlab-offline-postgres-slim:$env:CARBONLAB_IMAGE_TAG"
-    & docker.exe image inspect $appImage *> $null
+    & $DockerExe image inspect $appImage *> $null
     $appReady = $LASTEXITCODE -eq 0
-    & docker.exe image inspect $databaseImage *> $null
+    & $DockerExe image inspect $databaseImage *> $null
     $databaseReady = $LASTEXITCODE -eq 0
     if ($appReady -and $databaseReady) { return }
 
@@ -78,7 +114,7 @@ function Import-OfflineImages {
                 try { $gzip.CopyTo($output) } finally { $output.Dispose() }
             } finally { $gzip.Dispose() }
         } finally { $input.Dispose() }
-        & docker.exe load --input $temporaryTar
+        & $DockerExe load --input $temporaryTar
         if ($LASTEXITCODE -ne 0) { throw "docker load failed" }
     } finally {
         Remove-Item -LiteralPath $temporaryTar -Force -ErrorAction SilentlyContinue

@@ -217,8 +217,10 @@ def _build_one(
         "screenshots_included": screenshot_count,
         "validation": validation,
         "truth_boundary": (
-            "Mac arm64 is natively exercised. Windows x64 images are exercised under Docker amd64 "
-            "emulation on Mac; physical Windows double-click validation remains a host-specific check."
+            "Mac arm64 is natively exercised. The Windows BAT and Windows PowerShell 5.1 launch path "
+            "is exercised on a GitHub Actions windows-latest host, while the Linux amd64 application "
+            "images are exercised under Docker amd64 emulation on Mac. A combined physical Windows "
+            "plus Docker Desktop rehearsal remains recommended before the event."
         ),
     }
     (package_root / "BUILD_INFO.json").write_text(

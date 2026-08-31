@@ -2,7 +2,8 @@
 
 $root = Get-DemoRoot
 Import-DemoEnvironment -Path (Join-Path $root "config\demo.env")
+$docker = Resolve-DockerExecutable
 $compose = Get-ComposeArguments -Root $root
-& docker.exe @compose down
+& $docker @compose down
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host "CarbonLab stopped. Demo data is preserved."

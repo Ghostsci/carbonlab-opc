@@ -1,0 +1,32 @@
+name: Windows offline launcher smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/windows-offline-launcher-smoke.yml"
+      - ".gitattributes"
+      - "deploy/offline/templates/windows/**"
+      - "deploy/offline/tests/Test-WindowsLauncher.ps1"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-launcher:
+    name: Windows PowerShell 5.1 and BAT launcher
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Show host versions
+        shell: powershell
+        run: |
+          $PSVersionTable
+          python --version
+
+      - name: Exercise the Windows offline launcher
+        shell: powershell
+        run: .\deploy\offline\tests\Test-WindowsLauncher.ps1
