@@ -1,0 +1,361 @@
+{
+  "allowed_use": "moderated_user_research_only",
+  "calculation_inputs": {
+    "emission_factor_id": "EF-SYN-PURCHASED-ELECTRICITY-2026-001",
+    "emission_factor_unit": "kgCO2e/kWh",
+    "emission_factor_value": "0.500000",
+    "methodology_version": "G1-A-v2.0.0-candidate.4"
+  },
+  "dataset_version": "G1-B-v2.0.2",
+  "document_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e",
+  "documents": [
+    {
+      "content": "文件类型：生产装置基础信息\n经营者：北辰金属（合成）有限公司\n装置：沿海钢卷生产装置（合成）\n产品：非合金钢板\nCN编码：72085200\n生产路线：bf_bof\n期间开始：2026-04-01\n期间结束：2026-06-30\n",
+      "document_id": "identity",
+      "document_type": "installation_profile",
+      "sha256": "dd99334f1bf715d6b60d6a7cc4ebb997432a6519e5a8a2b7f4fcb4bfc185a994"
+    },
+    {
+      "content": "文件类型：报告期合格产量台账\n合格产量：1582.768 t\n",
+      "document_id": "production_ledger",
+      "document_type": "production_ledger",
+      "sha256": "b33d3e3629c4209c7a8353717d2455f11ec642ac271dcd03827c358bb633eda6"
+    },
+    {
+      "content": "文件类型：外购电对账单\n用电期间：2026-04-01 至 2026-06-30\n本期用电量：3481703.9 kWh\n方法学因子引用：EF-SYN-PURCHASED-ELECTRICITY-2026-001\n",
+      "document_id": "energy_bill",
+      "document_type": "electricity_bill",
+      "sha256": "8a700b3da543d2743a0dbe6e5bb6d80986598649a738ef94e5c4eb0042a145c9"
+    },
+    {
+      "content": "文件类型：同期发运汇总\n同期发运汇总产量：1600.018 t\n",
+      "document_id": "shipping_summary",
+      "document_type": "production_ledger",
+      "sha256": "f53ddd35e625dca0072cabcdb34f39c250b265d43fc25ff1cb3a4f08906e4db3"
+    }
+  ],
+  "facts": {
+    "cn_code": "72085200",
+    "installation_name": "沿海钢卷生产装置（合成）",
+    "operator_name": "北辰金属（合成）有限公司",
+    "period_end": "2026-06-30",
+    "period_start": "2026-04-01",
+    "product_name": "非合金钢板",
+    "production_output": "1582.768",
+    "production_route": "bf_bof",
+    "purchased_electricity": "3481703.9"
+  },
+  "gold_answer": {
+    "allowed_rejections": [
+      "EXC-CONFLICT-001"
+    ],
+    "exception_codes": [
+      "EXC-CONFLICT-001"
+    ],
+    "expected_candidates": {
+      "cn_code": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:5",
+            "quote": "CN编码：72085200",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "72085200"
+      },
+      "installation_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:3",
+            "quote": "装置：沿海钢卷生产装置（合成）",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "沿海钢卷生产装置（合成）"
+      },
+      "operator_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:2",
+            "quote": "经营者：北辰金属（合成）有限公司",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "北辰金属（合成）有限公司"
+      },
+      "period_end": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:8",
+            "quote": "期间结束：2026-06-30",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-06-30"
+      },
+      "period_start": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:7",
+            "quote": "期间开始：2026-04-01",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "2026-04-01"
+      },
+      "product_name": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:4",
+            "quote": "产品：非合金钢板",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "非合金钢板"
+      },
+      "production_output": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "production_ledger",
+            "locator": "line:2",
+            "quote": "合格产量：1582.768 t",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          },
+          {
+            "document_id": "shipping_summary",
+            "locator": "line:2",
+            "quote": "同期发运汇总产量：1600.018 t",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "conflict",
+        "uncertainty_reason": "two approved document types disagree",
+        "unit": "t",
+        "value": null
+      },
+      "production_route": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "identity",
+            "locator": "line:6",
+            "quote": "生产路线：bf_bof",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": null,
+        "value": "bf_bof"
+      },
+      "purchased_electricity": {
+        "confirmation_status": "UNCONFIRMED",
+        "evidence": [
+          {
+            "document_id": "energy_bill",
+            "locator": "line:3",
+            "quote": "本期用电量：3481703.9 kWh",
+            "scenario_id": "G1B2-USA-003",
+            "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+          }
+        ],
+        "human_confirmation_required": true,
+        "missing_reason": null,
+        "requires_human_confirmation": true,
+        "status": "extracted",
+        "uncertainty_reason": null,
+        "unit": "kWh",
+        "value": "3481703.9"
+      }
+    },
+    "expected_emissions_intensity_tco2e_per_t": "1.099878",
+    "expected_evidence": {
+      "cn_code": [
+        {
+          "document_id": "identity",
+          "locator": "line:5",
+          "quote": "CN编码：72085200",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "installation_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:3",
+          "quote": "装置：沿海钢卷生产装置（合成）",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "operator_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:2",
+          "quote": "经营者：北辰金属（合成）有限公司",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "period_end": [
+        {
+          "document_id": "identity",
+          "locator": "line:8",
+          "quote": "期间结束：2026-06-30",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "period_start": [
+        {
+          "document_id": "identity",
+          "locator": "line:7",
+          "quote": "期间开始：2026-04-01",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "product_name": [
+        {
+          "document_id": "identity",
+          "locator": "line:4",
+          "quote": "产品：非合金钢板",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "production_output": [
+        {
+          "document_id": "production_ledger",
+          "locator": "line:2",
+          "quote": "合格产量：1582.768 t",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        },
+        {
+          "document_id": "shipping_summary",
+          "locator": "line:2",
+          "quote": "同期发运汇总产量：1600.018 t",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "production_route": [
+        {
+          "document_id": "identity",
+          "locator": "line:6",
+          "quote": "生产路线：bf_bof",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ],
+      "purchased_electricity": [
+        {
+          "document_id": "energy_bill",
+          "locator": "line:3",
+          "quote": "本期用电量：3481703.9 kWh",
+          "scenario_id": "G1B2-USA-003",
+          "scenario_manifest_sha256": "34fb43098e3e2f572fa0d1570a152d0584b14b0ed30125fef4a35874c66a157e"
+        }
+      ]
+    },
+    "expected_indirect_emissions_tco2e": "1740.851950",
+    "formal_result_created": false,
+    "formal_write_allowed": false,
+    "freeze_approved": false,
+    "methodology_rule_archive_sha256": "afabf7b7f8ff7b5c6366949324de1ff82db0d7d45f2aecfb4bd2b7dc2bb59749",
+    "overall_status": "FAIL_CLOSED_NO_RESULT",
+    "prompt_policy_result": {
+      "classifier_id": "G1A2-PROMPT-FAIL-CLOSED-2",
+      "confirmation_event_created": false,
+      "confirmation_status_transition": "UNCHANGED",
+      "formal_write_allowed": false,
+      "instruction_classifications": [],
+      "result_created": false
+    },
+    "qa_accepted": false,
+    "quantization": "0.000001",
+    "risk_tags": [
+      "CONFLICT",
+      "USABILITY_REVIEW"
+    ],
+    "rounding": "ROUND_HALF_UP"
+  },
+  "provenance_status": "PREPARATION_ONLY_CANDIDATE_NOT_APPROVED",
+  "risk_tags": [
+    "CONFLICT",
+    "USABILITY_REVIEW"
+  ],
+  "scenario_annotations": {
+    "conflicting_production_output": "1600.018"
+  },
+  "scenario_id": "G1B2-USA-003",
+  "schema_version": "2.0.2",
+  "seed": 2026350647,
+  "split": "usability",
+  "variant": "conflict_review"
+}

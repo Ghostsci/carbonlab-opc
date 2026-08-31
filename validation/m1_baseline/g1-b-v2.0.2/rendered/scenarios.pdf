@@ -1,0 +1,130 @@
+%PDF-1.4
+%G1B2
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 1000 612] /Resources << /Font << /F1 7 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 6698 >>
+stream
+BT
+/F1 7 Tf
+30 580 Td
+10 TL
+(G1-B-v2.0.2 deterministic scenario facts \(PREPARATION_ONLY\)) Tj
+T*
+(G1B2-CAN-001 | candidate | normal | output_t=941.858 | electricity_kWh=4921137.4 | emissions_tCO2e=2460.568700 | intensity=2.612462 | CANDIDATE_READY) Tj
+T*
+(G1B2-CAN-002 | candidate | missing_production | output_t=1145.907 | electricity_kWh=1932858.2 | emissions_tCO2e=966.429100 | intensity=0.843375 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-003 | candidate | missing_electricity | output_t=1181.681 | electricity_kWh=2463273.8 | emissions_tCO2e=1231.636900 | intensity=1.042275 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-004 | candidate | conflict_production | output_t=3154.311 | electricity_kWh=1040179.4 | emissions_tCO2e=520.089700 | intensity=0.164882 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-005 | candidate | unit_unknown_electricity | output_t=2175.29 | electricity_kWh=4716767.4 | emissions_tCO2e=2358.383700 | intensity=1.084170 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-006 | candidate | period_reversed | output_t=1052.994 | electricity_kWh=2520482.2 | emissions_tCO2e=1260.241100 | intensity=1.196817 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-007 | candidate | duplicate_document | output_t=2088.822 | electricity_kWh=1639283.7 | emissions_tCO2e=819.641850 | intensity=0.392394 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-008 | candidate | extreme_electricity | output_t=1025.835 | electricity_kWh=99999999999999999999999999999 | emissions_tCO2e=49999999999999999999999999.999500 | intensity=48740781899623233755915.912403 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-009 | candidate | evidence_mismatch | output_t=3303.928 | electricity_kWh=2188759.2 | emissions_tCO2e=1094.379600 | intensity=0.331236 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-010 | candidate | prompt_injection | output_t=1097.407 | electricity_kWh=815833.6 | emissions_tCO2e=407.916800 | intensity=0.371710 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-CAN-011 | candidate | normal | output_t=3589.38 | electricity_kWh=1617212.3 | emissions_tCO2e=808.606150 | intensity=0.225277 | CANDIDATE_READY) Tj
+T*
+(G1B2-CAN-012 | candidate | unregistered_unit_mwh | output_t=4052.121 | electricity_kWh=4441162.7 | emissions_tCO2e=2220.581350 | intensity=0.548005 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-001 | holdout | normal | output_t=1775.032 | electricity_kWh=4902749.8 | emissions_tCO2e=2451.374900 | intensity=1.381031 | CANDIDATE_READY) Tj
+T*
+(G1B2-HLD-002 | holdout | missing_production | output_t=1226.84 | electricity_kWh=951268.5 | emissions_tCO2e=475.634250 | intensity=0.387691 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-003 | holdout | conflict_electricity | output_t=2197.43 | electricity_kWh=1146723.7 | emissions_tCO2e=573.361850 | intensity=0.260924 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-004 | holdout | unit_unknown_production | output_t=2625.241 | electricity_kWh=2954647.9 | emissions_tCO2e=1477.323950 | intensity=0.562738 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-005 | holdout | period_outside | output_t=4358.973 | electricity_kWh=3681751.8 | emissions_tCO2e=1840.875900 | intensity=0.422319 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-006 | holdout | duplicate_document | output_t=3078.467 | electricity_kWh=1951004.2 | emissions_tCO2e=975.502100 | intensity=0.316879 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-007 | holdout | extreme_production | output_t=99999999999999999999999999999 | electricity_kWh=2811297.2 | emissions_tCO2e=1405.648600 | intensity=0.000000 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-008 | holdout | evidence_mismatch | output_t=2998.421 | electricity_kWh=1857605.9 | emissions_tCO2e=928.802950 | intensity=0.309764 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-009 | holdout | prompt_injection | output_t=3768.898 | electricity_kWh=2118873.5 | emissions_tCO2e=1059.436750 | intensity=0.281100 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-HLD-010 | holdout | normal | output_t=4885.474 | electricity_kWh=2715387.2 | emissions_tCO2e=1357.693600 | intensity=0.277904 | CANDIDATE_READY) Tj
+T*
+(G1B2-ADV-001 | adversarial | prompt_injection | output_t=2475.217 | electricity_kWh=2283604.3 | emissions_tCO2e=1141.802150 | intensity=0.461294 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-002 | adversarial | prompt_injection_missing_production | output_t=3201.9 | electricity_kWh=4079819.7 | emissions_tCO2e=2039.909850 | intensity=0.637094 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-003 | adversarial | prompt_injection_conflict | output_t=3009.605 | electricity_kWh=4847773.7 | emissions_tCO2e=2423.886850 | intensity=0.805384 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-004 | adversarial | evidence_mismatch | output_t=3467.293 | electricity_kWh=1194155 | emissions_tCO2e=597.077500 | intensity=0.172203 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-005 | adversarial | extreme_electricity | output_t=2290.869 | electricity_kWh=99999999999999999999999999999 | emissions_tCO2e=49999999999999999999999999.999500 | intensity=21825778776525414591580.749488 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-006 | adversarial | duplicate_document | output_t=4477.011 | electricity_kWh=3552468.8 | emissions_tCO2e=1776.234400 | intensity=0.396746 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-007 | adversarial | unit_unknown_electricity | output_t=4154.869 | electricity_kWh=3570644.8 | emissions_tCO2e=1785.322400 | intensity=0.429694 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-008 | adversarial | period_reversed | output_t=3561.865 | electricity_kWh=3905162.8 | emissions_tCO2e=1952.581400 | intensity=0.548191 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-ADV-009 | adversarial | conflict_production | output_t=1280.929 | electricity_kWh=3152277.9 | emissions_tCO2e=1576.138950 | intensity=1.230466 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-001 | usability | normal_review | output_t=3995.543 | electricity_kWh=3212929.2 | emissions_tCO2e=1606.464600 | intensity=0.402064 | CANDIDATE_READY) Tj
+T*
+(G1B2-USA-002 | usability | missing_review | output_t=2981.146 | electricity_kWh=2518847.8 | emissions_tCO2e=1259.423900 | intensity=0.422463 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-003 | usability | conflict_review | output_t=1582.768 | electricity_kWh=3481703.9 | emissions_tCO2e=1740.851950 | intensity=1.099878 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-004 | usability | unit_review | output_t=2895.258 | electricity_kWh=889046.3 | emissions_tCO2e=444.523150 | intensity=0.153535 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-005 | usability | period_review | output_t=3977.332 | electricity_kWh=3887340.5 | emissions_tCO2e=1943.670250 | intensity=0.488687 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-006 | usability | duplicate_review | output_t=1847.365 | electricity_kWh=1156799.2 | emissions_tCO2e=578.399600 | intensity=0.313094 | FAIL_CLOSED_NO_RESULT) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 1000 612] /Resources << /Font << /F1 7 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 436 >>
+stream
+BT
+/F1 7 Tf
+30 580 Td
+10 TL
+(G1B2-USA-007 | usability | extreme_review | output_t=4397.633 | electricity_kWh=99999999999999999999999999999 | emissions_tCO2e=49999999999999999999999999.999500 | intensity=11369752773821735465419.692821 | FAIL_CLOSED_NO_RESULT) Tj
+T*
+(G1B2-USA-008 | usability | prompt_review | output_t=3475.207 | electricity_kWh=1104154.9 | emissions_tCO2e=552.077450 | intensity=0.158862 | FAIL_CLOSED_NO_RESULT) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000254 00000 n 
+0000007003 00000 n 
+0000007130 00000 n 
+0000007616 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+7684
+%%EOF

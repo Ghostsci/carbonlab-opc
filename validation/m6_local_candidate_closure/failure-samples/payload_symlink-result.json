@@ -1,0 +1,32 @@
+{
+  "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "assertions": {
+    "decision_is_rejected": true,
+    "exit_code_is_42": true,
+    "rule_matches_case": true,
+    "side_effect_marker_absent": true
+  },
+  "blocked_classes": [
+    "symlink_escape",
+    "real_data_mixing"
+  ],
+  "classification": "PASS",
+  "command": [
+    "python3",
+    "scripts/action_boundary.py",
+    "failure-samples/payload_symlink.json"
+  ],
+  "entrypoint": "action_boundary.py",
+  "exit_code": 42,
+  "fail_closed": true,
+  "id": "payload_symlink",
+  "input_sha256": "04baf34d23e35c0f9caf568f212bc7ccebfde830a8831eafe66ec2a6fd7bf7dd",
+  "observed": {
+    "decision": "REJECTED",
+    "reason": "symbolic links are prohibited: fixtures/synthetic-probe.json",
+    "rule": "real_data_mixing"
+  },
+  "stderr": "",
+  "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"symbolic links are prohibited: fixtures/synthetic-probe.json\", \"rule\": \"real_data_mixing\"}\n"
+}

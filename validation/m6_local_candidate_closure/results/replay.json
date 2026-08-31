@@ -1,0 +1,442 @@
+{
+  "canonical_sha256": "c4a7f12dad66d95d1cae8f3015a5ec047082cc6678885a9c3f77a90a76e1fbb0",
+  "classification": "PASS",
+  "run_id": "primary-final-v1.0.1",
+  "semantic": {
+    "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+    "evidence_index": {
+      "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+      "entries": [
+        {
+          "id": "repository-baseline",
+          "kind": "git_commit_reference",
+          "sha_or_reference": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+          "status": "PASS_WITH_LIMITATIONS"
+        },
+        {
+          "boundary": "NEW_BASELINE / NOT_A_CONTINUATION",
+          "id": "candidate2-new-baseline",
+          "kind": "nested_upstream_archive",
+          "path": "input/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3.tar.gz::input/M5_UPSTREAM_EVIDENCE_CLOSURE_V2.0.0-candidate.2.tar.gz",
+          "sha_or_reference": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a",
+          "status": "PASS"
+        },
+        {
+          "id": "m5-candidate-evidence",
+          "kind": "archive",
+          "path": "input/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3.tar.gz",
+          "sha_or_reference": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+          "status": "PASS",
+          "verified_members": 34
+        },
+        {
+          "binding_id": "M5_TO_M6_LOCAL_EVIDENCE_USE_V1",
+          "id": "m5-to-m6-evidence-use-binding",
+          "kind": "subject_object_action_target_validity_binding",
+          "limitation": "offline binding verifies complete scope and package integrity; it grants no formal-action authority",
+          "path": "policy/approval-binding.json",
+          "status": "PASS_WITH_LIMITATIONS"
+        },
+        {
+          "id": "m6-v1.0.0-security-audit",
+          "kind": "superseded_candidate_audit",
+          "qa_comment": "d18aa4f3-5f31-4493-906c-6875d91271db",
+          "sha_or_reference": "099f6e04255278960cfa267e4bfb67e4bd1d04a5743acebbe98fb1cf0dbf48db",
+          "status": "FAIL_CODE",
+          "verdict": "CHANGES_REQUIRED"
+        }
+      ],
+      "integrity_checks": {
+        "m0_through_m5_stage_sequence": "PASS",
+        "m5_archive_sha256": "PASS",
+        "m5_member_hashes": "34/34",
+        "orphan_references": 0,
+        "unapproved_replacements": 0,
+        "unresolved_conflicts": 0
+      }
+    },
+    "execution_boundary": {
+      "allowlisted_actions": [
+        "LOCAL_VALIDATE_FIXED_M5"
+      ],
+      "arbitrary_subprocess": false,
+      "formal_action_authority": "HUMAN_REQUIRED",
+      "negative_cases": 32,
+      "positive_control": "PASS",
+      "remote_or_production_dispatchers": []
+    },
+    "release_gates": [
+      {
+        "blocked_classes": [
+          "formal_competition_submission"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unauthorized_submission"
+      },
+      {
+        "blocked_classes": [
+          "public_release"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "public_release"
+      },
+      {
+        "blocked_classes": [
+          "production_write"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "production_write"
+      },
+      {
+        "blocked_classes": [
+          "real_data_mixing"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "real_data_mixing"
+      },
+      {
+        "blocked_classes": [
+          "credential_injection"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "credential_injection"
+      },
+      {
+        "blocked_classes": [
+          "remote_push",
+          "remote_pr",
+          "remote_release"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "remote_write"
+      },
+      {
+        "blocked_classes": [
+          "unapproved_version_replacement"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unapproved_version"
+      },
+      {
+        "blocked_classes": [
+          "approval_fabrication"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "forged_approval"
+      },
+      {
+        "blocked_classes": [
+          "hash_tampering"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "hash_tampering"
+      },
+      {
+        "blocked_classes": [
+          "truth_leakage"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "truth_leakage"
+      },
+      {
+        "blocked_classes": [
+          "formal_competition_submission",
+          "public_release",
+          "production_write",
+          "real_data_mixing",
+          "credential_injection",
+          "remote_write",
+          "approval_fabrication",
+          "truth_leakage"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "qa_bypass_all_exact_shape"
+      },
+      {
+        "blocked_classes": [
+          "unknown_field"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unknown_request_field"
+      },
+      {
+        "blocked_classes": [
+          "nested_confusion",
+          "remote_write"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "nested_field_confusion"
+      },
+      {
+        "blocked_classes": [
+          "duplicate_key",
+          "remote_write"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "duplicate_action_key"
+      },
+      {
+        "blocked_classes": [
+          "unicode_escape",
+          "duplicate_key",
+          "remote_write"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unicode_escaped_duplicate_key"
+      },
+      {
+        "blocked_classes": [
+          "credential_injection",
+          "url_encoding"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "url_encoded_credential"
+      },
+      {
+        "blocked_classes": [
+          "truth_leakage",
+          "base64_encoding"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "base64_encoded_truth"
+      },
+      {
+        "blocked_classes": [
+          "credential_injection",
+          "nested_confusion"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "nested_credential"
+      },
+      {
+        "blocked_classes": [
+          "credential_injection",
+          "unicode_escape"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unicode_escaped_secret_key"
+      },
+      {
+        "blocked_classes": [
+          "direct_guard",
+          "remote_write",
+          "public_release",
+          "formal_competition_submission"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "direct_guard_malicious_action"
+      },
+      {
+        "blocked_classes": [
+          "direct_action_boundary",
+          "remote_write"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "direct_boundary_formal_action"
+      },
+      {
+        "blocked_classes": [
+          "path_traversal",
+          "real_data_mixing"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "payload_path_traversal"
+      },
+      {
+        "blocked_classes": [
+          "symlink_escape",
+          "real_data_mixing"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "payload_symlink"
+      },
+      {
+        "blocked_classes": [
+          "artifact_substitution",
+          "hash_tampering"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "artifact_substitution"
+      },
+      {
+        "blocked_classes": [
+          "approval_object_mismatch",
+          "approval_fabrication"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "approval_object_mismatch"
+      },
+      {
+        "blocked_classes": [
+          "approval_target_mismatch",
+          "approval_fabrication"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "approval_target_mismatch"
+      },
+      {
+        "blocked_classes": [
+          "approval_validity",
+          "approval_fabrication"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "approval_expired"
+      },
+      {
+        "blocked_classes": [
+          "remote_write",
+          "base64_encoding"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "base64_encoded_remote_action"
+      },
+      {
+        "blocked_classes": [
+          "remote_write",
+          "url_encoding"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "percent_encoded_action"
+      },
+      {
+        "blocked_classes": [
+          "unknown_field",
+          "payload_schema"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "unknown_payload_field"
+      },
+      {
+        "blocked_classes": [
+          "duplicate_key",
+          "payload_schema"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "duplicate_payload_key"
+      },
+      {
+        "blocked_classes": [
+          "symlink_escape",
+          "approval_fabrication"
+        ],
+        "classification": "PASS",
+        "exit_code": 42,
+        "id": "policy_symlink"
+      }
+    ],
+    "stage_chain": {
+      "artifact_version": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1",
+      "fixed_baseline": {
+        "commit": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8",
+        "limitation": "fixed checkout materialized; Git administrative metadata is unavailable in the isolated build",
+        "repository": "https://github.com/Ghostsci/carbonlab-opc.git",
+        "status": "PASS_WITH_LIMITATIONS"
+      },
+      "legacy_boundary": {
+        "objects": [
+          "M0",
+          "M1-A",
+          "M1-B",
+          "M2",
+          "field contract",
+          "evidence policy",
+          "permission matrix"
+        ],
+        "status": "LEGACY_EVIDENCE_UNRECOVERABLE / NOT_SUPPLIED_TO_M5",
+        "treatment": "retained as history; not represented as recovered or continued"
+      },
+      "mode": [
+        "PREPARATION_ONLY",
+        "SYNTHETIC_ONLY",
+        "LOCAL_CANDIDATE",
+        "NOT_FOR_SUBMISSION"
+      ],
+      "orphan_references": [],
+      "stages": [
+        {
+          "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+          "stage": "M0",
+          "status": "PASS",
+          "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+        },
+        {
+          "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+          "stage": "M1-A",
+          "status": "PASS",
+          "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+        },
+        {
+          "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+          "stage": "M1-B",
+          "status": "PASS",
+          "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+        },
+        {
+          "basis": "candidate.2 NEW_BASELINE / NOT_A_CONTINUATION",
+          "stage": "M2",
+          "status": "PASS",
+          "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+        },
+        {
+          "artifact": "M3_MINIMUM_CLOSED_LOOP_V1.0.3_CORRECTED_CANONICAL",
+          "sha256": "60abf4fd50a1b1922f31958c4a50ec56330da5b251b1a761973295cd5b178d63",
+          "stage": "M3",
+          "status": "PASS"
+        },
+        {
+          "artifact": "M4_SYNTHETIC_UAT_V1.0.0",
+          "sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+          "stage": "M4",
+          "status": "PASS",
+          "verified_members": 69
+        },
+        {
+          "artifact": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3",
+          "artifact_sha256": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+          "independent_qa_comment": "d3249ac5-6e15-4d25-acb2-154debe15883",
+          "owner_exit_comment": "a71f3665-e338-48b3-a0ab-5a9c6df4359a",
+          "stage": "M5",
+          "stage_exit": "ACCEPT",
+          "status": "PASS",
+          "verified_members": 34
+        }
+      ],
+      "unapproved_replacements": [],
+      "unresolved_conflicts": [],
+      "verdict": "ACCEPT"
+    },
+    "superseded_v1_0_0_verdict": "CHANGES_REQUIRED",
+    "verdict": "ACCEPT"
+  }
+}

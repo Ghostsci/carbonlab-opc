@@ -1,0 +1,146 @@
+{
+  "candidate_fields_and_evidence": {
+    "cn_code": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "CN编码：72085200"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "72085200"
+    },
+    "installation_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "装置：沿海钢卷生产装置（合成）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "沿海钢卷生产装置（合成）"
+    },
+    "operator_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "经营者：清源材料（合成）有限公司"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "清源材料（合成）有限公司"
+    },
+    "period_end": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间结束：2026-06-30"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-06-30"
+    },
+    "period_start": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间开始：2026-04-01"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-04-01"
+    },
+    "product_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "产品：非合金钢板"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "非合金钢板"
+    },
+    "production_output": {
+      "evidence": [
+        {
+          "document_id": "production_ledger",
+          "quote": "合格产量：4,685.151（单位未标明）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "ambiguous",
+      "unit": null,
+      "value": null
+    },
+    "production_route": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "生产路线：bf_bof"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "bf_bof"
+    },
+    "purchased_electricity": {
+      "evidence": [
+        {
+          "document_id": "energy_bill",
+          "quote": "本期用电量：3797895.6 kWh"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "kWh",
+      "value": "3797895.6"
+    }
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "calculation_not_executed": true,
+    "fail_closed": true,
+    "formal_write_allowed_false": true,
+    "publish_allowed_false": true,
+    "unit_not_guessed": true
+  },
+  "coverage": [
+    "单位异常",
+    "fail-closed",
+    "证据追溯"
+  ],
+  "equivalent_text_evidence": "evidence/S04_UNIT_ANOMALY.json",
+  "expected_rejection": "unresolved_candidates:production_output",
+  "observable_result": [
+    "产量保留 ambiguous，不把未标明单位的值变成 t。",
+    "原文证据可追溯，确定性计算未执行。"
+  ],
+  "operation_steps": [
+    "提交含产量数值但单位未标明的合成台账。",
+    "查看 production_output 的 ambiguous 状态和原文证据。",
+    "尝试确认并计算。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S04_UNIT_ANOMALY",
+  "state_transition": [
+    "uploaded",
+    "candidate_ambiguous",
+    "guard_rejected"
+  ],
+  "synthetic_only": true,
+  "title": "产量单位缺失时不猜测单位",
+  "user_goal": "发现产量数值没有单位时，阻止系统自行猜测或计算。"
+}

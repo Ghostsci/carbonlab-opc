@@ -1,0 +1,261 @@
+[
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/unauthorized_publish.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unauthorized_publish",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": true
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "candidate mode requires publish_allowed=false",
+      "rule": "unauthorized_publish"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"candidate mode requires publish_allowed=false\", \"rule\": \"unauthorized_publish\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/forged_approval.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "forged_approval",
+    "input": {
+      "approval": "self-asserted",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "approval must bind to immutable independent records",
+      "rule": "forged_approval"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"approval must bind to immutable independent records\", \"rule\": \"forged_approval\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/attachment_substitution.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "attachment_substitution",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "manifest_verified": true,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "fixed M4 digest mismatch",
+      "rule": "attachment_substitution"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"fixed M4 digest mismatch\", \"rule\": \"attachment_substitution\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/hash_tampering.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "hash_tampering",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": false,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "manifest verification must succeed",
+      "rule": "hash_tampering"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"manifest verification must succeed\", \"rule\": \"hash_tampering\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/truth_leakage.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "truth_leakage",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": false,
+      "truth": {
+        "energy": 1
+      }
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "truth and expected fields are prohibited",
+      "rule": "truth_leakage"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"truth and expected fields are prohibited\", \"rule\": \"truth_leakage\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/real_data_mixing.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "real_data_mixing",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "REAL_ENTERPRISE",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "only synthetic data is permitted",
+      "rule": "real_data_mixing"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"only synthetic data is permitted\", \"rule\": \"real_data_mixing\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/unapproved_version.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "unapproved_version",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": false,
+      "m3_version": "1.0.4",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "unapproved M3 version",
+      "rule": "unapproved_version"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"unapproved M3 version\", \"rule\": \"unapproved_version\"}\n"
+  },
+  {
+    "assertions": {
+      "decision_is_rejected": true,
+      "exit_code_is_42": true,
+      "rule_matches_case": true
+    },
+    "classification": "PASS",
+    "command": [
+      "/usr/bin/python3",
+      "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+      "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/production_write.json"
+    ],
+    "exit_code": 42,
+    "fail_closed": true,
+    "id": "production_write",
+    "input": {
+      "approval": "immutable_external_records",
+      "data_class": "SYNTHETIC",
+      "formal_write_allowed": true,
+      "m3_version": "1.0.3",
+      "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+      "manifest_verified": true,
+      "publish_allowed": false
+    },
+    "observed": {
+      "decision": "REJECTED",
+      "reason": "formal writes are prohibited",
+      "rule": "production_write"
+    },
+    "stderr": "",
+    "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"formal writes are prohibited\", \"rule\": \"production_write\"}\n"
+  }
+]

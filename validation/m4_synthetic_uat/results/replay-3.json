@@ -1,0 +1,1713 @@
+{
+  "run_index": 3,
+  "run_sha256": "a08a2451a7083933ff314a009e29a04266b7dcc9203c069700df623cb327a997",
+  "semantic": {
+    "artifact_version": "M4_SYNTHETIC_UAT_V1.0.0",
+    "mode": "SYNTHETIC_ONLY_LOCAL_CANDIDATE",
+    "scenarios": [
+      {
+        "calculation_receipt": {
+          "formula": "purchased_electricity_kWh * factor_kgCO2e_per_kWh / 1000",
+          "input_sha256": "a6f41f164989806b1ce95642cf958357a97d9f91bc5bd78fc69467cc899291f0",
+          "inputs": {
+            "electricity_factor": {
+              "unit": "kgCO2e/kWh",
+              "value": "0.500000"
+            },
+            "production_output": {
+              "unit": "t",
+              "value": "2144.05"
+            },
+            "purchased_electricity": {
+              "unit": "kWh",
+              "value": "3529181"
+            }
+          },
+          "result": {
+            "unit": "tCO2e",
+            "value": "1764.5905000000000000000000000000000000000000000"
+          },
+          "rule_version": "synthetic-electricity-rule-v1"
+        },
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72085100"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72085100"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：一号热轧生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "一号热轧生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：东澜钢铁（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "东澜钢铁（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-12-31"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-12-31"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-10-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-10-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：热轧卷板"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "热轧卷板"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：2144.05 t"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "t",
+            "value": "2144.05"
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：bf_bof"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "bf_bof"
+          },
+          "purchased_electricity": {
+            "evidence": [
+              {
+                "document_id": "energy_bill",
+                "quote": "本期用电量：3529181 kWh"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "kWh",
+            "value": "3529181"
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "ai_output_remains_candidate_before_confirmation": true,
+          "deterministic_rule_calculation": true,
+          "formal_write_allowed_false": true,
+          "publish_allowed_false": true,
+          "signed_confirmation_credential_verified": true
+        },
+        "coverage": [
+          "正常单条",
+          "候选字段",
+          "字段级证据",
+          "确定性计算",
+          "人工确认"
+        ],
+        "equivalent_text_evidence": "evidence/S01_NORMAL_SINGLE.json",
+        "expected_rejection": null,
+        "observable_result": [
+          "9 个候选字段均带候选状态；已抽取字段带原文证据。",
+          "签名凭据通过后状态由 candidate 转为 calculated。",
+          "排放量由冻结规则计算为 1764.5905 tCO2e。",
+          "正式写入和发布标志在确认前后均为 false。"
+        ],
+        "operation_steps": [
+          "提交一组完整合成装置、用电量和产量文件。",
+          "查看候选字段、单位、证据引文和候选状态。",
+          "使用服务端签名的合成复核凭据确认候选。",
+          "查看确定性计算回执和候选护照边界。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S01_NORMAL_SINGLE",
+        "state_transition": [
+          "uploaded",
+          "candidate",
+          "calculated_local_candidate"
+        ],
+        "synthetic_only": true,
+        "title": "正常单条候选查看、来源追溯与人工确认",
+        "user_goal": "上传一组合成文件，核对候选字段和来源后完成候选确认。"
+      },
+      {
+        "batch_results": [
+          {
+            "classification": "PASS",
+            "passport": {
+              "calculation_receipt": {
+                "formula": "purchased_electricity_kWh * factor_kgCO2e_per_kWh / 1000",
+                "input_sha256": "830eba21fe1e56f69075ae85117744d0723e9d8e3f15ea5aa6161937bf5b5360",
+                "inputs": {
+                  "electricity_factor": {
+                    "unit": "kgCO2e/kWh",
+                    "value": "0.500000"
+                  },
+                  "production_output": {
+                    "unit": "t",
+                    "value": "903.955"
+                  },
+                  "purchased_electricity": {
+                    "unit": "kWh",
+                    "value": "2176841.7"
+                  }
+                },
+                "result": {
+                  "unit": "tCO2e",
+                  "value": "1088.4208500000000000000000000000000000000000000"
+                },
+                "rule_version": "synthetic-electricity-rule-v1"
+              },
+              "candidate": {
+                "conflicts": [],
+                "fields": {
+                  "cn_code": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "CN编码：72085100"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "72085100"
+                  },
+                  "installation_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "装置：一号热轧生产装置（合成）"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "一号热轧生产装置（合成）"
+                  },
+                  "operator_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "经营者：海岳特钢（合成）有限公司"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "海岳特钢（合成）有限公司"
+                  },
+                  "period_end": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "期间结束：2026-12-31"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "2026-12-31"
+                  },
+                  "period_start": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "期间开始：2026-10-01"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "2026-10-01"
+                  },
+                  "product_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "产品：热轧卷板"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "热轧卷板"
+                  },
+                  "production_output": {
+                    "evidence": [
+                      {
+                        "document_id": "production_ledger",
+                        "quote": "合格产量：903.955 t"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": "t",
+                    "value": "903.955"
+                  },
+                  "production_route": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "生产路线：bf_bof"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "bf_bof"
+                  },
+                  "purchased_electricity": {
+                    "evidence": [
+                      {
+                        "document_id": "energy_bill",
+                        "quote": "本期用电量：2176841.7 kWh"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": "kWh",
+                    "value": "2176841.7"
+                  }
+                },
+                "formal_write_allowed": false,
+                "missing_fields": [],
+                "prompt_injection_detected": false,
+                "scenario_id": "m4_batch_complete_a",
+                "schema_version": "1.1.0",
+                "task_id": "factory_document_extraction_v1"
+              },
+              "confirmation": {
+                "actor_id": "synthetic-reviewer",
+                "actor_role": "auditor",
+                "authentication": "signed_confirmation_credential",
+                "decision": "confirm",
+                "occurred_at": "2026-08-14T00:00:00Z",
+                "reason": "M4 synthetic acceptance fixture"
+              },
+              "formal_write_allowed": false,
+              "pipeline_version": "m3-candidate-passport-v1.0.3",
+              "provenance": {
+                "extraction_provider": "static/static-v1",
+                "source_sha256": {
+                  "energy_bill": "b5547d52c4a0757c40b7845fe94d07968f98c2a815b41cf0ed3fbb96a7e6bd0d",
+                  "identity": "072b9ba134ade0f5cc361921c74f0d9a06ad75b522d95d50d9998b5c7670f10c",
+                  "production_ledger": "821aa92eb4c647711f5771e617f4196dbccac3a85d3ef655bf605776b1bc416a"
+                },
+                "truth_isolated": true
+              },
+              "publish_allowed": false,
+              "scenario_id": "m4_batch_complete_a",
+              "state": "calculated",
+              "synthetic_only": true
+            },
+            "scenario_id": "m4_batch_complete_a"
+          },
+          {
+            "classification": "PASS",
+            "outcome": "expected_rejection",
+            "reason": "unresolved_candidates:production_output",
+            "scenario_id": "m4_batch_missing_output"
+          },
+          {
+            "classification": "PASS",
+            "passport": {
+              "calculation_receipt": {
+                "formula": "purchased_electricity_kWh * factor_kgCO2e_per_kWh / 1000",
+                "input_sha256": "818471853b0ac3b37e9f1a9aa675d5dc3ed2ca57cbb39b38fd6e9ef39929df95",
+                "inputs": {
+                  "electricity_factor": {
+                    "unit": "kgCO2e/kWh",
+                    "value": "0.500000"
+                  },
+                  "production_output": {
+                    "unit": "t",
+                    "value": "2288.792"
+                  },
+                  "purchased_electricity": {
+                    "unit": "kWh",
+                    "value": "3767049.3"
+                  }
+                },
+                "result": {
+                  "unit": "tCO2e",
+                  "value": "1883.5246500000000000000000000000000000000000000"
+                },
+                "rule_version": "synthetic-electricity-rule-v1"
+              },
+              "candidate": {
+                "conflicts": [],
+                "fields": {
+                  "cn_code": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "CN编码：72085100"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "72085100"
+                  },
+                  "installation_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "装置：二号板材生产装置（合成）"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "二号板材生产装置（合成）"
+                  },
+                  "operator_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "经营者：海岳特钢（合成）有限公司"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "海岳特钢（合成）有限公司"
+                  },
+                  "period_end": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "期间结束：2026-12-31"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "2026-12-31"
+                  },
+                  "period_start": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "期间开始：2026-10-01"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "2026-10-01"
+                  },
+                  "product_name": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "产品：热轧卷板"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "热轧卷板"
+                  },
+                  "production_output": {
+                    "evidence": [
+                      {
+                        "document_id": "production_ledger",
+                        "quote": "合格产量：2,288.792 t"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": "t",
+                    "value": "2288.792"
+                  },
+                  "production_route": {
+                    "evidence": [
+                      {
+                        "document_id": "identity",
+                        "quote": "生产路线：bf_bof"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": null,
+                    "value": "bf_bof"
+                  },
+                  "purchased_electricity": {
+                    "evidence": [
+                      {
+                        "document_id": "energy_bill",
+                        "quote": "本期用电量：3,767,049.3 kWh"
+                      }
+                    ],
+                    "requires_human_confirmation": true,
+                    "status": "extracted",
+                    "uncertainty_reason": null,
+                    "unit": "kWh",
+                    "value": "3767049.3"
+                  }
+                },
+                "formal_write_allowed": false,
+                "missing_fields": [],
+                "prompt_injection_detected": false,
+                "scenario_id": "m4_batch_complete_b",
+                "schema_version": "1.1.0",
+                "task_id": "factory_document_extraction_v1"
+              },
+              "confirmation": {
+                "actor_id": "synthetic-reviewer",
+                "actor_role": "auditor",
+                "authentication": "signed_confirmation_credential",
+                "decision": "confirm",
+                "occurred_at": "2026-08-14T00:00:00Z",
+                "reason": "M4 synthetic acceptance fixture"
+              },
+              "formal_write_allowed": false,
+              "pipeline_version": "m3-candidate-passport-v1.0.3",
+              "provenance": {
+                "extraction_provider": "static/static-v1",
+                "source_sha256": {
+                  "energy_bill": "5c1a507a02f4b08c974e84f86bffa965a1db8232d1b354c992c352a0375507f7",
+                  "identity": "ba238201a9396175fa98089f221db206e84d38bbe1f060d68b51269e0f1ff4b4",
+                  "production_ledger": "8a0e1123dc302fbbca8aac4f35d63cb41905f9379ee74de7410077d8f0fcd145"
+                },
+                "truth_isolated": true
+              },
+              "publish_allowed": false,
+              "scenario_id": "m4_batch_complete_b",
+              "state": "calculated",
+              "synthetic_only": true
+            },
+            "scenario_id": "m4_batch_complete_b"
+          }
+        ],
+        "candidate_fields_and_evidence": {
+          "m4_batch_complete_a": {
+            "cn_code": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "CN编码：72085100"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "72085100"
+            },
+            "installation_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "装置：一号热轧生产装置（合成）"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "一号热轧生产装置（合成）"
+            },
+            "operator_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "经营者：海岳特钢（合成）有限公司"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "海岳特钢（合成）有限公司"
+            },
+            "period_end": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间结束：2026-12-31"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-12-31"
+            },
+            "period_start": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间开始：2026-10-01"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-10-01"
+            },
+            "product_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "产品：热轧卷板"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "热轧卷板"
+            },
+            "production_output": {
+              "evidence": [
+                {
+                  "document_id": "production_ledger",
+                  "quote": "合格产量：903.955 t"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": "t",
+              "value": "903.955"
+            },
+            "production_route": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "生产路线：bf_bof"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "bf_bof"
+            },
+            "purchased_electricity": {
+              "evidence": [
+                {
+                  "document_id": "energy_bill",
+                  "quote": "本期用电量：2176841.7 kWh"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": "kWh",
+              "value": "2176841.7"
+            }
+          },
+          "m4_batch_complete_b": {
+            "cn_code": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "CN编码：72085100"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "72085100"
+            },
+            "installation_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "装置：二号板材生产装置（合成）"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "二号板材生产装置（合成）"
+            },
+            "operator_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "经营者：海岳特钢（合成）有限公司"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "海岳特钢（合成）有限公司"
+            },
+            "period_end": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间结束：2026-12-31"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-12-31"
+            },
+            "period_start": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间开始：2026-10-01"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-10-01"
+            },
+            "product_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "产品：热轧卷板"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "热轧卷板"
+            },
+            "production_output": {
+              "evidence": [
+                {
+                  "document_id": "production_ledger",
+                  "quote": "合格产量：2,288.792 t"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": "t",
+              "value": "2288.792"
+            },
+            "production_route": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "生产路线：bf_bof"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "bf_bof"
+            },
+            "purchased_electricity": {
+              "evidence": [
+                {
+                  "document_id": "energy_bill",
+                  "quote": "本期用电量：3,767,049.3 kWh"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": "kWh",
+              "value": "3767049.3"
+            }
+          },
+          "m4_batch_missing_output": {
+            "cn_code": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "CN编码：72085100"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "72085100"
+            },
+            "installation_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "装置：一号热轧生产装置（合成）"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "一号热轧生产装置（合成）"
+            },
+            "operator_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "经营者：清源材料（合成）有限公司"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "清源材料（合成）有限公司"
+            },
+            "period_end": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间结束：2026-06-30"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-06-30"
+            },
+            "period_start": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "期间开始：2026-04-01"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "2026-04-01"
+            },
+            "product_name": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "产品：热轧卷板"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "热轧卷板"
+            },
+            "production_output": {
+              "evidence": [],
+              "requires_human_confirmation": true,
+              "status": "missing",
+              "unit": null,
+              "value": null
+            },
+            "production_route": {
+              "evidence": [
+                {
+                  "document_id": "identity",
+                  "quote": "生产路线：bf_bof"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": null,
+              "value": "bf_bof"
+            },
+            "purchased_electricity": {
+              "evidence": [
+                {
+                  "document_id": "energy_bill",
+                  "quote": "本期用电量：4047785.6 kWh"
+                }
+              ],
+              "requires_human_confirmation": true,
+              "status": "extracted",
+              "unit": "kWh",
+              "value": "4047785.6"
+            }
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "deterministic_calculation_for_complete_items": true,
+          "formal_write_allowed_false": true,
+          "per_item_isolation": true,
+          "publish_allowed_false": true
+        },
+        "coverage": [
+          "批量",
+          "逐项隔离",
+          "确定性重放"
+        ],
+        "equivalent_text_evidence": "evidence/S02_BATCH_ISOLATION.json",
+        "expected_rejection": {
+          "reason": "unresolved_candidates:production_output",
+          "scenario_id": "m4_batch_missing_output"
+        },
+        "observable_result": [
+          "两个完整项进入 calculated 本地候选态。",
+          "缺失产量项单独 expected_rejection，未阻断其他项。",
+          "全部返回项 classification 均为 PASS。"
+        ],
+        "operation_steps": [
+          "提交两个完整场景和一个缺失产量场景。",
+          "对每项提供相同边界的签名合成复核凭据。",
+          "核对两个完整项计算成功、缺失项按项拒绝。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S02_BATCH_ISOLATION",
+        "state_transition": {
+          "m4_batch_complete_a": [
+            "uploaded",
+            "candidate",
+            "calculated_local_candidate"
+          ],
+          "m4_batch_complete_b": [
+            "uploaded",
+            "candidate",
+            "calculated_local_candidate"
+          ],
+          "m4_batch_missing_output": [
+            "uploaded",
+            "candidate_missing",
+            "guard_rejected"
+          ]
+        },
+        "synthetic_only": true,
+        "title": "批量处理与逐项异常隔离",
+        "user_goal": "一次处理三组合成文件，并确认单个异常不会污染其他候选。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72083900"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72083900"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：二号板材生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "二号板材生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：清源材料（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "清源材料（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-12-31"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-12-31"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-10-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-10-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：热轧钢卷"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "热轧钢卷"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：3,320.213 t"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "t",
+            "value": "3320.213"
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：eaf"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "eaf"
+          },
+          "purchased_electricity": {
+            "evidence": [],
+            "requires_human_confirmation": true,
+            "status": "missing",
+            "unit": null,
+            "value": null
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "fail_closed": true,
+          "formal_write_allowed_false": true,
+          "missing_evidence_not_invented": true,
+          "publish_allowed_false": true,
+          "valid_credential_cannot_bypass_missing_field": true
+        },
+        "coverage": [
+          "缺失证据",
+          "fail-closed",
+          "人工确认边界"
+        ],
+        "equivalent_text_evidence": "evidence/S03_MISSING_EVIDENCE.json",
+        "expected_rejection": "unresolved_candidates:purchased_electricity",
+        "observable_result": [
+          "用电字段显示 missing，未虚构字段级证据。",
+          "有效签名凭据也不能绕过未解决字段。",
+          "拒绝后原候选仍停留在 candidate。"
+        ],
+        "operation_steps": [
+          "提交声明未提供本期用电量的合成文件。",
+          "查看 purchased_electricity 的缺失状态和空证据列表。",
+          "尝试使用有效签名凭据确认。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S03_MISSING_EVIDENCE",
+        "state_transition": [
+          "uploaded",
+          "candidate_missing",
+          "guard_rejected"
+        ],
+        "synthetic_only": true,
+        "title": "缺失用电证据时阻断确认",
+        "user_goal": "识别缺失的用电证据，并确认不能靠人工点击跳过缺口。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72085200"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72085200"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：沿海钢卷生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "沿海钢卷生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：清源材料（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "清源材料（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-06-30"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-06-30"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-04-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-04-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：非合金钢板"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "非合金钢板"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：4,685.151（单位未标明）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "ambiguous",
+            "unit": null,
+            "value": null
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：bf_bof"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "bf_bof"
+          },
+          "purchased_electricity": {
+            "evidence": [
+              {
+                "document_id": "energy_bill",
+                "quote": "本期用电量：3797895.6 kWh"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "kWh",
+            "value": "3797895.6"
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "calculation_not_executed": true,
+          "fail_closed": true,
+          "formal_write_allowed_false": true,
+          "publish_allowed_false": true,
+          "unit_not_guessed": true
+        },
+        "coverage": [
+          "单位异常",
+          "fail-closed",
+          "证据追溯"
+        ],
+        "equivalent_text_evidence": "evidence/S04_UNIT_ANOMALY.json",
+        "expected_rejection": "unresolved_candidates:production_output",
+        "observable_result": [
+          "产量保留 ambiguous，不把未标明单位的值变成 t。",
+          "原文证据可追溯，确定性计算未执行。"
+        ],
+        "operation_steps": [
+          "提交含产量数值但单位未标明的合成台账。",
+          "查看 production_output 的 ambiguous 状态和原文证据。",
+          "尝试确认并计算。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S04_UNIT_ANOMALY",
+        "state_transition": [
+          "uploaded",
+          "candidate_ambiguous",
+          "guard_rejected"
+        ],
+        "synthetic_only": true,
+        "title": "产量单位缺失时不猜测单位",
+        "user_goal": "发现产量数值没有单位时，阻止系统自行猜测或计算。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "candidate": null,
+          "source_evidence": [
+            "期间结束：2026-12-31",
+            "期间开始：2027-01-01"
+          ]
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "calculation_not_executed": true,
+          "fail_closed": true,
+          "formal_write_allowed_false": true,
+          "invalid_period_rejected_before_candidate": true,
+          "publish_allowed_false": true
+        },
+        "coverage": [
+          "期间冲突",
+          "fail-closed"
+        ],
+        "equivalent_text_evidence": "evidence/S05_PERIOD_CONFLICT.json",
+        "expected_rejection": "invalid_period",
+        "observable_result": [
+          "期间冲突返回 invalid_period。",
+          "拒绝发生在候选护照生成前，没有计算、正式写入或发布状态。"
+        ],
+        "operation_steps": [
+          "提交开始日期为 2027-01-01、结束日期为 2026-12-31 的合成文件。",
+          "观察期间校验结果和候选生成状态。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S05_PERIOD_CONFLICT",
+        "state_transition": [
+          "uploaded",
+          "validation_rejected",
+          "no_candidate"
+        ],
+        "synthetic_only": true,
+        "title": "报告期起止冲突时在候选生成前拒绝",
+        "user_goal": "识别开始日期晚于结束日期的文件，避免生成误导性候选。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72085200"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72085200"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：沿海钢卷生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "沿海钢卷生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：海岳特钢（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "海岳特钢（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-06-30"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-06-30"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-04-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-04-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：非合金钢板"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "非合金钢板"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：3751.105 t"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "t",
+            "value": "3751.105"
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：bf_bof"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "bf_bof"
+          },
+          "purchased_electricity": {
+            "evidence": [
+              {
+                "document_id": "energy_bill",
+                "quote": "本期用电量：2,429,506 kWh"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "kWh",
+            "value": "2429506"
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "credential_cannot_bypass_injection_guard": true,
+          "document_instruction_not_executed": true,
+          "fail_closed": true,
+          "formal_write_allowed_false": true,
+          "publish_allowed_false": true
+        },
+        "coverage": [
+          "提示注入",
+          "fail-closed",
+          "候选态"
+        ],
+        "equivalent_text_evidence": "evidence/S06_PROMPT_INJECTION.json",
+        "expected_rejection": "document_instruction_detected",
+        "observable_result": [
+          "候选标记 prompt_injection_detected=true。",
+          "有效签名凭据不能覆盖文档指令风险，返回 expected rejection。"
+        ],
+        "operation_steps": [
+          "提交包含‘忽略所有系统规则’等指令的合成文件。",
+          "查看 prompt_injection_detected。",
+          "使用有效签名凭据尝试确认。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S06_PROMPT_INJECTION",
+        "state_transition": [
+          "uploaded",
+          "candidate_risk_flagged",
+          "guard_rejected"
+        ],
+        "synthetic_only": true,
+        "title": "文档内提示注入不能越过人工边界",
+        "user_goal": "确认文件中的越权指令只会触发风险标记，不会允许写入或发布。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72085100"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72085100"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：一号热轧生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "一号热轧生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：东澜钢铁（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "东澜钢铁（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-12-31"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-12-31"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-10-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-10-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：热轧卷板"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "热轧卷板"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：2144.05 t"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "t",
+            "value": "2144.05"
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：bf_bof"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "bf_bof"
+          },
+          "purchased_electricity": {
+            "evidence": [
+              {
+                "document_id": "energy_bill",
+                "quote": "本期用电量：3529181 kWh"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "kWh",
+            "value": "3529181"
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "caller_cannot_self_assert_identity": true,
+          "candidate_unchanged": true,
+          "forged_signature_rejected": true,
+          "formal_write_allowed_false": true,
+          "publish_allowed_false": true,
+          "unauthorized_role_rejected": true
+        },
+        "coverage": [
+          "未授权确认",
+          "凭据防伪",
+          "责任边界"
+        ],
+        "equivalent_text_evidence": "evidence/S07_UNAUTHORIZED_CONFIRMATION.json",
+        "expected_rejection": {
+          "forged_signature": "reviewer_credential_invalid",
+          "self_asserted_actor": "extra_forbidden",
+          "unauthorized_role": "reviewer_not_authorized"
+        },
+        "observable_result": [
+          "调用方自报 actor 字段被契约拒绝。",
+          "伪造签名返回 reviewer_credential_invalid。",
+          "未授权角色返回 reviewer_not_authorized。",
+          "候选未产生确认记录且仍为 candidate。"
+        ],
+        "operation_steps": [
+          "生成正常候选。",
+          "尝试在确认动作中自行注入 actor_id/actor_type。",
+          "分别使用伪造签名凭据和未授权角色凭据确认。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S07_UNAUTHORIZED_CONFIRMATION",
+        "state_transition": [
+          "uploaded",
+          "candidate",
+          "credential_rejected",
+          "candidate_unchanged"
+        ],
+        "synthetic_only": true,
+        "title": "伪造或越权人工确认凭据被拒绝",
+        "user_goal": "确认调用方不能自报身份，也不能用伪造签名或普通成员角色确认候选。"
+      },
+      {
+        "candidate_fields_and_evidence": {
+          "cn_code": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "CN编码：72085100"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "72085100"
+          },
+          "installation_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "装置：一号热轧生产装置（合成）"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "一号热轧生产装置（合成）"
+          },
+          "operator_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "经营者：东澜钢铁（合成）有限公司"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "东澜钢铁（合成）有限公司"
+          },
+          "period_end": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间结束：2026-12-31"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-12-31"
+          },
+          "period_start": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "期间开始：2026-10-01"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "2026-10-01"
+          },
+          "product_name": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "产品：热轧卷板"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "热轧卷板"
+          },
+          "production_output": {
+            "evidence": [
+              {
+                "document_id": "production_ledger",
+                "quote": "合格产量：2144.05 t"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "t",
+            "value": "2144.05"
+          },
+          "production_route": {
+            "evidence": [
+              {
+                "document_id": "identity",
+                "quote": "生产路线：bf_bof"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": null,
+            "value": "bf_bof"
+          },
+          "purchased_electricity": {
+            "evidence": [
+              {
+                "document_id": "energy_bill",
+                "quote": "本期用电量：3529181 kWh"
+              }
+            ],
+            "requires_human_confirmation": true,
+            "status": "extracted",
+            "unit": "kWh",
+            "value": "3529181"
+          }
+        },
+        "classification": "PASS",
+        "control_checks": {
+          "fail_closed": true,
+          "formal_write_true_rejected": true,
+          "publish_true_rejected": true,
+          "unconfirmed_candidate_not_publishable": true
+        },
+        "coverage": [
+          "未确认发布",
+          "正式写入禁止",
+          "fail-closed"
+        ],
+        "equivalent_text_evidence": "evidence/S08_UNCONFIRMED_PUBLISH.json",
+        "expected_rejection": {
+          "fields": [
+            "formal_write_allowed",
+            "publish_allowed",
+            "state"
+          ],
+          "type": "contract_validation_error"
+        },
+        "observable_result": [
+          "published 状态不在候选护照状态契约中。",
+          "formal_write_allowed=true 与 publish_allowed=true 均被 Literal[False] 拒绝。",
+          "原候选没有确认记录，状态和两个权限标志均未改变。"
+        ],
+        "operation_steps": [
+          "生成正常候选但不执行人工确认。",
+          "尝试把 state 改为 published，并把两个权限标志改为 true。",
+          "核对原候选状态和权限标志。"
+        ],
+        "real_user_observation": false,
+        "scenario_id": "S08_UNCONFIRMED_PUBLISH",
+        "state_transition": [
+          "uploaded",
+          "candidate",
+          "publish_contract_rejected",
+          "candidate_unchanged"
+        ],
+        "synthetic_only": true,
+        "title": "未确认候选的正式写入或发布尝试被契约拒绝",
+        "user_goal": "确认未完成人工确认的候选不能被改造成 published 或正式写入对象。"
+      }
+    ]
+  }
+}

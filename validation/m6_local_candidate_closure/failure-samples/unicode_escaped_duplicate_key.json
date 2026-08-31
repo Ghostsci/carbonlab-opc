@@ -1,0 +1,10 @@
+{
+  "act\u0069on": "LOCAL_VALIDATE_FIXED_M5",
+  "action": "GIT PUSH",
+  "approval_binding_id": "M5_TO_M6_LOCAL_EVIDENCE_USE_V1",
+  "artifact": {"path": "input/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3.tar.gz", "version": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3"},
+  "mode": "PREPARATION_ONLY/SYNTHETIC_ONLY/LOCAL_CANDIDATE/NOT_FOR_SUBMISSION",
+  "payload_files": ["fixtures/synthetic-probe.json"],
+  "schema_version": "m6.local-action-request.v1",
+  "target": "M6_LOCAL_CANDIDATE_CLOSURE_V1.0.1"
+}

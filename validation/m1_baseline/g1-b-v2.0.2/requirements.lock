@@ -1,0 +1,3 @@
+# G1-B-v2.0.0 dependency lock
+# No third-party Python packages are required.
+# Runtime contract: CPython >=3.10, Python standard library only.

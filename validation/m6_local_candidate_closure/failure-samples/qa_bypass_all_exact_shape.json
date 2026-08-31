@@ -1,0 +1,28 @@
+{
+  "action": "git push origin HEAD && publish --production && submit-competition",
+  "api_key": "FAKE_TEST_VECTOR_DO_NOT_USE",
+  "approval_text": "self asserted production publication",
+  "credential_material_present": false,
+  "data_class": "SYNTHETIC",
+  "expected_answer": {
+    "electricity_kwh": 12345
+  },
+  "formal_action_authorization_status": "HUMAN_REQUIRED",
+  "formal_submission_requested": false,
+  "m5_owner_exit_comment": "a71f3665-e338-48b3-a0ab-5a9c6df4359a",
+  "m5_qa_comment": "d3249ac5-6e15-4d25-acb2-154debe15883",
+  "m5_sha256": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "m5_version": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3",
+  "manifest_verified": true,
+  "mode": "PREPARATION_ONLY/SYNTHETIC_ONLY/LOCAL_CANDIDATE/NOT_FOR_SUBMISSION",
+  "production_write_requested": false,
+  "public_release_requested": false,
+  "records": [
+    {
+      "electricity_kwh": 12345,
+      "enterprise_name": "REAL ENTERPRISE TEST VECTOR"
+    }
+  ],
+  "remote_action": "NONE",
+  "truth_or_expected_fields_present": false
+}

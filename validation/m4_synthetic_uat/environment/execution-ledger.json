@@ -1,0 +1,116 @@
+{
+  "artifact_boundary": "M4_SYNTHETIC_UAT_V1.0.0",
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "pytest",
+        "backend/tests/test_candidate_passport_v1.py",
+        "-q"
+      ],
+      "cwd_boundary": "task_isolated_baseline_copy",
+      "exit_code": 0,
+      "log": "logs/m3-pytest-replay-1.log",
+      "name": "m3-pytest-replay-1"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "pytest",
+        "backend/tests/test_candidate_passport_v1.py",
+        "-q"
+      ],
+      "cwd_boundary": "task_isolated_baseline_copy",
+      "exit_code": 0,
+      "log": "logs/m3-pytest-replay-2.log",
+      "name": "m3-pytest-replay-2"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "pytest",
+        "backend/tests/test_candidate_passport_v1.py",
+        "-q"
+      ],
+      "cwd_boundary": "task_isolated_baseline_copy",
+      "exit_code": 0,
+      "log": "logs/m3-pytest-replay-3.log",
+      "name": "m3-pytest-replay-3"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run_synthetic_uat.py",
+        "--output-dir",
+        ".",
+        "--run-index",
+        "1"
+      ],
+      "cwd_boundary": "task_artifact_root",
+      "exit_code": 0,
+      "log": "logs/m4-uat-replay-1-stdout.log",
+      "name": "m4-uat-replay-1-stdout"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run_synthetic_uat.py",
+        "--output-dir",
+        ".",
+        "--run-index",
+        "2"
+      ],
+      "cwd_boundary": "task_artifact_root",
+      "exit_code": 0,
+      "log": "logs/m4-uat-replay-2-stdout.log",
+      "name": "m4-uat-replay-2-stdout"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run_synthetic_uat.py",
+        "--output-dir",
+        ".",
+        "--run-index",
+        "3"
+      ],
+      "cwd_boundary": "task_artifact_root",
+      "exit_code": 0,
+      "log": "logs/m4-uat-replay-3-stdout.log",
+      "name": "m4-uat-replay-3-stdout"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/run_synthetic_uat.py",
+        "--output-dir",
+        ".",
+        "--finalize"
+      ],
+      "cwd_boundary": "task_artifact_root",
+      "exit_code": 0,
+      "log": "logs/m4-finalize.log",
+      "name": "m4-finalize"
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd_boundary": "task_artifact_root",
+      "exit_code": 0,
+      "log": "logs/isolated-pip-check.log",
+      "name": "isolated-pip-check"
+    }
+  ],
+  "dependency_boundary": "task-only target directory under /tmp",
+  "executed_at_utc": "2026-08-14T14:56:40+00:00",
+  "networked_model_calls": 0,
+  "remote_writes": 0,
+  "source_boundary": "disposable baseline copy plus accepted M3 V1.0.3 patch"
+}

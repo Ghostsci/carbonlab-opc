@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.11, pytest-9.0.3, pluggy-1.6.0 -- /tmp/m2-v4-work/M2_FORMAL_REFROZEN_PATCH_AND_PYTEST_V4/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /tmp/m2-v4-work/M2_FORMAL_REFROZEN_PATCH_AND_PYTEST_V4
+collecting ... collected 24 items
+
+backend/tests/test_llm_conformance.py::test_conformance_runner_detects_regression_and_safety_violation PASSED [  4%]
+backend/tests/test_llm_conformance.py::test_model_comparison_enforces_hard_gates_before_non_inferiority PASSED [  8%]
+backend/tests/test_llm_conformance.py::test_real_but_unrelated_quote_cannot_support_a_field PASSED [ 12%]
+backend/tests/test_llm_conformance.py::test_conflict_field_requires_every_frozen_evidence_reference PASSED [ 16%]
+backend/tests/test_llm_conformance.py::test_model_comparison_rejects_unpinned_or_changed_evaluator_policy PASSED [ 20%]
+backend/tests/test_llm_validation_contracts.py::test_provider_output_schema_rejects_unknown_fields PASSED [ 25%]
+backend/tests/test_llm_validation_contracts.py::test_contract_rejects_formal_write_and_unsupported_extraction PASSED [ 29%]
+backend/tests/test_llm_validation_contracts.py::test_conflict_summary_must_repeat_the_field_evidence PASSED [ 33%]
+backend/tests/test_llm_validation_contracts.py::test_provider_adapter_rejects_insecure_remote_endpoint PASSED [ 37%]
+backend/tests/test_llm_validation_contracts.py::test_provider_adapter_requires_environment_credential PASSED [ 41%]
+backend/tests/test_llm_validation_contracts.py::test_provider_adapter_rejects_credentials_in_url_components[https://synthetic-user:synthetic-password@models.example.com/v1] PASSED [ 45%]
+backend/tests/test_llm_validation_contracts.py::test_provider_adapter_rejects_credentials_in_url_components[https://models.example.com/v1?access_token=synthetic-canary-value] PASSED [ 50%]
+backend/tests/test_llm_validation_contracts.py::test_provider_adapter_rejects_credentials_in_url_components[https://models.example.com/v1#authorization=synthetic-canary-value] PASSED [ 54%]
+backend/tests/test_llm_validation_contracts.py::test_recording_provider_never_persists_prompt_or_credential PASSED [ 58%]
+backend/tests/test_llm_validation_reporting.py::test_report_round_trip_preserves_slotted_dataclasses_without_raw_output PASSED [ 62%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_credential_like_values PASSED [ 66%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration0] PASSED [ 70%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration1] PASSED [ 75%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration2] PASSED [ 79%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration3] PASSED [ 83%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration4] PASSED [ 87%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_rejects_non_sk_credentials[provider_configuration5] PASSED [ 91%]
+backend/tests/test_llm_validation_reporting.py::test_report_writer_scans_rendered_markdown_before_writing PASSED [ 95%]
+backend/tests/test_llm_validation_reporting.py::test_report_loader_rejects_tampered_gate_assessment PASSED [100%]
+
+============================== 24 passed in 0.14s ==============================

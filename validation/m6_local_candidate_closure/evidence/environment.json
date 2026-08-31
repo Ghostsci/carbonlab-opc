@@ -1,0 +1,9 @@
+{
+  "cwd_boundary": "task-local isolated build and replay roots",
+  "machine": "x86_64",
+  "platform": "Linux-6.8.0-76060800daily20240311-generic-x86_64-with-glibc2.35",
+  "python": "3.10.12",
+  "remote_writes": "NOT_RUN_ENV / PROHIBITED / NO DISPATCH IMPLEMENTATION",
+  "repository": "https://github.com/Ghostsci/carbonlab-opc.git",
+  "requested_commit": "c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8"
+}

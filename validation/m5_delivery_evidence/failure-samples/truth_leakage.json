@@ -1,0 +1,12 @@
+{
+  "approval": "immutable_external_records",
+  "data_class": "SYNTHETIC",
+  "formal_write_allowed": false,
+  "m3_version": "1.0.3",
+  "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+  "manifest_verified": true,
+  "publish_allowed": false,
+  "truth": {
+    "energy": 1
+  }
+}

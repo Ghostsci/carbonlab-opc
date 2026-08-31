@@ -35,6 +35,9 @@ uploads/
 tmp/
 temp/
 
+# Milestone evidence logs are tracked on purpose (M1-M6 delivery branch)
+!validation/m*/**/*.log
+
 # IDE / OS
 .DS_Store
 .idea/

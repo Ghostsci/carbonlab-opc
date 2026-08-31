@@ -1,0 +1,31 @@
+Repository baseline (read-only):
+opc repo checkout https://github.com/Ghostsci/carbonlab-opc --ref c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8
+exit=0
+
+Task-local runtime:
+UV_CACHE_DIR=/tmp/m2-v4-work/uv-cache UV_PYTHON_INSTALL_DIR=/tmp/m2-v4-work/python /tmp/m2-v4-work/uv-tool/bin/uv python install 3.12
+exit=0; CPython 3.12.11
+
+Offline environment:
+/tmp/m2-v4-work/python/cpython-3.12.11-linux-x86_64-gnu/bin/python3.12 -m venv .venv
+exit=0
+.venv/bin/python -m pip install --no-index --find-links wheelhouse-py312 -r requirements-py312.lock
+exit=0
+sha256sum -c wheelhouse-py312.sha256
+exit=0; 17/17 OK
+
+Dependency audit:
+XDG_CACHE_HOME=/tmp/m2-v4-work/audit-cache /tmp/m2-v4-work/audit-venv/bin/pip-audit -r requirements-py312.lock --disable-pip --no-deps
+exit=0; No known vulnerabilities found
+
+Frozen replay command (identical command, three executions):
+PYTHONPATH=. .venv/bin/python -m pytest backend/tests/test_llm_conformance.py backend/tests/test_llm_validation_contracts.py backend/tests/test_llm_validation_reporting.py -vv
+replay-v4-1 exit=0; 24 passed
+replay-v4-2 exit=0; 24 passed
+replay-v4-3 exit=0; 24 passed
+
+Audit-chain recomputation:
+.venv/bin/python -c '<canonical SHA-256 verifier: UTF-8 JSON, sort_keys=True, separators=(comma,colon), remove event_hash, verify previous_event_hash from 64-zero genesis>'
+exit=0; events=11; head=891a3006f3ae29be03dcdd6452858766ce4d9b896378a8606fd1c8331d239c36
+
+No remote Git write, external LLM, real data, credential, fee-bearing call, or publication was performed.

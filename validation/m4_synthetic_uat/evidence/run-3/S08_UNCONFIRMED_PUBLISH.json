@@ -1,0 +1,154 @@
+{
+  "candidate_fields_and_evidence": {
+    "cn_code": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "CN编码：72085100"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "72085100"
+    },
+    "installation_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "装置：一号热轧生产装置（合成）"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "一号热轧生产装置（合成）"
+    },
+    "operator_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "经营者：东澜钢铁（合成）有限公司"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "东澜钢铁（合成）有限公司"
+    },
+    "period_end": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间结束：2026-12-31"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-12-31"
+    },
+    "period_start": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "期间开始：2026-10-01"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "2026-10-01"
+    },
+    "product_name": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "产品：热轧卷板"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "热轧卷板"
+    },
+    "production_output": {
+      "evidence": [
+        {
+          "document_id": "production_ledger",
+          "quote": "合格产量：2144.05 t"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "t",
+      "value": "2144.05"
+    },
+    "production_route": {
+      "evidence": [
+        {
+          "document_id": "identity",
+          "quote": "生产路线：bf_bof"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": null,
+      "value": "bf_bof"
+    },
+    "purchased_electricity": {
+      "evidence": [
+        {
+          "document_id": "energy_bill",
+          "quote": "本期用电量：3529181 kWh"
+        }
+      ],
+      "requires_human_confirmation": true,
+      "status": "extracted",
+      "unit": "kWh",
+      "value": "3529181"
+    }
+  },
+  "classification": "PASS",
+  "control_checks": {
+    "fail_closed": true,
+    "formal_write_true_rejected": true,
+    "publish_true_rejected": true,
+    "unconfirmed_candidate_not_publishable": true
+  },
+  "coverage": [
+    "未确认发布",
+    "正式写入禁止",
+    "fail-closed"
+  ],
+  "equivalent_text_evidence": "evidence/S08_UNCONFIRMED_PUBLISH.json",
+  "expected_rejection": {
+    "fields": [
+      "formal_write_allowed",
+      "publish_allowed",
+      "state"
+    ],
+    "type": "contract_validation_error"
+  },
+  "observable_result": [
+    "published 状态不在候选护照状态契约中。",
+    "formal_write_allowed=true 与 publish_allowed=true 均被 Literal[False] 拒绝。",
+    "原候选没有确认记录，状态和两个权限标志均未改变。"
+  ],
+  "operation_steps": [
+    "生成正常候选但不执行人工确认。",
+    "尝试把 state 改为 published，并把两个权限标志改为 true。",
+    "核对原候选状态和权限标志。"
+  ],
+  "real_user_observation": false,
+  "scenario_id": "S08_UNCONFIRMED_PUBLISH",
+  "state_transition": [
+    "uploaded",
+    "candidate",
+    "publish_contract_rejected",
+    "candidate_unchanged"
+  ],
+  "synthetic_only": true,
+  "title": "未确认候选的正式写入或发布尝试被契约拒绝",
+  "user_goal": "确认未完成人工确认的候选不能被改造成 published 或正式写入对象。"
+}

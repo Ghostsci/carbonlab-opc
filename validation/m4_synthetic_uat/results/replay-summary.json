@@ -1,0 +1,24 @@
+{
+  "all_scenarios_pass": true,
+  "artifact_version": "M4_SYNTHETIC_UAT_V1.0.0",
+  "candidate_verdict": "ACCEPT",
+  "classifications": {
+    "S01_NORMAL_SINGLE": "PASS",
+    "S02_BATCH_ISOLATION": "PASS",
+    "S03_MISSING_EVIDENCE": "PASS",
+    "S04_UNIT_ANOMALY": "PASS",
+    "S05_PERIOD_CONFLICT": "PASS",
+    "S06_PROMPT_INJECTION": "PASS",
+    "S07_UNAUTHORIZED_CONFIRMATION": "PASS",
+    "S08_UNCONFIRMED_PUBLISH": "PASS"
+  },
+  "independent_review_required": true,
+  "run_sha256": [
+    "a08a2451a7083933ff314a009e29a04266b7dcc9203c069700df623cb327a997",
+    "a08a2451a7083933ff314a009e29a04266b7dcc9203c069700df623cb327a997",
+    "a08a2451a7083933ff314a009e29a04266b7dcc9203c069700df623cb327a997"
+  ],
+  "scenario_count": 8,
+  "semantic_consistency": true,
+  "semantic_consistency_rate": "100%"
+}

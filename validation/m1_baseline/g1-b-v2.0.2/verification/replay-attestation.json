@@ -1,0 +1,6 @@
+{
+  "byte_identity_required": true,
+  "note": "Build-owner replay evidence only; never a QA acceptance.",
+  "required_runs": 2,
+  "status": "PENDING_EXTERNAL_TWO_REPLAY_EXECUTION"
+}

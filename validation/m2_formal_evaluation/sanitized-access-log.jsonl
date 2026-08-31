@@ -1,0 +1,8 @@
+{"seq":1,"event":"issue_evidence_read","scope":"CARB-15 metadata and comments","truth_body_access":false}
+{"seq":2,"event":"frozen_values_manifest_read","attachment_id":"01a00009-8697-78f3-aaed-601a2b6508b2","truth_body_access":false}
+{"seq":3,"event":"opaque_binding_read","attachment_id":"01a00009-857a-7427-8e2a-64033ff7c2f6","truth_body_access":false}
+{"seq":4,"event":"values_source_members_recovered","source_issue":"CARB-1.2","member_count":6,"truth_body_access":false}
+{"seq":5,"event":"repository_baseline_read","commit":"c4f0b5bab63572dd0b9722be7aa12293fc3fb2b8","truth_body_access":false}
+{"seq":6,"event":"local_dependency_resolution","network_target":"Python package index","external_llm":false,"credentials":false,"truth_body_access":false}
+{"seq":7,"event":"local_test_attempt","provider":"static/static-v1","external_llm":false,"truth_body_access":false}
+{"seq":8,"event":"package_assembled","remote_write":false,"truth_body_access":false}

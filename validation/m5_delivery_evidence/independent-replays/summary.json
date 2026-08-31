@@ -1,0 +1,12 @@
+{
+  "artifact_version": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3",
+  "archive_byte_hashes_expected_to_differ_by_run_id": true,
+  "canonical_sha256": "42425f22f2377d97777187eb837b84fa9f86602f244d405891c0b933cd7cb820",
+  "canonical_semantic_consistency": "100%",
+  "m4_members_each_round": "69/69",
+  "rejection_tests_each_round": "8/8",
+  "round_exit_codes": [0, 0, 0],
+  "upstream_candidate": "M5_UPSTREAM_EVIDENCE_CLOSURE_V2.0.0-candidate.2",
+  "upstream_members_each_round": "29/29",
+  "upstream_sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+}

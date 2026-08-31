@@ -1,0 +1,32 @@
+{
+  "assertions": {
+    "decision_is_rejected": true,
+    "exit_code_is_42": true,
+    "rule_matches_case": true
+  },
+  "classification": "PASS",
+  "command": [
+    "/usr/bin/python3",
+    "/tmp/carb18-v103-q5r36W/base/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.2/scripts/candidate_guard.py",
+    "/tmp/carb18-v103-q5r36W/delivery/M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.3/failure-samples/hash_tampering.json"
+  ],
+  "exit_code": 42,
+  "fail_closed": true,
+  "id": "hash_tampering",
+  "input": {
+    "approval": "immutable_external_records",
+    "data_class": "SYNTHETIC",
+    "formal_write_allowed": false,
+    "m3_version": "1.0.3",
+    "m4_sha256": "d60d30cf2e124d4b7c9e59c33dc777397fadcb1c13350bebe55eee405dfa4219",
+    "manifest_verified": false,
+    "publish_allowed": false
+  },
+  "observed": {
+    "decision": "REJECTED",
+    "reason": "manifest verification must succeed",
+    "rule": "hash_tampering"
+  },
+  "stderr": "",
+  "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"manifest verification must succeed\", \"rule\": \"hash_tampering\"}\n"
+}

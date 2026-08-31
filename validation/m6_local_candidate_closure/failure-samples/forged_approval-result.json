@@ -1,0 +1,31 @@
+{
+  "artifact_sha256_after": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "artifact_sha256_before": "0e900c68ad6dffcac32152c2f19a3e355c2680a0b1cf30d20cc32234c2a4311e",
+  "assertions": {
+    "decision_is_rejected": true,
+    "exit_code_is_42": true,
+    "rule_matches_case": true,
+    "side_effect_marker_absent": true
+  },
+  "blocked_classes": [
+    "approval_fabrication"
+  ],
+  "classification": "PASS",
+  "command": [
+    "python3",
+    "scripts/action_boundary.py",
+    "failure-samples/forged_approval.json"
+  ],
+  "entrypoint": "action_boundary.py",
+  "exit_code": 42,
+  "fail_closed": true,
+  "id": "forged_approval",
+  "input_sha256": "fd1276c4259ebe1e26d1ab801c5ae7d843727c9fa7ec6fd4db0aba334f65288a",
+  "observed": {
+    "decision": "REJECTED",
+    "reason": "request does not reference the frozen evidence-use binding",
+    "rule": "forged_approval"
+  },
+  "stderr": "",
+  "stdout": "{\"decision\": \"REJECTED\", \"reason\": \"request does not reference the frozen evidence-use binding\", \"rule\": \"forged_approval\"}\n"
+}

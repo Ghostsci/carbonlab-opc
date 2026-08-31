@@ -1,0 +1,23 @@
+{
+  "checked_count": 16,
+  "checks": {
+    "all_equivalent_evidence_exists": true,
+    "all_recorded_execution_exit_codes_zero": true,
+    "all_runtime_permission_flags_false": true,
+    "all_scenarios_pass": true,
+    "allowed_classifications_only": true,
+    "deterministic_emissions": true,
+    "expected_rejections_retained": true,
+    "expected_semantic_hash": true,
+    "input_hashes_match": true,
+    "no_credential_tokens_recorded": true,
+    "no_networked_model_or_remote_write": true,
+    "scenario_count_8": true,
+    "scenario_ids_exact": true,
+    "semantic_consistency_100_percent": true,
+    "signed_confirmation": true,
+    "three_hashes_identical": true
+  },
+  "classification": "PASS",
+  "passed_count": 16
+}

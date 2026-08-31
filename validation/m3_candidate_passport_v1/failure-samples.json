@@ -1,0 +1,32 @@
+[
+  {
+    "classification": "PASS",
+    "outcome": "expected_rejection",
+    "reason": "unresolved_candidates:production_output",
+    "scenario_id": "syn_candidate_1002_missing_output"
+  },
+  {
+    "classification": "PASS",
+    "outcome": "expected_rejection",
+    "reason": "unresolved_candidates:production_output",
+    "scenario_id": "syn_candidate_1003_ambiguous_output_unit"
+  },
+  {
+    "classification": "PASS",
+    "outcome": "expected_rejection",
+    "reason": "unresolved_candidates:production_output",
+    "scenario_id": "syn_candidate_1004_conflicting_output"
+  },
+  {
+    "classification": "PASS",
+    "outcome": "expected_rejection",
+    "reason": "unresolved_candidates:purchased_electricity",
+    "scenario_id": "syn_candidate_1005_missing_electricity"
+  },
+  {
+    "classification": "PASS",
+    "outcome": "expected_rejection",
+    "reason": "document_instruction_detected",
+    "scenario_id": "syn_candidate_3001_prompt_injection"
+  }
+]

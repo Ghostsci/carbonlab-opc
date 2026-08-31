@@ -1,0 +1,112 @@
+{
+  "classification": "PASS_WITH_LIMITATIONS",
+  "guardrail": "No missing artifact was inferred, synthesized, overwritten, or represented as approved.",
+  "investigation_scope": "OPC issue search plus the M5 fixed inputs and v1.0.1 package",
+  "objects": [
+    {
+      "missing": [
+        "canonical archive",
+        "per-file SHA256SUMS",
+        "source/version mapping",
+        "independent verdict",
+        "Owner exit",
+        "conflict/replacement resolution"
+      ],
+      "object": "M0",
+      "observed": "historical issue/comment references exist",
+      "rebaseline_entry": "upstream evidence owner must export and sign an immutable M0 canonical archive; independent QA verifies it; Owner records conflict/replacement resolution",
+      "result": "not recoverable as an approved canonical artifact from supplied inputs"
+    },
+    {
+      "missing": [
+        "canonical archive",
+        "per-file SHA256SUMS",
+        "source/version mapping",
+        "independent verdict",
+        "Owner exit",
+        "conflict/replacement resolution"
+      ],
+      "object": "M1-A",
+      "observed": "historical issue/comment references exist",
+      "rebaseline_entry": "upstream evidence owner must export and sign an immutable M1-A canonical archive; independent QA verifies it; Owner records conflict/replacement resolution",
+      "result": "not recoverable as an approved canonical artifact from supplied inputs"
+    },
+    {
+      "missing": [
+        "canonical archive",
+        "per-file SHA256SUMS",
+        "source/version mapping",
+        "independent verdict",
+        "Owner exit",
+        "conflict/replacement resolution"
+      ],
+      "object": "M1-B",
+      "observed": "historical issue/comment references exist",
+      "rebaseline_entry": "upstream evidence owner must export and sign an immutable M1-B canonical archive; independent QA verifies it; Owner records conflict/replacement resolution",
+      "result": "not recoverable as an approved canonical artifact from supplied inputs"
+    },
+    {
+      "missing": [
+        "canonical archive",
+        "per-file SHA256SUMS",
+        "source/version mapping",
+        "independent verdict",
+        "Owner exit",
+        "conflict/replacement resolution"
+      ],
+      "object": "M2",
+      "observed": "historical issue/comment references exist",
+      "rebaseline_entry": "upstream evidence owner must export and sign an immutable M2 canonical archive; independent QA verifies it; Owner records conflict/replacement resolution",
+      "result": "not recoverable as an approved canonical artifact from supplied inputs"
+    },
+    {
+      "missing": [
+        "approved immutable version",
+        "approval identity and decision",
+        "content hash",
+        "replacement/conflict resolution"
+      ],
+      "object": "field contract",
+      "observed": "references or draft/placeholder material only",
+      "rebaseline_entry": "policy owner issues a versioned field contract; independent reviewer verifies hash and approval chain; Owner records activation and supersession",
+      "result": "not recoverable as an approved policy from supplied inputs"
+    },
+    {
+      "missing": [
+        "approved immutable version",
+        "approval identity and decision",
+        "content hash",
+        "replacement/conflict resolution"
+      ],
+      "object": "evidence policy",
+      "observed": "references or draft/placeholder material only",
+      "rebaseline_entry": "policy owner issues a versioned evidence policy; independent reviewer verifies hash and approval chain; Owner records activation and supersession",
+      "result": "not recoverable as an approved policy from supplied inputs"
+    },
+    {
+      "missing": [
+        "approved immutable version",
+        "approval identity and decision",
+        "content hash",
+        "replacement/conflict resolution"
+      ],
+      "object": "permission matrix",
+      "observed": "references or draft/placeholder material only",
+      "rebaseline_entry": "policy owner issues a versioned permission matrix; independent reviewer verifies hash and approval chain; Owner records activation and supersession",
+      "result": "not recoverable as an approved policy from supplied inputs"
+    }
+  ],
+  "prior_package_disclosure_correction": {
+    "artifact": "M5_CANDIDATE_DELIVERY_EVIDENCE_PACK_V1.0.1",
+    "declared": "30/30",
+    "observed": "31/31",
+    "result": "PASS_WITH_LIMITATIONS"
+  },
+  "resolution": {
+    "artifact": "M5_UPSTREAM_EVIDENCE_CLOSURE_V2.0.0-candidate.2",
+    "boundary": "NEW_BASELINE / NOT_A_CONTINUATION",
+    "owner_decision": "DEC-20260814-01",
+    "result": "7/7 gaps mapped into the approved new baseline; legacy gaps remain historical",
+    "sha256": "3b6bdd3292186b867b0b03b1e8b7d1d655939287446b9a3bab5954741671778a"
+  }
+}

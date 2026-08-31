@@ -1,0 +1,11 @@
+{
+  "legacy_commit_full_identity": "LEGACY_EVIDENCE_UNRECOVERABLE",
+  "legacy_contracts": "LEGACY_EVIDENCE_UNRECOVERABLE",
+  "legacy_dependency_lock": "LEGACY_EVIDENCE_UNRECOVERABLE",
+  "legacy_generator": "LEGACY_EVIDENCE_UNRECOVERABLE",
+  "legacy_manifest_file_sha256": "63c90dc6e586702a80c56deb392199cd90627ecee0e63890cd16bb4fa3883948",
+  "legacy_repair_list_sha256": "82153454d782fa01317c9ab07730c0450a851efe5df0061de2f0ef10b94f5328",
+  "legacy_repair_package_sha256": "b5986cd35185553d05546a5bb2867b589e5e6a14a80c4058ac6bc95c9e48f960",
+  "trust": "UNTRUSTED_FOR_PROVENANCE",
+  "used_as_v2_source": false
+}

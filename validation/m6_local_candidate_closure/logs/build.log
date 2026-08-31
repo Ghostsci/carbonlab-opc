@@ -1,0 +1,8 @@
+run_id=primary-final-v1.0.1
+exit_code=0
+canonical_sha256=c4a7f12dad66d95d1cae8f3015a5ec047082cc6678885a9c3f77a90a76e1fbb0
+m5_members=34/34
+positive_control=1/1
+negative_cases=32/32
+remote_writes=0
+side_effect_markers=0

@@ -10,9 +10,6 @@ from pathlib import Path
 from typing import Protocol
 from urllib.parse import urlparse
 
-from openai import OpenAI
-
-
 @dataclass(frozen=True, slots=True)
 class ProviderInvocation:
     provider_id: str
@@ -54,6 +51,10 @@ class OpenAICompatibleProvider:
         api_key = os.environ.get(api_key_env)
         if not api_key:
             raise RuntimeError(f"required provider credential is missing: {api_key_env}")
+        # Import the external SDK only after configuration validation. Static
+        # runs and fail-closed configuration checks do not require the SDK.
+        from openai import OpenAI
+
         self.provider_id = provider_id
         self.model = model
         self._base_url = base_url.rstrip("/")
