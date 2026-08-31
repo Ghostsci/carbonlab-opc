@@ -42,7 +42,14 @@ resolve_docker() {
 [[ -f "$COMPOSE_FILE" ]] || fail "缺少 compose.offline.yml"
 DOCKER_BIN="$(resolve_docker)" || fail "没有找到 Docker 或 OrbStack。请先安装并启动 Docker Desktop/OrbStack。"
 
-if [[ "$(uname -m)" != "arm64" ]]; then
+PROCESS_ARCH="$(uname -m)"
+HARDWARE_ARM64="$(/usr/sbin/sysctl -in hw.optional.arm64 2>/dev/null || print 0)"
+PROCESS_TRANSLATED="$(/usr/sbin/sysctl -in sysctl.proc_translated 2>/dev/null || print 0)"
+print "运行环境：进程架构=$PROCESS_ARCH，Apple Silicon=$HARDWARE_ARM64，Rosetta=$PROCESS_TRANSLATED"
+
+# `uname -m` reports the process architecture, not necessarily the hardware.
+# Finder may launch a script through Rosetta and report x86_64 on an arm64 Mac.
+if [[ "$HARDWARE_ARM64" != "1" && "$PROCESS_ARCH" != "arm64" ]]; then
   fail "这个安装包仅支持 Apple Silicon Mac（arm64）。"
 fi
 

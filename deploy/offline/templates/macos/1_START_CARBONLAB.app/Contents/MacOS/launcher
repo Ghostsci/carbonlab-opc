@@ -14,7 +14,14 @@ if [[ "${CARBONLAB_NO_UI:-0}" != "1" ]]; then
   /usr/bin/osascript -e 'display notification "正在检查 Docker 并启动离线服务，首次运行可能需要 1—3 分钟。" with title "零碳云"' >/dev/null 2>&1 || true
 fi
 
-/bin/zsh -f "$ROOT_DIR/1_START_CARBONLAB.command" </dev/null >"$LOG_FILE" 2>&1
+# LaunchServices can start script-based apps through Rosetta. Force the child
+# shell back to native arm64 on Apple Silicon so process-level probes and Docker
+# tooling behave consistently with a Terminal launch.
+if [[ "$(/usr/sbin/sysctl -in hw.optional.arm64 2>/dev/null || print 0)" == "1" ]]; then
+  /usr/bin/arch -arm64 /bin/zsh -f "$ROOT_DIR/1_START_CARBONLAB.command" </dev/null >"$LOG_FILE" 2>&1
+else
+  /bin/zsh -f "$ROOT_DIR/1_START_CARBONLAB.command" </dev/null >"$LOG_FILE" 2>&1
+fi
 exit_code=$?
 
 if [[ $exit_code -eq 0 ]]; then
