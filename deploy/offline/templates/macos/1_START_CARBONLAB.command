@@ -62,6 +62,22 @@ set -a
 source "$ENV_FILE"
 set +a
 
+HEALTH_URL="http://127.0.0.1:${BACKEND_PORT}/api/health"
+FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}/login"
+
+# A developer or a previous demo package may already be serving CarbonLab on
+# the standard ports. Reuse a healthy instance instead of recreating containers,
+# colliding with ports, or touching its database volume.
+if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"status":"ok"' \
+  && curl -fsS -o /dev/null "$FRONTEND_URL" 2>/dev/null; then
+  print "\n检测到零碳云已在运行：$FRONTEND_URL"
+  print "无需重复启动容器，正在直接打开登录页。"
+  if [[ "${CARBONLAB_NO_BROWSER:-0}" != "1" ]]; then
+    open "$FRONTEND_URL"
+  fi
+  exit 0
+fi
+
 if ! "$DOCKER_BIN" image inspect "carbonlab-offline-backend:${CARBONLAB_IMAGE_TAG}" >/dev/null 2>&1 \
   || ! "$DOCKER_BIN" image inspect "carbonlab-offline-postgres-slim:${CARBONLAB_IMAGE_TAG}" >/dev/null 2>&1; then
   [[ -f "$IMAGE_ARCHIVE" ]] || fail "缺少离线镜像包 $IMAGE_ARCHIVE"
@@ -72,10 +88,8 @@ fi
 print "正在启动零碳云离线演示环境..."
 "$DOCKER_BIN" compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" -p "$PROJECT_NAME" up -d || fail "容器启动失败"
 
-HEALTH_URL="http://127.0.0.1:${BACKEND_PORT}/api/health"
 for _ in {1..120}; do
   if curl -fsS "$HEALTH_URL" 2>/dev/null | grep -q '"status":"ok"'; then
-    FRONTEND_URL="http://127.0.0.1:${FRONTEND_PORT}/login"
     print "\n零碳云已就绪：$FRONTEND_URL"
     print "登录页点击『一键进入演示』即可。"
     if [[ "${CARBONLAB_NO_BROWSER:-0}" != "1" ]]; then
