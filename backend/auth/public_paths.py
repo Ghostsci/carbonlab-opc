@@ -26,6 +26,12 @@ PUBLIC_PATH_PREFIXES = ("/docs",)
 def is_public_path(path: str) -> bool:
     """Return whether ``path`` may be reached without an access token."""
     normalized = path.rstrip("/") or "/"
+    # All authenticated service operations live below /api.  Non-API paths
+    # are the compiled SPA shell and its static assets in the slim offline
+    # package; requiring a Bearer token before the login page can load would
+    # make that package unusable.  Unknown /api routes remain protected.
+    if not normalized.startswith("/api"):
+        return True
     if normalized in PUBLIC_EXACT_PATHS:
         return True
     return any(

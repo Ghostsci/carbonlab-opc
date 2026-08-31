@@ -1,0 +1,23 @@
+# CarbonLab competition offline runtime.
+#
+# This list intentionally excludes development-only and unused services from
+# the full product image (Celery, Redis, MinIO, LlamaIndex, Prometheus, etc.).
+# The offline package uses local file storage, deterministic local embeddings,
+# and PostgreSQL in the companion slim database image.
+fastapi==0.115.6
+uvicorn==0.34.0
+sqlalchemy==2.0.36
+alembic==1.14.1
+psycopg2-binary==2.9.10
+pgvector==0.5.0
+python-dotenv==1.0.1
+pydantic==2.13.4
+pydantic-settings==2.7.1
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-jose[cryptography]==3.5.0
+python-multipart==0.0.20
+email-validator==2.3.0
+openai==2.36.0
+pypdf==6.10.0
+openpyxl==3.1.5
