@@ -2,94 +2,94 @@
 
 **AI 原生制造企业碳数据提取、核算与可信护照系统**
 
-> OPC 复赛深化阶段独立仓库。当前是可运行的 P0 候选版本，主要使用合成数据；不代表真实企业试点完成，也不替代法定核查。
+> OPC 深化项目公开代码仓库。当前成熟度为 **V3 内部测试**：网页闭环和合成数据验证已经完成，但尚未进入真实企业试点，不替代法定核查或监管申报。
 
-## 1. 项目解决什么问题
+## 当前版本
 
-制造企业的碳数据通常散落在电费单、生产台账、发票和表格中。真正困难的不是“让 AI 读一个 PDF”，而是把每一个进入正式核算的数字都回答清楚：
+- 最新分支：`main`
+- 产品代码冻结：`219b7cc30b901750c8136495a7a45aba6cc21116`
+- 产品标签：`zcy-standard-data-ledger-v1.0.1-20260831`
+- 赛事平台最新交接说明：[`docs/competition/CARBONLAB_V3_PLATFORM_HANDOFF_20260831.md`](docs/competition/CARBONLAB_V3_PLATFORM_HANDOFF_20260831.md)
 
-1. 数字来自哪份原始文件、哪一段或哪个单元格；
-2. AI 提取错了时，谁确认、修改或拒绝；
-3. 单位、规则和计算是否可以确定性重放；
-4. 对外分享时，接收方看到的是哪个冻结版本。
+## 项目解决什么问题
 
-CarbonLab 把这条链做成“工厂碳数据护照”：AI 负责提出候选，人负责确认，规则引擎负责计算，系统负责保留证据和版本。
-
-## 2. 本轮最小闭环
+制造企业的碳数据通常散落在电费单、生产台账、发票和表格中。CarbonLab 不让大模型直接决定正式结果，而是建立以下责任链：
 
 ```text
-原始文件接入
-→ 文件分类
-→ AI 候选字段提取
-→ 字段级证据关联
-→ 人工确认 / 修改 / 拒绝
-→ 确定性单位校验与计算
-→ 证据留存与结果重放
-→ 版本冻结与发布
-→ 工厂碳数据护照展示、追溯和授权共享
+原始文件
+→ AI 提取候选并定位证据
+→ A-03 质检和风险提示
+→ H-01 人工确认企业事实
+→ 标准化数据台账
+→ H-02 人工确认方法和因子
+→ R-01 Decimal 确定性计算
+→ A-04 护照编制
+→ H-03 复核、冻结和发布
 ```
 
-## 3. 已实现能力
+统一原则：**AI 提议，规则检查，人类确认，确定性计算，授权发布，全程留痕。**
 
-- PDF、CSV、XLSX 和文本类文件接入、哈希与处理状态；
-- OpenAI-compatible 模型封装和结构化候选提取；
-- 字段值、证据原文及位置的验证契约；
-- 人工确认后写入正式活动数据的 API；
-- Decimal 精确数值、单位/basis 校验和确定性计算；
-- 租户、企业、原始文档、活动、结果和规则的来源链；
-- 工厂/装置护照账户、快照、复核、冻结、发布、重放和最小授权共享；
-- Candidate、Holdout、Adversarial 合成数据集和 Usability 样例；
-- 可替换模型的一致性评测工具；
-- 登录、文件接入与确认、护照展示三类最小前端页面。
+## 当前可运行页面
 
-## 4. 未完成或尚未验证
+- `/upload`：数字员工工作台；
+- `/data-ledger`：标准化数据台账；
+- `/calculations`：核算工作台；
+- `/passports`：工厂碳数据护照；
+- `/agent-ops`：数字员工治理与执行 Trace。
 
-- 尚未完成真实制造企业试点；
-- 尚未完成非专业用户正式可用性测试；
-- 当前没有有效的“准入模型资格锁”，任何模型都不得被宣称已获生产准入；
-- 历史 DeepSeek 报告仅用于审计回放，其登记状态明确为失效；
-- 尚未完成方法学、数据集和模型准入的人类正式冻结；
-- 不提供碳交易、绿证撮合、绿色金融、自动监管申报或法定核查替代。
+## 已实现能力
 
-## 5. AI 与人的边界
+- PDF、CSV、XLSX 和文本类文件接入、哈希和证据存储；
+- 字段候选提取、原始工作表/单元格/文本行定位；
+- A-01 至 A-04 固定 Skill 数字员工和可查看执行 Trace；
+- H-01 企业事实确认、H-02 因子确认、H-03 授权发布；
+- 版本化碳数据本体与混合 RAG；
+- ActivityData 追加式正式账本和标准化数据台账；
+- Decimal、单位/basis 校验和确定性排放计算；
+- 工厂碳数据护照的归集、复核、冻结、发布和重放；
+- 租户/企业隔离、版本、哈希和审计记录；
+- Mac Apple Silicon 与 Windows x64 离线演示包候选。
 
-| 环节 | AI 可以做 | AI 不得做 | 人类责任 |
-|---|---|---|---|
-| 文件理解 | 分类、提候选、给置信度 | 把候选直接写正式账本 | 查看原文和候选 |
-| 证据 | 标记页码/表格/段落 | 用无关引文支持字段 | 确认字段与证据匹配 |
-| 数值 | 识别原始字符串 | 猜测缺失数值、改写精度 | 确认值、单位和原因 |
-| 计算 | 解释计算含义 | 代替确定性引擎算正式结果 | 批准输入与规则 |
-| 发布 | 生成摘要建议 | 冻结或发布护照 | 复核并执行发布 |
+## V3 内部验证
 
-## 6. 技术栈
+- 12 份 XLSX × 50 条明细，共 600 条合成明细；
+- 12/12 完成上传、提取、质检、确认和确定性计算；
+- 缺失、负数、错误单位和多账期等异常被 fail-closed；
+- 1000 行合成工作簿完成证据定位与闭环验证；
+- 后端全量测试：`149 passed`；
+- 前端 production build：通过；
+- Mac arm64 离线环境实际运行通过；
+- Windows amd64 镜像和离线包完成架构与完整性验证。
 
-- 前端：React 19、TypeScript 6、Vite 8、Tailwind CSS；
-- 后端：Python 3.12、FastAPI、Pydantic、SQLAlchemy；
-- 数据库：PostgreSQL 16、Alembic；
-- AI：OpenAI-compatible Provider，可替换模型；
+详细报告：
+
+- [`validation/competition_batch_v2/VALIDATION_RESULTS.md`](validation/competition_batch_v2/VALIDATION_RESULTS.md)
+- [`docs/competition/MINIMUM_DEMO_DELIVERY_REPORT_20260821.md`](docs/competition/MINIMUM_DEMO_DELIVERY_REPORT_20260821.md)
+- [`docs/competition/CARBONLAB_V3_PLATFORM_HANDOFF_20260831.md`](docs/competition/CARBONLAB_V3_PLATFORM_HANDOFF_20260831.md)
+
+## 尚未完成或不得宣称
+
+- 尚未使用真实企业生产资料完成试点；
+- 尚未完成法定核查、监管申报或第三方认证；
+- 尚未证明所有供电公司、ERP、SAP、MES 版式均可识别；
+- 扫描图片型票据 OCR 不属于当前离线 Demo 稳定范围；
+- 不提供碳交易、绿证撮合、绿色金融或自动报关；
+- 合成测试结果不得写成客户效果、收入或企业反馈。
+
+## 技术栈
+
+- 前端：React、TypeScript、Vite、Tailwind CSS；
+- 后端：Python、FastAPI、Pydantic、SQLAlchemy；
+- 数据库：PostgreSQL、Alembic；
+- AI：OpenAI-compatible Provider、固定 Skill、本体与混合 RAG；
 - 测试：Pytest、TypeScript build、ESLint；
-- 交付：Docker Compose。
+- 交付：Docker Compose、跨架构离线镜像。
 
-## 7. 目录结构
-
-```text
-backend/                 FastAPI、领域服务、模型、迁移和测试
-frontend/                登录、文件接入和护照页面
-scripts/                 演示数据与模型验证脚本
-validation/              数据集、契约、历史报告和验证规则
-docs/architecture/       系统架构
-docs/migration/          旧项目审查、清单和迁移报告
-docs/handoff/            运行、状态和赛事平台接管说明
-ai/memory-bank/          治理、方法、任务和阶段门记忆
-```
-
-## 8. 首次运行
-
-### Docker Compose（推荐）
+## 本地运行
 
 ```bash
 cp .env.example .env
-# 修改 .env 中的数据库密码、JWT_SECRET；需要真实模型时再填写 LLM 配置
+# 配置本地数据库密码和 JWT_SECRET；核心离线演示不需要外部 LLM Key
 docker compose up --build
 ```
 
@@ -99,83 +99,10 @@ docker compose up --build
 - 后端文档：`http://localhost:8000/docs`
 - 健康检查：`http://localhost:8000/api/health`
 
-停止：
+不要提交 `.env`、真实 API Key、真实企业文件或个人信息。
 
-```bash
-docker compose down
-```
+## 当前结论
 
-彻底重置本地数据：
+本仓库证明的是：**最小碳数据工作流能够在合成数据和受控环境中运行、阻断、重放和追溯。**
 
-```bash
-docker compose down -v
-```
-
-### 创建合成演示数据
-
-演示密码必须由本地环境提供，不写入仓库：
-
-```bash
-CARBONLAB_DEMO_PASSWORD='<仅本地使用的密码>' \
-docker compose run --rm -e CARBONLAB_DEMO_PASSWORD backend \
-python -m scripts.seed_passport_demo
-```
-
-演示邮箱为 `demo@huasheng-steel.com`；所有页面和数据均标记为 DEMO ONLY。
-
-## 9. 测试
-
-后端：
-
-```bash
-python3 -m pytest -q backend/tests
-```
-
-前端：
-
-```bash
-cd frontend
-npm ci
-npm run build
-npm run lint
-```
-
-数据库迁移：
-
-```bash
-docker compose run --rm backend alembic -c backend/alembic.ini upgrade head
-```
-
-实际迁移验证结果见 `docs/migration/migration-report.md`。
-
-## 10. 环境变量
-
-复制 `.env.example` 后填写。核心变量：
-
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `CORS_ALLOWED_ORIGINS`
-- `STORAGE_BACKEND`
-- `LLM_API_BASE`
-- `LLM_API_KEY`
-- `LLM_MODEL`
-- `CARBONLAB_DEMO_PASSWORD`（只在创建本地演示账号时临时提供）
-
-不要提交 `.env`、真实 Key、真实企业文件或个人信息。
-
-## 11. 当前成果边界
-
-本仓库证明的是：最小业务链能够在合成数据上运行、测试和重放。它没有证明模型已经适用于所有工厂文件，也没有证明结果获得监管或第三方核查认可。
-
-## 12. 交接入口
-
-赛事平台按顺序读取：
-
-1. `docs/handoff/opc-platform-takeover.md`
-2. `docs/handoff/project-handoff.md`
-3. `docs/handoff/feature-status-matrix.md`
-4. `docs/handoff/runbook.md`
-5. `ai/memory-bank/tasks/master-plan.md`
-6. `ai/memory-bank/tasks/week-01.md`
-
-详细迁移来源和取舍见 `docs/migration/`。
+下一步是非项目成员可用性测试，以及使用脱敏真实工厂资料开展人工专家与系统并行的 V4 影子试用。
