@@ -8,6 +8,14 @@
 
 比赛平台原分支保留为独立过程证据，不直接覆盖主产品；主产品只吸收了经修复的候选确认机制。
 
+GitHub 交付：
+
+- 回滚分支：`codex/pre-minimum-demo-20260821`（`c4f0b5b`）；
+- 比赛平台原始分支：`competition/minimum-demo-delivery`（`4e2171e`，Draft PR #1）；
+- 本轮集成分支：`codex/minimum-demo-v1-20260821`；
+- 主实现提交：`386d7ac`；
+- 集成 PR：`https://github.com/Ghostsci/carbonlab-opc/pull/2`。
+
 ## 2. 本轮完成内容
 
 ### 人机协同边界
@@ -56,6 +64,11 @@
 - `output/playwright/minimum-demo-upload.png`
 - `output/playwright/minimum-demo-passport-handoff.png`
 
+带中文旁白和字幕的完整演示视频：
+
+- `demo_video/CarbonLab_最小闭环演示_20260821.mp4`
+- 视频时长约 39 秒，使用合成数据录制；录制脚本、旁白文本与字幕源文件均已保留。
+
 ## 4. 已验证的攻击
 
 1. 用合法签名确认后再修改任一字段：返回冲突，不写 ActivityData。
@@ -77,4 +90,3 @@
 ## 6. 下一步唯一优先事项
 
 邀请 1—3 名非碳专业用户，使用合成演示文件独立完成上述五分钟流程，记录：完成时间、卡点、误解、是否能复述“AI 提议—人确认—代码计算—护照留痕”的边界。先修影响上手和理解的问题，再进入真实脱敏工厂资料试点。
-
